@@ -376,6 +376,7 @@ App.buildSearchIndex = function(){
   idx.push({type:'手冊', title:'誓詞規律銘言＋執委會制度＋報班', link:'#book', desc:'', text:'誓詞 規律 銘言 準備 報班 訓練班 考章 執委會'});
   idx.push({type:'手冊', title:'執委會制度＋執委職責＋會議記錄表', link:'#book/exec', desc:'已併入手冊', text:'執委會 執委 制度 會議記錄 主席 秘書 司庫 自務自治'});
   idx.push({type:'手冊', title:'集會工具（計分板・抽籤・倒數・分組・投屏）', link:'#book/tools', desc:'可投屏', text:'計分板 抽籤 倒數 分組 工具 投屏 分組數 投影 大電視'});
+  idx.push({type:'手冊', title:'AYP領袖指南（團員參加＋領袖參與＋成立執行處）', link:'#book/ayp', desc:'新領袖必修', text:'ayp 領袖指南 團員參加 執行處支部 組長 導師 評核員 成立執行處 表格 AYP/10 座談會 紀錄簿 迎新講座'});
   idx.push({type:'素材', title:'工作紙（16 場直接印）＋急救卡（6 張連圖）', link:'#print', desc:'可印可投屏', text:'工作紙 列印 素材 急救卡 家長通知 歌紙 誓詞卡 投屏'});
   idx.push({type:'素材', title:'🇨🇳 國歌《義勇軍進行曲》＋升旗禮儀', link:'#print', desc:'素材庫', text:'國歌 義勇軍進行曲 升旗 禮儀 唱國歌'});
   if(typeof AYP!=='undefined'){
@@ -1023,6 +1024,7 @@ App.pages.book = function(sub){
     {k:'tools',ic:'🧰',n:'集會工具'},
     {k:'apply',ic:'🎖️',n:'考章安排'},
     {k:'course',ic:'📚',n:'報考訓練班'},
+    {k:'ayp',ic:'🌟',n:'AYP領袖指南'},
     {k:'refs',ic:'🔗',n:'參考資料'}
   ];
   var cur = subs.some(function(s){return s.k===sub;}) ? sub : 'promise';
@@ -1089,6 +1091,18 @@ App.pages.book = function(sub){
       return '<li><b>'+s.t+'</b>：'+s.d+'</li>';
     }).join('');
     wrap.appendChild(App.sec('📚 如何報考訓練班（訂閱通告圖書館）').add(ol4));
+    return wrap;
+  }
+
+  if(cur==='ayp'){
+    var L = AYP.leader;
+    wrap.appendChild(App.h('p','lede','新領袖必修：AYP 係乜、團員點參加、領袖點參與、旅團點成立執行處支部。三級數字＋五科詳情去下方 <a href="#ayp">🌟 AYP</a> 查。'));
+    wrap.appendChild(App.block('🌟 什麼是 AYP（三句話）', '<ul class="tight">'+L.what.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul>', {print:true}));
+    wrap.appendChild(App.block('🧒 團員如何參加（領袖幫手 5 步）', '<ol class="tight">'+L.joinMember.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ol>', {print:true}));
+    wrap.appendChild(App.block('🧑‍🏫 領袖如何參與（三種角色）', L.joinLeader.map(function(x){return '<p><b>'+x.t+'</b>：'+x.d+'</p>';}).join(''), {print:true}));
+    wrap.appendChild(App.block('🏕️ 如何成立童軍執行處支部', '<ol class="tight">'+L.setup.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ol><p class="tip">💡 '+L.setupNote+'</p>', {print:true}));
+    var ldocs = L.links.map(function(d){return '<li><a class="external-link" href="'+d.url+'" target="_blank" rel="noopener">🔗 '+d.n+'</a>（'+d.d+'）</li>';}).join('');
+    wrap.appendChild(App.block('🔗 官方文件', '<ul class="tight">'+ldocs+'</ul>', {print:false}));
     return wrap;
   }
 
@@ -1435,6 +1449,7 @@ App.pages.ayp = function(sub){
     var docs = AYP.docs.map(function(d){return '<li><a class="external-link" href="'+d.url+'" target="_blank" rel="noopener">🔗 '+d.n+'</a>（'+d.d+'）</li>';}).join('');
     wrap.appendChild(App.block('📝 點參加（7 步）', '<ol class="tight">'+steps+'</ol>', {print:true}));
     wrap.appendChild(App.block('🔗 官方文件', '<ul class="tight">'+docs+'</ul>', {print:false}));
+    wrap.appendChild(App.h('p','tip','💡 領袖要幫團員參加／成立執行處支部：睇 <a href="#book/ayp">📖 手冊・AYP 領袖指南</a>。'));
   }
   wrap.appendChild(App.h('p','tip','📚 資料來源：'+AYP.source.title+'。'+AYP.source.note));
   return wrap;

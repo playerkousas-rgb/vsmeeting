@@ -249,7 +249,7 @@ for (const p of ['print','play','skills','ayp','badges','book','uniform','ceremo
 for (const s of ctx.CEREMONY.cards.map(c=>c.k)) { try{ ctx.App.pages.ceremony(s); }catch(e){ console.error('❌ pages.ceremony('+s+'):',e.message); process.exit(1); } }
 for (const s of ['land','sea','air','badge','acc','check']) { try{ ctx.App.pages.uniform(s); }catch(e){ console.error('❌ pages.uniform('+s+'):',e.message); process.exit(1); } }
 /* VS：手冊 subs＝誓詞／執委會制度／工具／考章／報班／參考 */
-for (const s of ['promise','exec','tools','apply','course','refs']) { try{ ctx.App.pages.book(s); }catch(e){ console.error('❌ pages.book('+s+'):',e.message); process.exit(1); } }
+for (const s of ['promise','exec','tools','apply','course','ayp','refs']) { try{ ctx.App.pages.book(s); }catch(e){ console.error('❌ pages.book('+s+'):',e.message); process.exit(1); } }
 for (const s of ['rope','care','map','pack','camp','pioneer','track','field','aid']) { try{ ctx.App.pages.skills(s); }catch(e){ console.error('❌ pages.skills('+s+'):',e.message); process.exit(1); } }
 for (const s of ['about','levels','sections','join']) { try{ ctx.App.pages.ayp(s); }catch(e){ console.error('❌ pages.ayp('+s+'):',e.message); process.exit(1); } }
 console.log('✅ v19 全部 tab＋小分頁 render 正常');
@@ -390,6 +390,13 @@ for (const st of ctx.AYP.join) {
 for (const d of ctx.AYP.docs) {
   if (!d.n || !d.url || d.url.indexOf('http') !== 0) { console.error('❌ AYP 官方文件連結唔齊'); process.exit(1); }
 }
+if (!ctx.AYP.leader || ctx.AYP.leader.what.length < 3) { console.error('❌ AYP.leader.what 唔齊'); process.exit(1); }
+if (ctx.AYP.leader.joinMember.length !== 5) { console.error('❌ AYP.leader.joinMember 唔係 5 步'); process.exit(1); }
+if (ctx.AYP.leader.joinLeader.length !== 3) { console.error('❌ AYP.leader.joinLeader 唔係 3 種角色'); process.exit(1); }
+if (ctx.AYP.leader.setup.length !== 4) { console.error('❌ AYP.leader.setup 唔係 4 步'); process.exit(1); }
+if (ctx.AYP.leader.links.length < 5) { console.error('❌ AYP.leader.links 官方文件不足'); process.exit(1); }
+if (!aypSrc.includes('AYP/10') || !aypSrc.includes('2157 8610')) { console.error('❌ ayp.js 缺 AYP/10／2157 8610'); process.exit(1); }
+if (!appSrc.includes('AYP領袖指南') || appSrc.indexOf("if(cur==='ayp'){") < 0) { console.error('❌ 手冊冇 AYP領袖指南分頁'); process.exit(1); }
 if (!aypSrc.includes('主項') || !aypSrc.includes('副項') || !aypSrc.includes('紀錄簿') || !aypSrc.includes('執行處')) { console.error('❌ ayp.js 缺關鍵內容（主項／副項／紀錄簿／執行處）'); process.exit(1); }
 console.log('✅ AYP：五科＋三級比較表＋7 步參加流程＋官方文件（只查不記）');
 // index.html 接線
@@ -991,4 +998,4 @@ console.log('✅ v34：新／熟手定位・手機 44px・安全圖片 fallback�
   console.log('✅ v38 深資守則：獎章 20 項（m1–m11 齊）・考章報班各 7 步・制服 6 款官網圖・16 場分鐘數啱');
 }
 
-console.log('\n🎉 全部 smoke test 通過（v39 深資版：16 場＋7 套儀式卡＋獎章查閱＋AYP・前端零 SVG）');
+console.log('\n🎉 全部 smoke test 通過（v40 深資版：16 場＋7 套儀式卡＋獎章查閱＋AYP・前端零 SVG）');
