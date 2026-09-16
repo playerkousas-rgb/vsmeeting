@@ -1,7 +1,7 @@
 {
-  "name": "scout-meeting-helper",
+  "name": "vs-meeting-helper",
   "version": "0.1.0",
-  "description": "🧭 童軍團集會助手 Scout Hub — 靜態PWA，無build step；上方新領袖跟住做，下方資深領袖搵材料",
+  "description": "🧭 深資童軍團集會助手 — 靜態PWA，無build step；上方新領袖跟住做，下方資深領袖搵材料。Scout System 出品",
   "private": true,
   "scripts": {
     "start": "python3 -m http.server 8090 --bind 0.0.0.0",

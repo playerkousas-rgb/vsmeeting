@@ -1,7 +1,7 @@
 {
-  "name": "童軍團集會助手 Scout Hub",
-  "short_name": "童軍助手",
-  "description": "香港童軍支部（11–15 歲）集會工具：24 場完整教案（會員章＋日常集會）、遊戲場地圖、技能圖解、儀式卡、制服同徽章佩戴位置、興趣章要求、營火會歌紙；可列印、可投屏、離線用得。",
+  "name": "深資童軍團集會助手",
+  "short_name": "深資助手",
+  "description": "深資童軍支部（15–20 歲）集會工具：16 場完整教案（會員章＋肩章）、遊戲場地圖、技能圖解、儀式卡、制服同徽章佩戴位置、獎章要求、營火會歌紙；可列印、可投屏、離線用得。Scout System 出品。",
   "lang": "zh-HK",
   "start_url": "./index.html",
   "scope": "./",
@@ -21,8 +21,8 @@
       "url": "./index.html#skills"
     },
     {
-      "name": "🎖️ 興趣章",
-      "short_name": "興趣章",
+      "name": "🎖️ 獎章",
+      "short_name": "獎章",
       "url": "./index.html#badges"
     },
     {

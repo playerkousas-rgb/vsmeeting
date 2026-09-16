@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2E7D32">
-<title>🧭 童軍團集會助手 Scout Hub</title>
-<meta name="description" content="跟你嘅集會流程做就帶得到；想搵材料、搵靈感亦都有。童軍支部 (11-15歲) 靜態 PWA。">
+<title>🧭 深資童軍團集會助手</title>
+<meta name="description" content="深資童軍支部 (15-20歲) 集會工具：16 場完整教案、儀式卡、制服、獎章查閱、營火會。可列印、可投屏、離線用得。Scout System 出品。">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
-<div id="netbar" style="display:none">📴 而家離線：套包照帶到；官方套包、報章系統及外部網站要上網先用得，掣已變灰。</div>
+<div id="netbar" style="display:none">📴 而家離線：套包照帶到；官方套包及外部網站要上網先用得，掣已變灰。</div>
 <div id="app">
   <div id="stickytop">
     <header id="topbar">
-      <div class="brand" onclick="location.hash='#plan'">🧭 童軍團集會助手 <span class="branch-tag">SCOUTS</span></div>
+      <div class="brand" onclick="location.hash='#plan'">🧭 深資童軍團集會助手 <span class="branch-tag">VENTURE</span></div>
       <div class="topbtns">
         <button class="iconbtn" onclick="if(typeof App!=='undefined'&&App.searchOpen){App.searchOpen()}else{location.hash='#search'}" title="全站搜尋" aria-label="全站搜尋">🔍</button>
         <a class="iconbtn" href="#book/refs" title="外部工具及官方參考" aria-label="外部工具及官方參考">🔗</a>
@@ -27,20 +27,20 @@
         <a href="#plan" data-tab="plan"><span>📅</span>集會目錄</a>
         <a href="#ceremony" data-tab="ceremony"><span>🎪</span>集會儀式</a>
         <a href="#uniform" data-tab="uniform"><span>👕</span>制服</a>
-        <a href="https://drive.google.com/file/d/1MhGE2LP3kiCEmyJAGUfIlLzL0Iq4fK33/view" target="_blank" rel="noopener" class="official external-link" data-tab="official"><span>📦</span>官方套包</a>
+        <a href="https://drive.google.com/file/d/1MEXphy7RQXXfFZX3uXsg0L4ZfOXbPEuo/view" target="_blank" rel="noopener" class="official external-link" data-tab="official"><span>📦</span>官方套包</a>
         <a href="#book" data-tab="book"><span>📖</span>手冊</a>
       </div>
     </nav>
   </div>
   <main id="view"></main>
-  <footer class="site-footer"><small>© 2026 Scout System. All rights reserved. | 內容以《童軍訓練綱要》2026-06-06版及青少年活動署最新通告為準</small></footer>
+  <footer class="site-footer"><small>© 2026 Scout System. All rights reserved. | Scout System 出品｜內容以《深資童軍訓練綱要》及青少年活動署最新通告為準</small></footer>
   <div id="flowbar"></div>
   <nav id="tabbar" aria-label="即插即用">
     <div class="navrow">
       <a href="#print" data-tab="print"><span>✂️</span>素材庫</a>
       <a href="#play" data-tab="play"><span>🎮</span>活動</a>
       <a href="#skills" data-tab="skills"><span>🪢</span>技能</a>
-      <a href="#badges" data-tab="badges"><span>🎖️</span>興趣章</a>
+      <a href="#badges" data-tab="badges"><span>🎖️</span>獎章</a>
       <a href="#songs" data-tab="songs"><span>🔥</span>營火會</a>
     </div>
   </nav>
@@ -71,14 +71,6 @@
 <script src="js/c14-lesson.js"></script>
 <script src="js/c15-lesson.js"></script>
 <script src="js/c16-lesson.js"></script>
-<script src="js/c17-lesson.js"></script>
-<script src="js/c18-lesson.js"></script>
-<script src="js/c19-lesson.js"></script>
-<script src="js/c20-lesson.js"></script>
-<script src="js/c21-lesson.js"></script>
-<script src="js/c22-lesson.js"></script>
-<script src="js/c23-lesson.js"></script>
-<script src="js/c24-lesson.js"></script>
 <script src="js/data.js"></script>
 <script src="js/projector.js"></script>
 <script src="js/app.js"></script>

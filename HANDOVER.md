@@ -1,9 +1,13 @@
-# Scout Hub — Handover Notes（交下一個 Agent 用）
+# 深資童軍團集會助手 — Handover Notes（交下一個 Agent 用）
 
-> 最後更新：2026-09-16
-> 目前 branch：`arena/01a0a963-scoutmeeting`（v37：**前端零 SVG** — 制服 9 張位置圖＋全部圖解一律 AVIF）
+> 最後更新：2026-09-17
+> 目前 branch：`arena/01a0a9bb-vsmeeting`（v38：**深資童軍版** — 16 場＋7 套儀式卡＋獎章查閱，前端零 SVG）
 >
-> **v36／v37 快照（睇呢段就夠，下面 v19 前後嘅記錄當歷史）**
+> **v38 快照（睇呢段就夠；下面 v19–v34 係童軍版歷史記錄）**
+> - **深資童軍版全量重建**：16 場教案（會員章 c01–c06／肩章認識 c07–c09／肩章技能 c10–c16）、7 套儀式卡（無團呼）、深資制服 6 款（官網原圖 link-only）、獎章 20 項（會員章 11＋肩章 7＋獎章路 2，只查不記）、繩結 9 個、地圖 1:20,000、急救 5 種＋復原臥式。
+> - **組織**：執委會制（主席／副主席／秘書／司庫／康樂總務）＋團員大會；集隊由執委會帶，領袖監禮；考章＝團內考核 7 步，報班＝通告圖書館 7 步。
+> - **已刪走嘅童軍支部內容**：c17–c24 教案、團呼卡、拖木頭挑戰場地圖、小隊制度／小隊長、興趣組 33 章、區報章系統、童軍版繩結 10／地圖 1:25,000／急救 7 種；sw 已唔再預緩存 `img/badge/`＋`img/uni/`（檔仲喺 disk，未刪）。
+> - **v36／v37 舊快照（架構沿用）**
 > - **制服 9 張位置圖**（`img/dia/uniform-{chest,zoom,sleeve,body,scarf,ties,kilwell,cap,branch}.avif`）＝乾淨制服底圖（AI 生成中性衣物、零徽章）＋**程式照《儀容與制服手冊》疊位置線／尺寸線／①–⑨ 編號**；章位一律由條文決定，AI 只出底圖（守住 v21 禁令）。前端經 `IMG.html('uniform.<key>')` 出圖。
 > - **前端零 SVG（v37）**：`js/diagrams.js`＋`js/svg-kit.js`（76KB 手繪 SVG 字串）已經搬去 `assets_src/diasvg/*.src.js`（build-only，唔入 bundle）；`js/dia.js` 用 `IMG.map`（54 張 AVIF＋尺寸＋alt）自動砌返 `DIAGRAMS.*`，所以 `app.js`／`ceremony.js` 嘅寫法完全不變，但出到嘅一定係 `<img src="img/dia/*.avif">`。圖載唔到＝`IMG.fallback()` 出 alt 文字（冇 SVG 後備）。
 > - `img/icon-192.svg` → `assets_src/icons/icon-192.svg`（只有 icon 來源仲係 SVG，唔會 ship）。
@@ -14,10 +18,10 @@
 
 ## 1. 項目是什麼
 
-**Scout Hub** = 香港童軍（11–15 歲童軍支部）團集會助手 PWA，俾領袖帶隊用。
-- 參考：幼童軍 Cub Hub UI/架構（但唔抄佢哋 emoji icon）
-- 內容來源：官方 2026-06-06《童軍訓練綱要》+ 2026-09-01 團集會套包
-- 定位：**領袖帶隊工具**，三步帶法（領袖預備 → 集會流程 → 跟進）＋小隊長任務卡為主、成員工作紙為輔
+**深資童軍團集會助手** = 深資童軍支部（15–20 歲）團集會助手 PWA，俾領袖帶隊用。Scout System 出品。
+- 參考：童軍 Scout Hub UI/架構（同殼同 5+5，同無 build step）
+- 內容來源：《深資童軍訓練綱要》+ 官方 2026-09-01 深資童軍團集會套包
+- 定位：**領袖帶隊工具**，上方 5 tab 事前準備（新領袖跟住做）＋下方 5 tab 現場即用（資深領袖搵材料）
 - 主色：**森林綠 #2E7D32 + 金色 #F9A825**
 - Icon：自製森林綠底＋金色百合花飾（fleur-de-lis），喺 `icons/icon-192.png`、`icons/icon-512.png`（唔用 Cubs Hub 嗰套 emoji icon）
 
@@ -26,83 +30,67 @@
 **上方 5 tab**：
 | Tab | 狀態 | 說明 |
 |---|---|---|
-| 📅 集會目錄（plan） | ✅ 24/24 全完成！ | 24 場規劃表格，撳 tid 入教案詳情 |
-| 🎪 集會儀式（ceremony） | ✅ 7 套儀式卡 | 開始/結束儀式、中式隊列、升旗、宣誓、三指敬禮、團呼 |
-| 👕 制服（uniform） | ✅ 6 類官網圖＋佩戴表＋自查 | 官網圖片熱連（TLS 下載失敗先唔 mirror） |
-| 📦 官方套包（official） | ✅ 外連 | `window.location.href = EXTERNAL.officialPack` |
-| 📖 手冊（book） | ✅ 誓詞/規律/銘言 + 報章 + 報班 | 含「如何報考專科徽章」+「如何報考訓練班（訂閱通告圖書館）」 |
+| 📅 集會目錄（plan） | ✅ 16/16 全完成！ | 16 場規劃表格（階段篩選），撳 tid 入教案詳情 |
+| 🎪 集會儀式（ceremony） | ✅ 7 套儀式卡 | 開始/結束儀式、中式隊列、升旗、宣誓、三指敬禮、集合解散（無團呼） |
+| 👕 制服（uniform） | ✅ 深資 6 款＋佩戴 ①–⑨＋配件＋自查 | 服式圖連總會官網原圖（link-only，唔本地存） |
+| 📦 官方套包（official） | ✅ 外連 | 深資支部官方集會套包 Drive PDF |
+| 📖 手冊（book） | ✅ 誓詞/規律/銘言＋執委會＋工具＋考章＋報班＋參考 | 含「團內考核 7 步」+「報考訓練班（訂閱通告圖書館）7 步」 |
 
 **下方 5 tab**：
 | Tab | 狀態 | 說明 |
 |---|---|---|
-| ✂️ 素材庫（print） | 🚧 WIP | 首版 placeholder |
-| 🎮 活動（play） | 🟡 4 個常用遊戲 | 未來補更多 |
-| 🪢 技能（skills） | 🚧 WIP | 列出 9 大技能分類，圖解卡未做 |
-| 🎖️ 興趣章（badges） | ✅ 33 個興趣組專科徽章 | 含官方要求 + 建議考核方式，filter 分類 |
-| 🔥 營火歌（songs，v19 取代小隊 tab） | ✅ | 11 首公版傳統營火歌歌紙（和弦/拍子/動作）＋領唱 5 招＋火圈編排圖；小隊制度已併入手冊 |
+| ✂️ 素材庫（print） | ✅ 6 類真分頁 | 16 場工作紙逐張印＋6 張急救卡＋誓詞卡＋收繩卡＋國歌升旗＋營火會歌紙 |
+| 🎮 活動（play） | ✅ 13 個遊戲 | 玩法/人數/物資/安全/場地圖（11 有圖＋2 破冰無圖） |
+| 🪢 技能（skills） | ✅ 9 分頁 | 繩結 9 口訣＋收繩/地圖/指南針/露營/先鋒/追蹤/郊野/急救 |
+| 🎖️ 獎章（badges） | ✅ 20 項 | 會員章 11＋肩章 7＋獎章路 2，考核要求＋建議方式＋教案連結 |
+| 🔥 營火會（songs） | ✅ 6 分頁 | 流程/歡呼/人手設備/帶唱/歌單 14/安全考章 |
 
-**頂欄外連**（icon-only 按鈕）：
-- 🔍 搜尋（暫跳去 #book，未做 search 功能）
-- 🏅 scoutbadge.vercel.app（**進度性獎章全外連**：會員章/探索/標準/高級/總領袖，本 APP 唔做記錄/考核）
-- 📨 scout-circulars.vercel.app（通告圖書館）
-- 🆕 📝 districtbadgesystem30.vercel.app（**只係報考專科徽章用**，唔係訓練班系統——用戶明確更正）
+**頂欄**（icon-only 按鈕）：🔍 全站搜尋 ＋ 🔗 參考資料（外部工具集中喺 `#book/refs`：深資綱要網上版＋官方套包＋通告圖書館）
 
 ## 3. 重要用戶約定（唔可以改）
 
-0. **v19 用戶新约定（見下方第 16 節）**：①tab 內容要分頁（制服要陸/海/空小分頁）②兴趣组由团考核、興趣章 tab 唔放區總部報章系統連結③唔出繩結逐步圖卡（會錯）④儀式/活動/技能要補圖（興趣章唔使）⑤歌紙只用傳統童軍營火歌，唔自創唔放流行歌⑥列印指邊印邊⑦工作紙：上面教案「跟住做」＋素材庫「直接印」兩邊都要⑧集會目錄整行可撳
+0. **v38 深資版約定**：①tab 內容要分頁 ②會員章＋肩章由團內考核，獎章 tab 只查不記、唔放報章系統 ③唔出繩結逐步圖卡（文字口訣為準）④儀式/活動/技能要補圖（獎章唔使）⑤歌紙只用香港旅團唱開、有出處嘅營火歌 ⑥列印指邊印邊 ⑦工作紙：上面教案「跟住做」＋素材庫「直接印」兩邊都要 ⑧集會目錄整行可撳
 1. **唔好抄 Cubs Hub 嘅 emoji icon**——用自製森林綠+金百合花飾（v19 已更新為 192/512/maskable 三 size，原圖來自 generate_image）
 2. **完全移除森林故事**（幼童軍先有，童軍支部冇）
 3. **第 4 tab = 🪢 技能；第 5 tab 已由「小隊」改為 🔥 營火歌**（v19 用戶指示，取代舊約定）
-4. **「活動章」tab 改名「興趣章」，只做興趣組**（藍底技能組/紅底服務組/金邊教導組全外連 scoutbadge）
-5. **進度性獎章內容/記錄/考核全部外連 scoutbadge**，本 APP 唔做
-6. **制服必須用香港童軍總會官網圖片**（熱連 `https://www.scout.org.hk/uploads/member/Scout_B.1.jpg` 等，唔好自己整/改圖）
+4. **「獎章」tab 做會員章 11＋肩章 7＋獎章路 2**，只查不記；考核由團安排，訓練班經通告圖書館
+5. **唔做考核記錄／獎章判定／出席記錄**
+6. **深資制服服式圖連總會官網原圖**（`https://www.scout.org.hk/uploads/member/venture_scouts_*.jpg`，link-only，唔本地存，唔好自己整/改圖）；深資軟帽唔係貝雷帽
 7. **儀式內容唔自己作**，動作要領文字化；中式隊列參考總會《中式隊列指引》PDF
-8. **誓詞/規律/銘言已核對《童軍訓練綱要》2026-06-06 版**，唔好亂改字眼
+8. **誓詞/規律/銘言照《深資童軍訓練綱要》**，唔好亂改字眼
 9. **「如何報考訓練班」**必須教用通告圖書館訂閱：通知面板 → 剔支部/分類 → 啟用通知 → 手機加入主畫面
-10. **恆常集會為主、特別集會另設專區**；小隊長任務卡首版從簡、領袖主導
-11. **集會以 9 段程序為標準結構**（c01-c12 全部 9 段）
-13. **🚫 集會套包只教「會員章＋日常集會」級別**（v29 用戶指示）：深階步操（原地四轉／斜轉、橫移、快慢步行進與行進間轉向／換步、口令與動令時間表、旗手十二式、會操檢閱程序）**唔放喺 app**——由領袖自己上職前／進階訓練班＋人手一份《步操手冊》研讀。app 內只留：基本姿勢（立正・稍息／童軍動作・休息・睇齊）・敬禮・升旗禮儀・宣誓・團呼・集合／解散・基本整隊，加上手冊連結同「呢啲屬進階」嘅講明。**測試已經鎖死**（`tests/smoke.mjs` v29 段會 fail 如果深階內容翻咗嚟），唔好為咗「完整」再搬返入面。
+10. **恆常集會為主、特別集會（大會操/宣誓/創辦人日/露營）另設篩選**；執委會帶活動、領袖做顧問
+11. **恆常集會 90 分鐘，段數按教案實際節數**（c01–c03/c05–c15 係 8 段，c04 大會操 5 段，c16 露營 7 段）
+13. **🚫 集會套包只教「會員章＋日常集會」級別**（v29 用戶指示，v38 沿用）：深階步操**唔放喺 app**——由領袖自己上職前／進階訓練班＋人手一份《步操手冊》研讀。app 內只留：基本姿勢（立正・稍息・休息・睇齊）・敬禮・升旗禮儀・宣誓・集合／解散・基本整隊，加上手冊連結同「呢啲屬進階」嘅講明。深資集會唔設團呼。**測試已經鎖死**（`tests/smoke.mjs` v29 段會 fail 如果深階內容翻咗嚟），唔好為咗「完整」再搬返入面。
 12. **🚫 唔准生成「制服圖」**（v21 用戶指正：AI 一定畫錯帽章／巾圈／袋蓋／布章位置）。AI 插畫只畫**中性練習衫**（灰T＋深灰短褲、冇帽冇領巾冇章），目標只係俾領袖睇明**動作／站位／程序**；制服標準一律用官網圖＋《儀容與制服手冊》。同埋唔出：繩結逐步圖、營火袍布章插畫（呢啲屬制服／徽章範圍，只用平面圖解＋文字）
 
-## 4. 已完成教案（24/24 場，狀態：✅ full:true）🎉
+## 4. 已完成教案（16/16 場，狀態：✅ full:true）🎉
 
 | tid | 主題 | 獎章 | 形式 | 特色檔案標記 |
 |---|---|---|---|---|
-| c01 | 加入小隊＋中式隊列基礎 | 會員章 m1+m2+m5 | 恆常（90min） | — |
-| c02 | 童軍歷史 | 會員章 m3 | 恆常（90min） | — |
-| c03 | 國旗國徽區旗區徽＋保護自己 | 會員章 m6+m7+m10 | 恆常（90min） | **sensitive:true**（橙色警告） |
-| c04 | 升旗禮儀＋國歌 | 會員章 m8+m9 | 恆常（90min） | — |
-| c05 | 誓詞規律銘言 | 會員章 m4 | 特別（90min） | — |
-| c06 | 宣誓儀式 | 會員章 m11 | 特別（90min） | **special:true**（崗位/物品/事後跟進） |
-| c07 | 身心健康＋小隊歡呼＋運動 | 探索 B1+B2 | 恆常（90min） | — |
-| c08 | 生態環境參觀 | 探索 D3（選修） | **室外半日特別（210min）** | special + **outdoor:true**（個人裝備/禁帶/長版家長同意書） |
-| c09 | 地圖圖例＋執背囊 | 探索 A2a+b | 恆常（90min） | — |
-| c10 | 一日郊野 5km 徒步 | 探索 A2b+c + C2b | **室外一日特別（270min/4.5h）** | special + outdoor（1:6+急救證書/對講機×4/救生毯/16 項個人裝備/SOS/三長哨/Leave No Trace） |
-| c11 | 農曆新年團拜＋揮春創作 | 探索 C3a（文化藝術） | 室內特別（120min/2h） | special（書法/過敏專區/哈姆立克/鼓勵利是/唔設字靚獎） |
-| c12 | 童軍創辦人紀念日（思善日） | 探索 C2a+C2b | 室內特別（90min） | special（2/22 BP 伉儷生日/全球靜默 3 分鐘/電子蠟燭/自願一毫子捐款/6 國分享/思善卡/尊重多元宗教） |
-| c13 | 先鋒工程（一）：平結八字雙套半結反手結 | 探索 A3a | 恆常（90min） | knots 速查表（C13.knots：n/en/use/how/check，供日後技能 tab 用） |
-| c14 | 先鋒工程（二）：稱人接繩繫木縮繩曳木結＋收繩保養 | 探索 A3a+b | 恆常（90min） | knots＋ropeCare 速查表（C14.knots/C14.ropeCare）＋十結大點名 |
-| c15 | 營藝（一）：露營背囊＋危險工具安全 | 探索 A1b+c | 恆常（90min） | 小刀手鋸實作＋斧頭爐具示範（c16 前預備） |
-| c16 | 小隊露營（兩日一夜） | 探索 A1a+d+A4+C1a | 室外特別（1620min） | special+outdoor 紮營煮食營火拔營＋指南針定向（呼應 c09）+Leave No Trace |
-| c17 | 七種急救＋4小時服務 | 探索 D1a+b | 恆常（90min） | 沖脫泡蓋送/RICE/復原臥式＋C17.firstaid 速查表 |
-| c18 | 母親節特別集會 | （特別活動） | 室內特別（90min） | special 心意卡＋紙康乃馨＋媽媽茶點送花儀式 |
-| c19 | 小隊會議 | 探索 C1a | 恆常（90min） | 7 步程序＋主席 5 招＋真會議真記錄 |
-| c20 | 生活分享＋探索獎章頒發儀式 | 探索 C2a | 室內特別（90min） | special 全年回顧＋頒獎＋補考表 |
-| c21 | 暑期戶外同樂日（沙灘） | （暑期特別活動） | 室外特別（180min） | special+outdoor 沙灘遊戲＋HELP＋淨灘 |
-| c22 | 社區考察：文化習俗/傳統節慶 | 標準 D2 選修 | 室外特別（180min） | special+outdoor 兩站參觀＋小隊訪問 |
-| c23 | 游泳章（興趣組） | 標準 B1 | 特別（120min/泳池） | special 6 項考核＋C23.requirements（引官方要求） |
-| c24 | 模型製作（興趣組） | 標準 B2 | 恆常（90min） | 𠝹刀安全＋理想營地大模型＋展覽（全年最後一場） |
+| c01 | 破冰＋童軍運動目的 | 會員章・理解 | 恆常（90min・8 段） | P.O.R. 第一章、分組旗、期望工作紙 |
+| c02 | 世界及香港童軍運動＋隊列 | 會員章・理解 | 恆常（90min・8 段） | WOSM、時間線比賽、中式隊列 |
+| c03 | 國旗國徽區旗區徽 | 會員章・認識 | 恆常（90min・8 段） | 升掛禮儀＋情境題 |
+| c04 | 香港童軍大會操 | — | **特別室外（全日）** | special + outdoor（集體外出觀摩） |
+| c05 | 國歌＋升旗 | 會員章・認識 | 恆常（90min・8 段） | 國歌教唱、升旗程序、模擬升旗 |
+| c06 | 宣誓集會 | 會員章・宣誓 | 特別（90min・8 段） | special + **sensitive:true**（Safe from Harm＋兩人規則）＋頒會員章 |
+| c07 | 認識深資童軍支部 | 肩章・認識 | 恆常（90min・8 段） | 執委會制、獎章路 |
+| c08 | 列席執委會會議 | 肩章・認識 | 恆常（90min・8 段） | 真會議列席＋會議記錄實習 |
+| c09 | 童軍創辦人紀念日活動 | 肩章・認識 | 特別（90min・8 段） | special（貝登堡故事、思善卡、服務策劃） |
+| c10 | 急救 | 肩章・技能 | 恆常（90min・8 段） | 5 種＋復原臥式＋情境賽＋C10.firstaid 速查表 |
+| c11 | 地圖種類及圖例 | 肩章・技能 | 恆常（90min・8 段） | 1:20,000、圖例測驗 |
+| c12 | 指南針＋戶外定向 | 肩章・技能 | 室外（90min・8 段） | outdoor（正置地圖、校園定向） |
+| c13 | 繩結（一） | 肩章・技能 | 恆常（90min・8 段） | 平/接繩/八字/雙套＋C13.knots 速查表 |
+| c14 | 繩結（二）＋收繩 | 肩章・技能 | 恆常（90min・8 段） | 稱人/繫木/三編結＋收繩保養＋九結大點名＋C14.knots/C14.ropeCare |
+| c15 | 露營策劃＋烹調實習 | 肩章・技能 | 恆常（90min・8 段） | 計劃書、氣爐刀具安全、煮食、執包比賽 |
+| c16 | 兩日一夜露營＋頒發肩章 | 肩章・技能 | **特別室外（兩日一夜・7 段）** | special + outdoor（紮營煮食營火拔營＋頒肩章） |
 
-**剩餘 placeholder 場次：無——24 場已全數完成！🎉**（v16 補完 c15–c24）
-
-**10 個 tab 內容：已全數補齊！🎉**（v17：✂️素材庫＋🎮12遊戲＋🪢9技能卡＋🧑‍🤝‍🧑小隊制度工具）
-
-**歌紙＋SVG 圖解＋全站搜尋：已全數完成！🎉**（v18：國歌＋2 原創營火歌＋歌單；17 個 SVG 圖；85 項搜尋索引）
+**16 場已全數完成！🎉**（v38 深資版重建；舊 c17–c24 已刪除）
 
 ## 5. 檔案結構
 
 ```
-scoutmeeting/
+vsmeeting/
 ├── index.html              # 入口（載入所有 js）
 ├── manifest.webmanifest    # PWA manifest
 ├── sw.js                   # Service Worker（版本號 scout-v{N}-c{XX}-YYYYMMDD）
@@ -120,18 +108,19 @@ scoutmeeting/
 │   │   └── svg-kit.src.js  # build-only：儀式／遊戲／技能／營火手繪 SVG 底稿（前端唔會下載）
 │   └── icons/icon-192.svg  # icon 原始 SVG（前端只 ship PNG）
 ├── js/
-│   ├── dia.js              # IMG.map（54 張 AVIF＋尺寸＋alt）＋自動砌 DIAGRAMS（前端唯一出圖路徑）
+│   ├── dia.js              # IMG.map（53 張 AVIF＋尺寸＋alt）＋自動砌 DIAGRAMS（前端唯一出圖路徑；cer.howl／uniform.branch 底稿保留，app 唔用）
 │   ├── app.js              # 核心：路由、App.renderMeeting()、所有 page render
-│   ├── data.js             # DATA 物件：meetings[] 24 場、facts、games、specialEvents、EXTERNAL 外連
-│   ├── interests.js        # INTERESTS：33 個興趣章、categories、howToApply（報章＋報班流程）
-│   ├── ceremony.js         # CEREMONY：7 套儀式卡（含 refs 連結）
-│   ├── uniform.js          # UNIFORM：6 類制服官網圖＋badgePositions＋checklist＋winter
-│   ├── c01-lesson.js ~ c24-lesson.js  # 24 個完整教案（含 C13/C14.knots/C14.ropeCare/C17.firstaid/C23.requirements 速查表）
+│   ├── data.js             # DATA 物件：meetings[] 16 場、facts、games（13 個）、EXTERNAL 外連
+│   ├── interests.js        # INTERESTS：獎章 20 項（會員章 11＋肩章 7＋獎章路 2）、howToApply（團內考核＋報班流程）
+│   ├── ceremony.js         # CEREMONY：7 套儀式卡（無團呼，含 refs 連結）
+│   ├── uniform.js          # UNIFORM：深資 6 款規格＋neckwear/kilwell/beltSocks＋placement＋checklist＋shop
+│   ├── c01-lesson.js ~ c16-lesson.js  # 16 個完整教案（含 C10.firstaid/C13.knots/C14.knots/C14.ropeCare 速查表）
 └── tests/
-    └── smoke.mjs           # 主要 test：`npm test`，97 項全通過（c01–c24）
+    ├── smoke.mjs           # 主要 test（16 場＋全部 tab＋圖解幾何＋深資守則）
+    └── runtime.mjs         # 全部頁面 render＋行為測試（`npm test` 兩個一齊跑）
 ```
 
-**注意**：tests/ 資料夾仲有幾個舊嘅 *.mjs 檔（audit/browser-*/content/nav/practical/print-songs-art/quickkeys/runtime/ui）係前期遺留，**唔係**現行測試——現行只用 `tests/smoke.mjs`。唔好因為其他 test 壞而卡住，可以留低/刪除都得。
+**注意**：tests/ 資料夾仲有幾個舊嘅 *.mjs 檔（audit/browser-*/content/nav/practical/print-songs-art/quickkeys/ui）係前期遺留，**唔係**現行測試——現行用 `tests/smoke.mjs`＋`tests/runtime.mjs`。唔好因為其他 test 壞而卡住，可以留低/刪除都得。
 
 ## 6. 教案物件結構（重要代碼約定）
 
@@ -141,12 +130,12 @@ scoutmeeting/
 var C12 = {};
 C12.timing = { prepWeek, leaderMeeting, setBefore, packAfter, venue };
 C12.leaderPrep = [{when, what}] | [string]; // 兩種格式都支援
-C12.words / C12.countries / C13.knots / C17.firstaid / C23.requirements / ...  // 隨教案自訂（UI 唔渲染，備課＋日後技能 tab 用）
-C12.program = [                             // 必備，9 段
+C13.knots / C14.ropeCare / C10.firstaid / ...  // 隨教案自訂速查表（技能 tab 會用）
+C12.program = [                             // 必備，段數按教案實際節數
   {
-    n: '段落名（string）', t: 分鐘（number）,
+    label: '段落名', min: 分鐘（c04/c16 無 min，時間跟大會／營期）,
     steps: [string,...],                    // 新格式（c10+）
-    leader: {leader:'...', patrol:'...'} | string,  // 兩種格式都支援
+    leader: {leader:'...', exec:'...'} | string,  // exec＝執委會分工（舊 patrol 欄位保留兼容）
     leaderScript: '...',                    // 段內領袖講稿（新格式，app.js 會渲染為金色 callout）
     materials: '...' | mats: [...],         // 物資（新舊格式）
     safety: '...',                          // 段內安全提示（新格式）
@@ -175,19 +164,19 @@ C12.trivia = [{h,d}] | [{q,a}]; // 新舊兩種（h/d 舊，q/a 新）
 
 `App.renderMeeting(tid)` 根據 `DATA.meetings` 入面 `m` 物件嘅 flag 自動渲染：
 
-- `m.sensitive:true` → 橙色警告卡（c03）
+- `m.sensitive:true` → Safe from Harm 橙色警告卡（c06）
 - `m.outdoor:true` → 藍色室外警告卡 + `m.personalKit` / `m.doNotBring` 清單
 - `m.full:true` → 用 `m.data = Cxx` 完整渲染
 - `m.special:true` → 自動顯示崗位表（roles）、頒發物品（items）、禮成後跟進（postCeremony）、補充小知識（trivia）
-- 通用區塊：領袖預備（leaderPrep）、🎤開場白（script，如有；c10+ 已改為 segment-level leaderScript）、9 段程序表、🎒執袋、📝家長通知、✂️工作紙、💌承諾卡（如有）、👥崗位、🎖️物品、👀觀察/檢查、📬禮成、🆘後備、🃏情境卡、💡小知識、⚠️安全
+- 通用區塊：領袖預備（leaderPrep）、開場白（script）、程序表（段數按教案實際節數）、🎒執袋、📝家長通知、✂️工作紙、👥崗位、🎖️物品、👀觀察/檢查、📬禮成、🆘後備、🃏情境卡、💡小知識、⚠️安全
 
-renderMeeting 已升級支援兩種格式混合——c01-c09 用 inline `{ n:1, min:5, ...}` 舊格式，c10–c24 用 multi-line `{ n:'...', t:10, steps:[...]}` 新格式，兩者皆可正常渲染。24 場已全完成，無需再寫新教案。
+renderMeeting 支援新舊兩種段落格式混合（`label/min`、`n/t`、`sub/activities/talking/blocks`）；leader 支援 `{leader, exec}` 物件。16 場已全完成，無需再寫新教案。
 
 ## 8. PWA 與 Cache
 
 - Service Worker 檔案：`sw.js`
-- Cache 命名：`scout-v{N}-c{XX}-YYYYMMDD`
-- 每加一個新 cXX-lesson.js，要做 3 件事：
+- Cache 命名：`scout-v{N}-c16-YYYYMMDD`（現行 `scout-v38-c16-20260917`）
+- 每加/減一個 cXX-lesson.js，要做 3 件事：
   1. `index.html` 加 `<script src="js/cXX-lesson.js"></script>`
   2. `data.js` 將對應 placeholder 替換為 `full:true, special?/outdoor?/sensitive?, data:Cxx, bag?/notice?/personalKit?/doNotBring?`
   3. `sw.js`：升級 CACHE 版本字串，ASSETS 加 `js/cXX-lesson.js`
@@ -197,28 +186,28 @@ renderMeeting 已升級支援兩種格式混合——c01-c09 用 inline `{ n:1, 
 
 | URL | 用途 |
 |---|---|
-| https://prog.scouting.org.hk/scouts/ | 童軍支部大綱（c02 歷史、全球童軍資料） |
-| https://uniform.scouting.org.hk/ + https://www.scout.org.hk/uploads/member/Scout_B.1.jpg 等 6 張 | 制服官網熱連圖 |
-| https://www.scout.org.hk/uploads/tc/circulars/16450/guidelines-of-chinese-foot-drill...pdf | 中式隊列指引 |
-| https://scout-circulars.vercel.app/ | 通告圖書館（報班流程截圖教學） |
+| https://sites.google.com/scouting.org.hk/venture/VentureScoutTrainingScheme | 《深資童軍訓練綱要》網上版（獎章要求出處） |
+| https://www.scout.org.hk/tc/youth-members/venture-scouts/index.html?sid=2 + `uploads/member/venture_scouts_*.jpg` 6 張 | 深資制服規格＋官網原圖（link-only） |
+| https://drive.google.com/file/d/1MEXphy7RQXXfFZX3uXsg0L4ZfOXbPEuo/view | 官方深資團集會套包 2026-09-01 版 PDF |
+| https://scout-circulars.vercel.app/ | 通告圖書館（報班流程＋推送訂閱教學） |
+| https://www.hkscoutshop.org.hk/ | 童軍物品供應社（3.7／3.8 唔入 app，指向呢度） |
 
 ## 10. 測試
 
 ```bash
-cd /home/user/scoutmeeting
-npm test    # 跑 tests/smoke.mjs，97 項，必須全部 ✅ 先好 merge
+cd /home/user/vsmeeting
+npm test    # smoke.mjs＋runtime.mjs，必須全部 ✅ 先好 merge
 ```
 
-**注意**：之前嘅 test 用正則去 count program segments，c11/c12 用多行格式之後改咗做直接 `vm.runInContext()` 載入後數 `.program.length`，呢個方法穩陣好多。日後加新場都係沿用呢個方式。
-
-測試依家會驗：
-- 所有檔案存在、icon 係 PNG、HTML 有齊外連/script
-- 制服官網 URL 存在、通告圖書館「訂閱」提及、districtbadgesystem30 標明只係專章
-- 7 套儀式卡、33 個興趣章
-- 每個 c01-c24 都 parse 到、program.length === 9、bag/safety 陣列存在
-- 每個 lesson 獨有關鍵字存在（例如 c10 一定要有「Leave No Trace」/「撤退」；c12 一定要有「電子蠟燭」/「自願」/「思善卡」；c13 一定要有「左壓右」/「接力賽」；c14 一定要有「兔仔」/「拖木頭」/「收繩」；c16 一定要有「帳篷」/「拔營」/「指南針」；c23 一定要有「踩水」/「HELP」）
-- renderMeeting(c01-c24) 全部可正常呼叫（用 fake DOM stub）
-- sw.js cache 版本升級、README 提及最新 cXX
+測試會驗（v38 深資版）：
+- 所有檔案存在、icon 係 PNG、HTML 有齊外連/script（c17–c24 引用必須消失）
+- 深資制服官網 URL（6 張 venture_scouts_*.jpg）存在、通告圖書館「訂閱」提及、團內考核、無區報章系統
+- 7 套儀式卡（無團呼）、獎章 20 項（會員章 m1–m11 齊）
+- 每個 c01-c16 都 parse 到、program 段數啱（c04 係 5、c16 係 7、其餘 8）、bag/safety 陣列存在
+- 每個 lesson 獨有關鍵字存在（例如 c01 要有「P.O.R. 係乜」；c06 要有「Safe from Harm」；c11 要有「1:20,000」；c14 要有「九結大點名」）
+- renderMeeting(c01-c16) 全部可正常呼叫（用 fake DOM stub）
+- sw.js cache 名 `scout-vN-c16-日期`、同 README 一致；sw 唔再 cache `img/badge/`＋`img/uni/`
+- 深資守則：考章／報班各 7 步、制服 6 款 key、16 場分鐘數（c04／c16 除外）
 
 ## 11. 已知限制 / 技術債
 
@@ -249,16 +238,16 @@ npm test    # 跑 tests/smoke.mjs，97 項，必須全部 ✅ 先好 merge
 ## 13. 開發命令
 
 ```bash
-cd /home/user/scoutmeeting
-python3 -m http.server 8080   # 開 dev server（如需）
-npm test                      # 跑 smoke test
+cd /home/user/vsmeeting
+python3 -m http.server 8090 --bind 0.0.0.0   # 開 dev server（npm start 同效）
+npm test                      # smoke＋runtime
 ```
 
 ## 14. Git 狀態
 
-- working branch 規則：**永遠留喺 `arena/01a0a4b6-scoutmeeting` 做嘢**，合併先落 `main`
-- 本 session 已經喺 `arena/01a0a4b6-scoutmeeting` 上開發（由 main v14 fast-forward 合併起步）；完成後經 PR 或 merge 落 `main`，唔好開新 branch（Arena 用呢個 branch 追蹤 session）
-- 可以 push：`git push origin arena/01a0a4b6-scoutmeeting`（認證已配置）；合併 main 用 PR（由用戶批）
+- working branch 規則：**永遠留喺 `arena/01a0a9bb-vsmeeting` 做嘢**，合併先落 `main`
+- 本 session 喺 `arena/01a0a9bb-vsmeeting` 上開發（由 main 童軍版起步，全量重建深資版）；完成後經 PR 或 merge 落 `main`，唔好開新 branch（Arena 用呢個 branch 追蹤 session）
+- 可以 push：`git push origin arena/01a0a9bb-vsmeeting`（認證已配置）；合併 main 用 PR（由用戶批）
 
 ## 15. 用戶口吻／文案風格
 
@@ -269,10 +258,10 @@ npm test                      # 跑 smoke test
 - 家長 Q&A 要預先回答家長最關心嘅問題（收費？安全？宗教？過敏？）
 
 ---
-**Last agent 完成時間**：2026-09-16（v18：歌紙＋SVG 圖解＋全站搜尋全完成！）
-**最後完成**：v18（歌紙/17 SVG/搜尋85項索引）
-**smoke test**：108 項全通過
-**http server**：如需要可 `cd /home/user/scoutmeeting && python3 -m http.server 8080` 重開
+**Last agent 完成時間**：2026-09-17（v38：深資童軍版全量重建完成！）
+**最後完成**：v38（16 場教案／7 套儀式卡／獎章 20 項／深資制服 6 款）
+**smoke test＋runtime**：全綠
+**http server**：如需要可 `cd /home/user/vsmeeting && npm start` 重開
 
 
 ---
@@ -688,3 +677,31 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 ### PWA／文件
 - `sw.js` cache：`scout-v34-c24-20260916`；預 cache 新 AVIF。38 張 AVIF 合計約 1,194KiB（仍低於 smoke 1,200KiB 上限）。
 - README 同本 HANDOVER 已同步。歷史 §19 嘅「game-chairs 禁止回流」只係針對錯櫈數生成候選圖，已由本節及現行 smoke 斷言取代。
+
+---
+
+## 32. v38：深資童軍版全量重建（2026-09-17）
+
+由童軍 Scout Hub v37 起步，按《深資童軍訓練綱要》＋官方深資集會套包（2026-09-01）全量重建。Scout System 出品（app 名：深資童軍團集會助手）。
+
+### 重寫／刪除
+- **教案**：c01–c16 全新深資版（會員章→肩章認識→肩章技能）；**刪除 c17–c24**（`index.html` script tag＋`sw.js` cache 一併移除）。
+- **儀式**：7 套卡（刪團呼；集隊改執委會帶；開禮加「深資集會唔設童軍團呼」註明）。
+- **制服**：深資 6 款規格重寫（軟帽／恤／褲裙／皮帶鞋襪／旅巾巾圈／徽章五種）；服式圖改官網原圖 link-only（唔本地存）；分支卡唔再用童軍支部顏色對照圖。
+- **獎章**：`interests.js` 重寫成 20 項（會員章 m1–m11＋肩章 7＋獎章路 2），每項 req＋suggest＋meet；考章＝團內考核 7 步；訓練班＝通告圖書館 7 步（`courseApply` 保留）。
+- **技能**：繩結 10→9 個（刪半結／反手結／縮繩結／曳木結，加三編結）；地圖 1:25,000→1:20,000；急救 7 種→5 種（C10.firstaid）；營藝刀斧→刀具安全。
+- **遊戲**：刪拖木頭挑戰（場地圖一併刪）；加破冰「你是誰」「用背脊畫圖畫」（唔使場地圖）；計分板／工具改「分組」。
+- **手冊**：小隊制度→執委會制度；「報考專科徽章」→「考章安排」；參考資料剩 3 條（深資綱要＋官方套包＋通告圖書館）。
+- **品牌**：title／brand／footer／manifest／README 全轉深資版＋VENTURE＋Scout System 出品；官方套包 Drive ID 轉深資版 `1MEXphy7RQXXfFZX3uXsg0L4ZfOXbPEuo`。
+- **sw.js**：`scout-v38-c16-20260917`；唔再預緩存 `img/badge/`＋`img/uni/`（童軍支部舊圖，檔仲喺 disk）。
+
+### 保留未動（刻意）
+- `assets_src/diasvg/` 手繪底稿（含 howl）、`js/dia.js` 全表、`img/dia/*.avif` 全部：幾何斷言（30°／305／25mm／2250／BLANK／viewBox 唔出框）照舊全綠；app 層唔引用 howl／uniform.branch。
+- 歌曲 14 首（只改小隊→分組字眼）、投屏、列印、44px、營火會 6 分頁架構。
+
+### 測試
+- `tests/smoke.mjs` 重寫 v38 版（16 場段數／關鍵字、7 卡、20 獎章、11 遊戲圖＋2 破冰無圖、c16 cache 名、badge/uni 不在 sw、深資守則 block）；`tests/runtime.mjs` 訊息更新。`npm test` 全綠。
+
+### 教訓（重要）
+- **唔好同一個 block 入面對同一個檔打多個 edit_file**：會 race（last-write-wins，甚至 corrupt）。同檔多改一律用 **一個 bash python script 原子執行＋assert 逐個 count**。
+- 從 `read_file` 輸出抄 regex 返 `write_file` 時，唔好「修正」反斜線數量：讀顯示會 double、寫輸入會 halve，**逐字抄先啱**。中過一次：viewBox checker 誤報，root cause 係我將 `\\d` 寫成 `\\\\d`。

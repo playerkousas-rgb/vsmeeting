@@ -1,5 +1,5 @@
 /* runtime：用 DOM stub 將全部版面（同分頁）render 一次，捉 runtime error／undefined 漏出畫面。
- * 載入次序必須係：c01–c24 lessons → data → 其餘模組 → app（否則 data.js 會 ReferenceError: C01 is not defined）
+ * 載入次序必須係：c01–c16 lessons → data → 其餘模組 → app（否則 data.js 會 ReferenceError: C01 is not defined）
  * 執行：node tests/runtime.mjs（或 npm run test:runtime）
  */
 import fs from 'fs';
@@ -62,7 +62,7 @@ vm.createContext(sb);
 const lessons = fs.readdirSync(path.join(root, 'js')).filter(f => /^c\d\d-/.test(f)).sort().map(f => 'js/' + f);
 const files = lessons.concat(['js/data.js', 'js/interests.js', 'js/ceremony.js', 'js/uniform.js', 'js/dia.js', 'js/songs.js', 'js/figs.js', 'js/projector.js', 'js/app.js']);
 for (const f of files) vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), sb, { filename: f });
-ok(true, '載入次序正確：c01–c24 → data → 模組 → app（' + files.length + ' 個檔案）');
+ok(true, '載入次序正確：c01–c16 → data → 模組 → app（' + files.length + ' 個檔案）');
 
 const App = sb.App, DATA = sb.DATA;
 ok(!App.__err, 'app.js 載入冇 throw');
@@ -92,7 +92,7 @@ for (const s of sb.SONGS.sheets) {
   try { App.pages.songs(s.k); ok(true, 'songs/' + s.k + ' render'); } catch (e) { ok(false, 'songs/' + s.k + '：' + e.message); }
 }
 
-/* 24 場教案全部 render（分頁化之後每節都要落到 pane） */
+/* 16 場教案全部 render（分頁化之後每節都要落到 pane） */
 for (const m of DATA.meetings) {
   try {
     const node = App.renderMeeting(m.tid);
