@@ -377,6 +377,7 @@ App.buildSearchIndex = function(){
   idx.push({type:'手冊', title:'執委會制度＋執委職責＋會議記錄表', link:'#book/exec', desc:'已併入手冊', text:'執委會 執委 制度 會議記錄 主席 秘書 司庫 自務自治'});
   idx.push({type:'手冊', title:'集會工具（計分板・抽籤・倒數・分組・投屏）', link:'#book/tools', desc:'可投屏', text:'計分板 抽籤 倒數 分組 工具 投屏 分組數 投影 大電視'});
   idx.push({type:'手冊', title:'AYP領袖指南（團員參加＋領袖參與＋成立執行處）', link:'#book/ayp', desc:'新領袖必修', text:'ayp 領袖指南 團員參加 執行處支部 組長 導師 評核員 成立執行處 表格 AYP/10 座談會 紀錄簿 迎新講座'});
+  idx.push({type:'手冊', title:'參考資料（綱要＋套包＋圖書館＋AYP＋升團直連）', link:'#book/refs', desc:'外部連結', text:'參考資料 綱要 套包 圖書館 ayp 升團 upgrade 外部連結 分享 團員'});
   idx.push({type:'素材', title:'工作紙（16 場直接印）＋急救卡（6 張連圖）', link:'#print', desc:'可印可投屏', text:'工作紙 列印 素材 急救卡 家長通知 歌紙 誓詞卡 投屏'});
   idx.push({type:'素材', title:'🇨🇳 國歌《義勇軍進行曲》＋升旗禮儀', link:'#print', desc:'素材庫', text:'國歌 義勇軍進行曲 升旗 禮儀 唱國歌'});
   if(typeof AYP!=='undefined'){
@@ -1109,7 +1110,9 @@ App.pages.book = function(sub){
   var ul3 = App.h('ul','bullet');
   ul3.innerHTML = '<li><a href="'+DATA.source.url+'" target="_blank" rel="noopener">《深資童軍訓練綱要》網上版（深資支部）</a></li>'+
     '<li><a href="'+EXTERNAL.officialPack+'" target="_blank" rel="noopener">官方集會套包 2026-09-01 版 PDF</a></li>'+
-    '<li><a href="'+EXTERNAL.circulars+'" target="_blank" rel="noopener">通告圖書館（訓練班／活動通告＋推送訂閱）</a></li>';
+    '<li><a href="'+EXTERNAL.circulars+'" target="_blank" rel="noopener">通告圖書館（訓練班／活動通告＋推送訂閱）</a></li>'+
+    '<li><a href="'+EXTERNAL.aypGuide+'" target="_blank" rel="noopener">🌟 AYP 童軍接駁指南（領袖轉給團員）</a></li>'+
+    '<li><a href="'+EXTERNAL.upgradeGuide+'" target="_blank" rel="noopener">⬆️ 升團準備指南（制服＋升團過渡）</a></li>';
   wrap.appendChild(App.sec('🔗 參考資料').add(ul3));
   return wrap;
 };

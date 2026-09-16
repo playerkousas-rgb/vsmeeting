@@ -35,13 +35,13 @@ if (!html.includes('深資童軍團集會助手') || !html.includes('VENTURE')) 
 if (html.includes('SCOUTS') || html.includes('>🧭 童軍團集會助手 <')) { console.error('❌ index.html 仲有童軍支部 brand'); process.exit(1); }
 if (!html.includes('Scout System 出品')) { console.error('❌ index.html footer 未註明 Scout System 出品'); process.exit(1); }
 if (html.includes('js/redesign.js')) { console.error('❌ index.html 仲有死引用 js/redesign.js'); process.exit(1); }
-if ((html.match(/class="iconbtn"/g)||[]).length !== 2 || !html.includes('href="#book/refs"')) {
-  console.error('❌ 手機頂欄應只留「搜尋／參考」兩個入口，外部工具集中喺手冊'); process.exit(1);
+if ((html.match(/class="iconbtn"/g)||[]).length !== 4 || !html.includes('https://scout-circulars.vercel.app/') || !html.includes('https://ayp-eight.vercel.app/') || !html.includes('https://upgrade-ashen.vercel.app/')) {
+  console.error('❌ 手機頂欄應為搜尋＋圖書館＋AYP＋升團四個入口'); process.exit(1);
 }
-if (/window\.open\('https:\/\/(?:scoutbadge|districtbadgesystem30|scout-circulars)/.test(html)) {
-  console.error('❌ 頂欄仍有重複外部工具掣'); process.exit(1);
+if (html.includes('scoutbadge') || html.includes('districtbadgesystem30') || html.includes('專章考驗')) {
+  console.error('❌ 唔應該有專章系統入口（深資唔用專章系統）'); process.exit(1);
 }
-console.log('✅ index.html 接線齊（深資版 brand＋官方套包 VS 版）；頂欄外部工具已集中到「手冊→參考資料」');
+console.log('✅ index.html 接線齊（深資版 brand＋官方套包 VS 版）；頂欄四掣（搜尋＋圖書館＋AYP＋升團）');
 if (!interestsSrc.includes('通告圖書館') || !interestsSrc.includes('訂閱')) { console.error('❌ 訓練班步驟未提及訂閱通告圖書館'); process.exit(1); }
 console.log('✅ 訓練班程序包含「訂閱通告圖書館」');
 // VS：會員章＋肩章＝團內考核；童軍支部嘅區報章系統唔出現
@@ -998,4 +998,4 @@ console.log('✅ v34：新／熟手定位・手機 44px・安全圖片 fallback�
   console.log('✅ v38 深資守則：獎章 20 項（m1–m11 齊）・考章報班各 7 步・制服 6 款官網圖・16 場分鐘數啱');
 }
 
-console.log('\n🎉 全部 smoke test 通過（v40 深資版：16 場＋7 套儀式卡＋獎章查閱＋AYP・前端零 SVG）');
+console.log('\n🎉 全部 smoke test 通過（v41 深資版：16 場＋7 套儀式卡＋獎章查閱＋AYP・前端零 SVG）');

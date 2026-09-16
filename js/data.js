@@ -5,7 +5,9 @@
 var DATA = {};
 var EXTERNAL = {
   circulars: 'https://scout-circulars.vercel.app/',
-  officialPack: 'https://drive.google.com/file/d/1MEXphy7RQXXfFZX3uXsg0L4ZfOXbPEuo/view'
+  officialPack: 'https://drive.google.com/file/d/1MEXphy7RQXXfFZX3uXsg0L4ZfOXbPEuo/view',
+  aypGuide: 'https://ayp-eight.vercel.app/',
+  upgradeGuide: 'https://upgrade-ashen.vercel.app/'
 };
 DATA.source = {
   title: '深資童軍訓練綱要（深資童軍支部）',
