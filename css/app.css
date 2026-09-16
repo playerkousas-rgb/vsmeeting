@@ -1,13 +1,15 @@
-/* 🐺 幼童軍團集會助手 Cub Hub — 統一排版對齊 ghmeeting v4.7 — © 2026 Scout System */
-/* 基底沿用 ghmeeting 的 5+5 外殼，品牌色改為幼童軍橙 */
+/* 🧭 深資童軍團集會助手 — Venture Scout Hub v42 — © 2026 Scout System */
+/* 基底 5+5 外殼，品牌色改為深資棗紅 #7E1B2E + 火炬金 #FFB300，呼應支部火炬 V+S 標誌 */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --or:#2E7D32;--ord:#E65100;--or2:#FF8F00;
-  --gr:#2E7D32;--grd:#1B5E20;
-  --bg:#F3F8F4;--card:#ffffff;--ink:#3E2723;--mute:#8D6E63;
-  --line:#FFE0B2;--blue:#1565C0;--red:#C62828;--brn:#4E342E;
+  --or:#7E1B2E;--ord:#5C1421;--or2:#A52A3A;
+  --gr:#7E1B2E;--grd:#5C1421;
+  --bg:#FDF6F7;--card:#ffffff;--ink:#3E1E22;--mute:#8D6B6E;
+  --line:#EACED2;--blue:#1565C0;--red:#C62828;--brn:#4E1E24;
   --gold:#FFB300;
-  --sh:0 2px 10px rgba(120,60,0,.10);
+  --sh:0 2px 10px rgba(122,30,47,.12);
+  --brand:#7E1B2E;--brand-dark:#5C1421;--brand-light:#F8D8DC;
+  --warn:#C62828;
 }
 html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
   font-family:"PingFang HK","Noto Sans HK","Noto Sans TC","Microsoft JhengHei",ui-rounded,"Helvetica Neue",sans-serif;
@@ -126,7 +128,7 @@ small,.mut{color:var(--mute)}
 #flowbar.on{pointer-events:auto;bottom:calc(64px + env(safe-area-inset-bottom))}
 #flowbar.on>*{box-sizing:border-box}
 #flowbar.on>*{max-width:860px;margin:0 auto}
-.fb-top{display:flex;align-items:center;gap:6px;background:linear-gradient(95deg,#2e7d32,#66bb6a);
+.fb-top{display:flex;align-items:center;gap:6px;background:linear-gradient(95deg,#5C1421,#7E1B2E);
   color:#fff;padding:4px 10px;font-size:.72rem;border-radius:14px 14px 0 0;box-shadow:0 -3px 12px rgba(0,0,0,.12)}
 .fb-top b{font-size:.74rem;font-weight:800;white-space:nowrap}
 .fb-no{background:rgba(255,255,255,.24);border-radius:99px;padding:1px 8px;font-weight:700;white-space:nowrap}
@@ -136,7 +138,7 @@ small,.mut{color:var(--mute)}
 .fb-dots i.d{background:#fff}
 .fb-dots i.c{background:#fff59d;box-shadow:0 0 0 2px rgba(255,255,255,.45)}
 .fb-ic{width:22px;height:22px;border-radius:7px;background:rgba(255,255,255,.2);color:#fff;font-size:.72rem;flex:none}
-.fb-main{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #66bb6a;border-top:0;
+.fb-main{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #7E1B2E;border-top:0;
   border-radius:0 0 14px 14px;padding:8px 10px;box-shadow:0 -2px 10px rgba(0,0,0,.08)}
 .fb-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
 .fb-txt b{font-size:.92rem;color:var(--ink)}
@@ -145,9 +147,9 @@ small,.mut{color:var(--mute)}
 .fb-act{display:flex;flex-direction:column;gap:4px;flex:none}
 .fb-act .btn.sm{padding:6px 10px;white-space:nowrap}
 @media(max-width:400px){.fb-txt b{font-size:.86rem}.fb-act .btn.sm{font-size:.74rem;padding:5px 8px}}
-.flow-invite{background:#f4fbf2;border:1.5px dashed #81c784;border-radius:14px;padding:10px 12px;margin:12px 0;
+.flow-invite{background:#FDF6F7;border:1.5px dashed #EACED2;border-radius:14px;padding:10px 12px;margin:12px 0;
   font-size:.82rem;color:#33691e}
-.flow-invite b{display:block;color:var(--grd);font-size:.9rem;margin-bottom:2px}
+.flow-invite b{display:block;color:#7E1B2E;font-size:.9rem;margin-bottom:2px}
 .flow-invite.on{background:#fff8e1;border-color:#ffb74d;color:#8a5a2a}
 .flow-invite.on b{color:#e65100}
 /* ---- cards / bits ---- */
@@ -232,7 +234,7 @@ hr.soft{border:none;border-top:1.5px dashed var(--line);margin:12px 0}
 .gtile{background:#fff3e0;border:2px solid #ffe0b2;border-radius:16px;padding:14px;font-size:1.15rem;
   font-weight:700;text-align:center;transition:.12s;cursor:pointer}
 .gtile:active{transform:scale(.97)}
-.gtile.ok{background:#c8e6c9;border-color:var(--gr);color:#1b5e20}
+.gtile.ok{background:#c8e6c9;border-color:#43a047;color:#1b5e20}
 .gtile.no{background:#ffcdd2;border-color:var(--red);color:#b71c1c}
 .gtile .em{font-size:2.2rem;display:block}
 .qa-q{font-size:clamp(1.3rem,3.6vw,2rem);font-weight:800;text-align:center;margin:6px 0}
@@ -261,7 +263,7 @@ hr.soft{border:none;border-top:1.5px dashed var(--line);margin:12px 0}
   border-radius:12px;padding:4px 12px;color:#ffd54f;min-width:86px;text-align:center}
 .timer.late{color:#ef9a9a;animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.5}}
-.lead-bar .btn.sm{background:#2e7d32;color:#fff}
+.lead-bar .btn.sm{background:#7E1B2E;color:#fff}
 .lead-bar .btn.sm.ghost{background:transparent;border:1.5px solid #4c7a55;color:#c8e6c9}
 .toolwrap{position:fixed;inset:0;z-index:120;background:rgba(20,40,25,.92);display:flex;
   align-items:center;justify-content:center;padding:14px}
@@ -289,12 +291,12 @@ hr.soft{border:none;border-top:1.5px dashed var(--line);margin:12px 0}
 
 .tl-action-banner{font-size:clamp(1.15rem,3.6vw,1.75rem);font-weight:800;text-align:center;padding:12px 16px;border-radius:18px;margin:8px auto;width:100%;max-width:620px;transition:.2s;line-height:1.4}
 .tl-action-banner small{display:block;font-size:.85rem;font-weight:600;margin-top:2px;opacity:.9}
-.tl-action-banner.gr{background:#e8f5e9;color:#1b5e20;border:2px solid #81c784}
+.tl-action-banner.gr{background:#e8f5e9;color:#5C1421;border:2px solid #81c784}
 .tl-action-banner.am{background:#fff8e1;color:#e65100;border:2px solid #ffb74d}
 .tl-action-banner.rd{background:#ffebee;color:#b71c1c;border:2px solid #e57373}
 
 .ldr-banner{background:#f5f5f5;border:2px solid #e0e0e0;border-radius:18px;padding:16px;text-align:center;margin:10px auto;max-width:620px;width:100%;transition:.2s}
-.ldr-banner.true{background:#e8f5e9;border-color:#81c784;color:#1b5e20}
+.ldr-banner.true{background:#e8f5e9;border-color:#81c784;color:#5C1421}
 .ldr-banner.trap{background:#ffebee;border-color:#e57373;color:#b71c1c}
 
 .sfxgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -304,7 +306,7 @@ hr.soft{border:none;border-top:1.5px dashed var(--line);margin:12px 0}
 /* roadmap */
 .road{position:relative;margin:14px 0;padding-left:26px}
 .road:before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:4px;border-radius:4px;
-  background:linear-gradient(#e53935,#795548,#1e88e5,#2e7d32,#f57c00)}
+  background:linear-gradient(#e53935,#795548,#1e88e5,#7E1B2E,#f57c00)}
 .road .stop{position:relative;margin:0 0 14px}
 .road .stop:before{content:"";position:absolute;left:-26px;top:8px;width:14px;height:14px;border-radius:50%;
   background:#fff;border:4px solid var(--or)}
@@ -413,7 +415,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
 }
 .body-pt .pt-badge.r { background: #ffebee; color: #b71c1c; }
 .body-pt .pt-badge.y { background: #fff8e1; color: #e65100; }
-.body-pt .pt-badge.g { background: #e8f5e9; color: #1b5e20; }
+.body-pt .pt-badge.g { background: #e8f5e9; color: #5C1421; }
 .body-pt .pt-name { font-weight: 800; font-size: .95rem; color: var(--ink); display: block; }
 .body-pt .pt-rule { font-size: .78rem; color: var(--mute); display: block; margin-top: 2px; }
 
@@ -429,7 +431,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
 }
 .body-info-card.r { background: #ffebee; border: 2px solid #ef5350; color: #b71c1c; }
 .body-info-card.y { background: #fff8e1; border: 2px solid #ffa726; color: #e65100; }
-.body-info-card.g { background: #e8f5e9; border: 2px solid #66bb6a; color: #1b5e20; }
+.body-info-card.g { background: #e8f5e9; border: 2px solid #66bb6a; color: #5C1421; }
 
 /* 三色回收分類擂台 */
 .recycle-card-stage {
@@ -523,7 +525,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
   transition: all .15s;
   cursor: pointer;
 }
-.clean-step-card.active { border-color: var(--gr); background: #f1f8e9; box-shadow: 0 4px 12px rgba(67,160,71,.2); }
+.clean-step-card.active { border-color: var(--gr); background: #FDF6F7; box-shadow: 0 4px 12px rgba(67,160,71,.2); }
 .clean-step-card .c-no {
   display: inline-block;
   width: 22px;
@@ -598,7 +600,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
 .rainbow-card.active { transform: scale(1.04); box-shadow: 0 4px 14px rgba(0,0,0,.15); }
 .rainbow-card.red { background: #ffebee; border-color: #e57373; color: #b71c1c; }
 .rainbow-card.orange { background: #fff3e0; border-color: #ffb74d; color: #e65100; }
-.rainbow-card.green { background: #e8f5e9; border-color: #81c784; color: #1b5e20; }
+.rainbow-card.green { background: #e8f5e9; border-color: #81c784; color: #5C1421; }
 .rainbow-card.white { background: #f5f5f5; border-color: #bdbdbd; color: #424242; }
 .rainbow-card.purple { background: #f3e5f5; border-color: #ba68c8; color: #6a1b9a; }
 
@@ -695,7 +697,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
 }
 .family-node.current {
   border-color: var(--gr);
-  background: #f1f8e9;
+  background: #FDF6F7;
   box-shadow: 0 4px 12px rgba(67,160,71,.15);
 }
 .family-node .f-ic { font-size: 2.2rem; flex: 0 0 auto; }
@@ -865,7 +867,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
   display: inline-block;
   font-size: .74rem;
   font-weight: 800;
-  color: #1b5e20;
+  color: #5C1421;
   background: #e8f5e9;
   padding: 2px 8px;
   border-radius: 99px;
@@ -905,7 +907,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
   border-radius: 99px;
   border: 1.5px solid;
 }
-.sheet-stat.ok { color: #1b5e20; background: #e8f5e9; border-color: #a5d6a7; }
+.sheet-stat.ok { color: #5C1421; background: #e8f5e9; border-color: #a5d6a7; }
 .sheet-stat.warn { color: #8d6e00; background: #fff8e1; border-color: #ffe082; }
 .sheet-stat.bad { color: #b71c1c; background: #ffebee; border-color: #ef9a9a; }
 .sheet-flag {
@@ -922,7 +924,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
   background: #fff;
   white-space: nowrap;
 }
-.sheet-flag.ok { color: #1b5e20; background: #e8f5e9; border-color: #a5d6a7; }
+.sheet-flag.ok { color: #5C1421; background: #e8f5e9; border-color: #a5d6a7; }
 .sheet-flag.warn { color: #8d6e00; background: #fff8e1; border-color: #ffe082; }
 .sheet-flag.bad { color: #b71c1c; background: #ffebee; border-color: #ef9a9a; }
 .sheet-pageline {
@@ -977,19 +979,19 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-bottom: 2px solid #2e7d32;
+  border-bottom: 2px solid #7E1B2E;
   padding-bottom: 8px;
   margin-bottom: 12px;
 }
 .print-header h2 {
   font-size: 1.25rem;
-  color: #1b5e20;
+  color: #5C1421;
   margin: 3px 0;
 }
 .p-badge {
   font-size: .72rem;
   font-weight: 800;
-  background: #2e7d32;
+  background: #7E1B2E;
   color: #fff;
   padding: 2px 8px;
   border-radius: 4px;
@@ -1010,10 +1012,10 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
 .p-sec-title {
   font-size: .9rem;
   font-weight: 800;
-  color: #2e7d32;
+  color: #7E1B2E;
   background: #e8f5e9;
   padding: 4px 8px;
-  border-left: 4px solid #2e7d32;
+  border-left: 4px solid #7E1B2E;
   margin-bottom: 6px;
 }
 .p-mats-grid {
@@ -1046,8 +1048,8 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
   text-align: left;
 }
 .print-table th {
-  background: #f1f8e9;
-  color: #1b5e20;
+  background: #FDF6F7;
+  color: #5C1421;
   font-weight: 800;
 }
 .p-tag {
@@ -1131,11 +1133,11 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
 .cut-card.card-yellow { border-color: #fbc02d; background: #fffdf5; }
 .cut-card.card-yellow .c-badge { background: #fff8e1; color: #e65100; }
 .cut-card.card-green { border-color: #43a047; background: #f6fbf6; }
-.cut-card.card-green .c-badge { background: #e8f5e9; color: #1b5e20; }
+.cut-card.card-green .c-badge { background: #e8f5e9; color: #5C1421; }
 
 .cut-card.bin-blue { border-color: #1e88e5; background: #f0f7ff; }
 .cut-card.bin-yellow { border-color: #fbc02d; background: #fffef0; }
-.cut-card.bin-green { border-color: #43a047; background: #f1f8e9; }
+.cut-card.bin-green { border-color: #43a047; background: #FDF6F7; }
 
 .cut-card.small-item {
   padding: 8px 4px;
@@ -1157,14 +1159,14 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
 
 /* 情緒卡 */
 .emo-card .emo-ic { font-size: 2.8rem; line-height: 1; }
-.emo-card .emo-tip { font-size: .72rem; color: #2e7d32; font-weight: 700; margin-top: 4px; }
+.emo-card .emo-tip { font-size: .72rem; color: #7E1B2E; font-weight: 700; margin-top: 4px; }
 .print-guide-banner {
-  border: 1.5px solid #2e7d32;
+  border: 1.5px solid #7E1B2E;
   border-radius: 10px;
   padding: 8px 12px;
-  background: #f1f8e9;
+  background: #FDF6F7;
 }
-.print-guide-banner h4 { margin: 0 0 4px; color: #1b5e20; font-size: .88rem; }
+.print-guide-banner h4 { margin: 0 0 4px; color: #5C1421; font-size: .88rem; }
 .guide-steps-4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1291,11 +1293,11 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
   gap: 16px;
 }
 .pass-page {
-  border: 2px solid #2e7d32;
+  border: 2px solid #7E1B2E;
   border-radius: 12px;
   padding: 14px;
 }
-.pass-head h3 { margin: 0; font-size: 1.1rem; color: #1b5e20; }
+.pass-head h3 { margin: 0; font-size: 1.1rem; color: #5C1421; }
 .pass-head p { font-size: .78rem; margin: 2px 0; }
 .pass-motto { font-size: .74rem; font-weight: 800; color: #e65100; margin: 6px 0; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
 .pass-domain-item {
@@ -1337,13 +1339,13 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
 .u-img { font-size: 2.8rem; margin: 6px 0; }
 .u-card p { font-size: .75rem; line-height: 1.35; color: #333; margin: 0; }
 .badge-pos-box {
-  border: 2px solid #2e7d32;
+  border: 2px solid #7E1B2E;
   border-radius: 12px;
   padding: 12px;
-  background: #f1f8e9;
+  background: #FDF6F7;
   margin-top: 12px;
 }
-.badge-pos-box h3 { margin: 0 0 8px; color: #1b5e20; font-size: 1rem; }
+.badge-pos-box h3 { margin: 0 0 8px; color: #5C1421; font-size: 1rem; }
 .pos-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1353,7 +1355,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
 
 /* 誓詞大字報 */
 .poster-border {
-  border: 6px double #2e7d32;
+  border: 6px double #7E1B2E;
   padding: 24px;
   text-align: center;
   min-height: 860px;
@@ -1362,7 +1364,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
   justify-content: space-around;
 }
 .p-emblem { font-size: 2.6rem; letter-spacing: 12px; }
-.poster-border h1 { font-size: 2rem; color: #1b5e20; margin: 4px 0 16px; }
+.poster-border h1 { font-size: 2rem; color: #5C1421; margin: 4px 0 16px; }
 .poster-block {
   margin: 14px 0;
 }
@@ -1567,7 +1569,7 @@ toast,._toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);bac
 .cr-row b{display:block;font-size:.82rem;color:var(--ord)}
 .cr-row small{font-size:.75rem;line-height:1.38;display:block;color:#5d4037}
 /* 活動架卡片 */
-.coach-tag{display:inline-block;font-size:.7rem;font-weight:800;color:#1b5e20;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:999px;padding:2px 8px;margin:3px 0 4px}
+.coach-tag{display:inline-block;font-size:.7rem;font-weight:800;color:#5C1421;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:999px;padding:2px 8px;margin:3px 0 4px}
 .activity-card.has-coach{border-color:#ffb74d;box-shadow:0 3px 14px rgba(230,81,0,.10)}
 .act-col{display:grid;gap:5px;justify-items:stretch}
 /* A4 打印版 */
@@ -1733,7 +1735,7 @@ button.lnk:hover{color:var(--ord)}
 .kit-date small{flex:1 1 100%;line-height:1.4}
 .date-row{display:flex;gap:8px;align-items:center}
 .date-row input[type=date]{flex:1 1 auto;width:auto}
-.kc-prog{font-size:.78rem;background:#e8f5e9;color:#1b5e20;border-radius:999px;padding:2px 8px;margin-right:6px;display:inline-block}
+.kc-prog{font-size:.78rem;background:#e8f5e9;color:#5C1421;border-radius:999px;padding:2px 8px;margin-right:6px;display:inline-block}
 .kc-prog b{font-size:.86rem}
 .kc-left{margin:6px 0 0;padding:7px 9px;background:#fff3e0;border-left:3px solid #fb8c00;border-radius:0 8px 8px 0;font-size:.78rem;line-height:1.45;color:#4e342e}
 .srch input[type=search]{width:100%;box-sizing:border-box;margin:6px 0 10px;padding:10px 12px;font-size:.95rem;border:2px solid var(--ord,#8d6e63);border-radius:10px;background:#fff}
@@ -1747,7 +1749,7 @@ button.lnk:hover{color:var(--ord)}
 .srch-row:hover,.srch-row:active{background:#fff3e0;border-color:#ffb74d}
 .srch-t{font-size:.86rem;font-weight:800;color:var(--ink,#3e2723)}
 .srch-row small{font-size:.74rem;color:#6d4c41;line-height:1.35}
-.srch-go{align-self:flex-end;font-size:.72rem;font-weight:800;color:#2e7d32}
+.srch-go{align-self:flex-end;font-size:.72rem;font-weight:800;color:#7E1B2E}
 @media (max-width:520px){.srch-out{max-height:50vh}.kit-date{gap:6px}}
 
 /* ================= v2.7 互動遊戲（螢幕帶領・身體落場） ================= */
@@ -1773,7 +1775,7 @@ button.lnk:hover{color:var(--ord)}
 .hole.nine b{font-size:2.2rem;line-height:1;color:var(--ink)}
 .hole.nine small{font-size:.78rem}
 .hole.nine.up{background:#c8e6c9;border-color:#2e7d32;box-shadow:0 0 22px rgba(67,160,71,.55);transform:scale(1.04)}
-.hole.nine.up b{color:#1b5e20}
+.hole.nine.up b{color:#5C1421}
 .gh-ic{position:absolute;top:-6px;right:-4px;font-size:1.6rem}
 /* 四角搶答／回收分桶 */
 .corner-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:820px;width:100%;margin:10px auto}
@@ -1782,7 +1784,7 @@ button.lnk:hover{color:var(--ord)}
 .corner-card .cc-txt{font-size:clamp(1rem,2.4vw,1.35rem);font-weight:800}
 .corner-card b{font-size:1.2rem}
 .corner-card small{font-size:.8rem;color:var(--mute)}
-.corner-card.ok{background:#c8e6c9;border-color:#2e7d32;box-shadow:0 0 20px rgba(67,160,71,.45)}
+.corner-card.ok{background:#c8e6c9;border-color:#2E7D32;box-shadow:0 0 20px rgba(67,160,71,.45)}
 .corner-card.dim{opacity:.4}
 .corner-card.no{background:#ffcdd2;border-color:#c62828}
 .recycle-corners{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:860px;width:100%;margin:6px auto}
@@ -1815,7 +1817,7 @@ button.lnk:hover{color:var(--ord)}
 .mdot.on{background:var(--gr);transform:scale(1.35)}
 .moon-target.hit{box-shadow:0 0 26px rgba(255,193,7,.75)}
 /* 活動架分類標籤 */
-.coach-tag.tag-play{background:#e8f5e9;color:#1b5e20}
+.coach-tag.tag-play{background:#e8f5e9;color:#5C1421}
 .coach-tag.tag-tool{background:#e3f2fd;color:#0d47a1}
 /* 📖 手冊・遊戲帶領總表 */
 .gcards{display:grid;grid-template-columns:1fr;gap:10px;margin-top:8px}
@@ -1835,7 +1837,7 @@ button.lnk:hover{color:var(--ord)}
 .sign-sub{font-size:10pt;color:#444;margin-top:6px;text-align:center}
 .sign-card.cc-a{border-color:#e53935;background:#fff5f5}.sign-card.cc-a .sign-letter{color:#c62828}
 .sign-card.cc-b{border-color:#1e88e5;background:#f3f9ff}.sign-card.cc-b .sign-letter{color:#0d47a1}
-.sign-card.cc-c{border-color:#43a047;background:#f4fbf4}.sign-card.cc-c .sign-letter{color:#1b5e20}
+.sign-card.cc-c{border-color:#43a047;background:#f4fbf4}.sign-card.cc-c .sign-letter{color:#5C1421}
 .sign-card.cc-d{border-color:#fb8c00;background:#fff9f0}.sign-card.cc-d .sign-letter{color:#e65100}
 .sign-card.sign-yes{border-color:#43a047;background:#f4fbf4}
 .sign-card.sign-no{border-color:#e53935;background:#fff5f5}
@@ -1849,9 +1851,9 @@ button.lnk:hover{color:var(--ord)}
 .play-print-card .ppc-h b{font-size:12pt}
 .play-print-card .ppc-kind{margin-left:auto;font-size:8pt;background:#eee;border-radius:8px;padding:2px 7px}
 .play-print-card .ppc-row{font-size:8.5pt;line-height:1.45;padding:2px 0}
-.play-print-card .ppc-row b{color:#2e7d32;margin-right:5px}
+.play-print-card .ppc-row b{color:#7E1B2E;margin-right:5px}
 /* 單個遊戲版（喺遊戲畫面撳「只印呢個遊戲」）：一張大卡企正中間，唔使剪 */
-.play-print-card.ppc-single{border:2.5px solid #2e7d32;background:#f6fff6;border-radius:14px;
+.play-print-card.ppc-single{border:2.5px solid #7E1B2E;background:#f6fff6;border-radius:14px;
   padding:16px 18px;margin:14px auto;max-width:660px;box-shadow:0 3px 12px rgba(46,125,50,.12)}
 .play-print-card.ppc-single .ppc-h{gap:10px;padding-bottom:8px;margin-bottom:8px}
 .play-print-card.ppc-single .ppc-ic{font-size:30pt}
@@ -1986,7 +1988,7 @@ button.lnk:hover{color:var(--ord)}
 .pk-divider .pkd-sub{font-size:12pt;color:#555;margin-bottom:14px}
 .pk-divider .pkd-note{font-size:10.5pt;line-height:1.7;color:#333;max-width:135mm;margin:0 auto 14px;
   border-top:1.5px dashed #bbb;border-bottom:1.5px dashed #bbb;padding:10px 0}
-.pk-divider .pkd-list{font-size:11pt;line-height:1.9;font-weight:700;color:#2e7d32}
+.pk-divider .pkd-list{font-size:11pt;line-height:1.9;font-weight:700;color:#7E1B2E}
 .pk-3{display:flex;align-items:center;gap:7px;margin-top:11px;padding-top:10px;
   border-top:1.5px dashed #ffd9a8;font-size:.78rem;color:#8a6a45;font-weight:700;flex-wrap:wrap}
 .pk-3 b{display:inline-flex;width:19px;height:19px;border-radius:50%;background:var(--or);color:#fff;
@@ -2039,20 +2041,20 @@ button.lnk:hover{color:var(--ord)}
 .pk-cards{display:grid;gap:9px}
 .pk-card{border:1.5px dashed #999;border-radius:10px;padding:8px 10px;break-inside:avoid}
 .pkc-h{display:flex;align-items:baseline;gap:7px;border-bottom:1px solid #ddd;padding-bottom:4px;margin-bottom:5px}
-.pkc-no{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#2e7d32;color:#fff;
+.pkc-no{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#7E1B2E;color:#fff;
   font-size:9pt;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
 .pkc-h b{font-size:11.5pt}
 .pkc-m{margin-left:auto;font-size:8pt;color:#666;font-weight:700}
 .pkc-say{font-size:10pt;font-style:italic;color:#b71c1c;background:#fff8f8;border-left:3px solid #ef9a9a;
   padding:5px 7px;border-radius:4px;margin-bottom:5px;line-height:1.4}
 .pkc-row{font-size:8.6pt;line-height:1.45;margin-bottom:3px}
-.pkc-row b{color:#1b5e20;margin-right:4px}
+.pkc-row b{color:#5C1421;margin-right:4px}
 .pkc-row span{display:inline-block;margin-right:7px}
 .pkc-kid{margin-top:5px;font-size:8.4pt;font-weight:800;color:#e65100;background:#fff3e0;
   border-radius:5px;padding:3px 7px}
 .pk-open{margin-top:9px;background:#f1f8e9;border-left:3px solid #43a047;padding:7px 9px;
   font-size:9pt;line-height:1.45;border-radius:4px}
-.pk-open b{color:#1b5e20;display:block;font-size:8.4pt;margin-bottom:2px}
+.pk-open b{color:#5C1421;display:block;font-size:8.4pt;margin-bottom:2px}
 .pk-q{color:#e65100}
 .pack-run td{font-size:8.6pt}
 /* 打印：即用紙一版一張（標題頁脚已經喺 SVG 入面） */
@@ -2158,10 +2160,11 @@ figure.fig figcaption{font-size:.76rem;color:var(--mute);padding:7px 10px;border
 .prep-done{background:#f1f8e9;border:1.5px solid #a5d6a7}
 .toc-row.on{background:#fff8ee}
 
-/* ==== Cub Hub 覆蓋：品牌色統一為幼童軍橙，兼容舊 .cur ==== */
+/* ==== Venture Hub 覆蓋：品牌色統一為棗紅，兼容舊 .cur ==== */
 :root{
-  --or:#2E7D32;--ord:#E65100;
-  --bg:#F3F8F4;--card:#ffffff;--line:#FFE0B2;--ink:#3E2723;--mute:#8D6E63;
+  --or:#7E1B2E;--ord:#5C1421;
+  --bg:#FDF6F7;--card:#ffffff;--line:#EACED2;--ink:#3E1E22;--mute:#8D6B6E;
+  --brand:#7E1B2E;--brand-dark:#5C1421;--brand-light:#F8D8DC;
 }
 #topbar{background:linear-gradient(95deg,var(--ord),var(--or));color:#fff}
 #view{padding:14px 14px 108px;max-width:860px}
@@ -2251,7 +2254,7 @@ figure.fig figcaption{font-size:.76rem;color:var(--mute);padding:7px 10px;border
 .manual-card small{display:block}
 .subtabs{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .subtab{background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;cursor:pointer}
-.subtab.cur{background:var(--brand,#2E7D32);color:#fff;border-color:var(--brand,#2E7D32)}
+.subtab.cur{background:var(--brand,#7E1B2E);color:#fff;border-color:var(--brand,#7E1B2E)}
 .info-section{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:#fff}
 
 /* hero 統一：沿用 ghmeeting 的 ready-hero 風格，但用幼童軍橙 */
@@ -2330,10 +2333,10 @@ body.offline .extcard{opacity:.55}
 
 /* 全站搜尋（頂欄 🔍）與快鍵抽籤結果 */
 .search-input{width:100%;padding:11px 12px;border:2px solid var(--line);border-radius:10px;font-size:15px;margin:8px 0;box-sizing:border-box}
-.search-input:focus{outline:none;border-color:var(--brand,#2E7D32)}
+.search-input:focus{outline:none;border-color:var(--brand,#7E1B2E)}
 .searchout{margin-top:6px}
 .search-hit{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin:6px 0;text-decoration:none;color:inherit;background:#fff}
-.search-hit:hover{border-color:var(--brand,#2E7D32)}
+.search-hit:hover{border-color:var(--brand,#7E1B2E)}
 .search-hit b{color:var(--ord)}
 .search-hit small{color:var(--mute);font-size:.78rem}
 .toolpick small{display:block;font-size:.82rem;color:var(--mute);font-weight:600}
@@ -2385,7 +2388,7 @@ body.offline .extcard{opacity:.55}
 .lib-card { border: 1px solid var(--line); border-radius: 14px; padding: 10px; background: #fff; display: flex; flex-direction: column; gap: 4px; }
 .lib-card h3 { margin: 2px 0 0; font-size: .92rem; }
 .lib-emoji { font-size: 26px; }
-.lib-tag { align-self: flex-start; font-size: .66rem; font-weight: 800; color: #1b5e20; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 999px; padding: 2px 8px; }
+.lib-tag { align-self: flex-start; font-size: .66rem; font-weight: 800; color: #5C1421; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 999px; padding: 2px 8px; }
 .lib-tag.plain { color: #6d6455; background: #f4f1ea; border-color: #d8cfc0; }
 .skill-figure { margin: 8px 0; }
 .skill-zoom { display: block; margin: 6px auto 0; }
@@ -2399,16 +2402,16 @@ body.offline .extcard{opacity:.55}
 .song-card:active { transform: scale(.99); }
 .song-card b { font-size: .9rem; color: #4527a0; }
 .song-card.own b { color: #e65100; }
-.song-card.formal b { color: #2e7d32; }
+.song-card.formal b { color: #7E1B2E; }
 .song-card small { font-size: .74rem; color: var(--mute); line-height: 1.35; }
 .song-kind { font-size: .66rem; font-weight: 800; border-radius: 999px; padding: 2px 8px; background: #ede7f6; color: #4527a0; }
 .song-card.own .song-kind { background: #fff3e0; color: #e65100; }
-.song-card.formal .song-kind { background: #e8f5e9; color: #2e7d32; }
+.song-card.formal .song-kind { background: #e8f5e9; color: #7E1B2E; }
 .song-lines { display: grid; gap: 4px; margin: 10px 0; }
 .song-line { margin: 0; padding: 7px 10px; border-radius: 10px; font-size: .95rem; line-height: 1.5; background: #f6f4ff; border-left: 4px solid #7e57c2; }
 .song-line b { display: inline-block; min-width: 22px; margin-right: 6px; font-size: .72rem; color: #fff; background: #7e57c2; border-radius: 6px; padding: 1px 6px; text-align: center; vertical-align: 2px; }
-.song-line.cubs { background: #e8f5e9; border-left-color: #2e7d32; }
-.song-line.cubs b { background: #2e7d32; }
+.song-line.cubs { background: #e8f5e9; border-left-color: #7E1B2E; }
+.song-line.cubs b { background: #7E1B2E; }
 .song-line.all { background: #fff8e1; border-left-color: #f9a825; }
 .song-line.all b { background: #f9a825; }
 .song-line.big { font-size: clamp(1.3rem, 6vw, 2rem); padding: 16px 14px; font-weight: 800; }
@@ -2650,7 +2653,7 @@ body.story-open .story-stage-wrap{display:block}
 .craft-card:hover{border-color:var(--ord);background:#fffdf6}
 .craft-card b{font-size:1rem}
 .craft-card small{color:var(--mute);font-size:.78rem;line-height:1.4}
-.craft-go{font-size:.75rem;font-weight:700;color:var(--ord);background:#2E7D3214;border-radius:999px;padding:2px 9px}
+.craft-go{font-size:.75rem;font-weight:700;color:var(--ord);background:#7E1B2E14;border-radius:999px;padding:2px 9px}
 .craft-thumb{display:block;width:100%;height:104px;border-radius:10px;overflow:hidden;background:#f6efe2}
 .craft-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .craft-thumb.big{width:150px;height:110px;flex:0 0 150px}
@@ -2698,10 +2701,10 @@ body.story-open .story-stage-wrap{display:block}
 .craft-blank.tall{min-height:130px}
 @media print{.exam-grid{display:none}.exam-key{border:1px solid #888}}
 
-/* === Scout Hub 追加樣式（綠色主題 + 卡片、徽章網格） === */
+/* === Venture Hub 追加樣式（棗紅主題 + 卡片、徽章網格） === */
 :root{
-  --brand:#2E7D32; --brand-dark:#1B5E20; --brand-light:#C8E6C9;
-  --gold:#F9A825; --bg:#F3F8F4; --warn:#C62828;
+  --brand:#7E1B2E; --brand-dark:#5C1421; --brand-light:#F8D8DC;
+  --gold:#FFB300; --bg:#FDF6F7; --warn:#C62828;
 }
 #topbar{ background:var(--brand); }
 .brand{ color:#fff; }
@@ -2779,23 +2782,23 @@ ul.motto li{ font-size:15px; }
 
 /* === c01 教案詳細頁樣式 === */
 .meeting-page { padding-bottom:40px; }
-.back-link { display:inline-block; margin-bottom:12px; color:#2E7D32; text-decoration:none; font-size:14px; }
+.back-link { display:inline-block; margin-bottom:12px; color:#7E1B2E; text-decoration:none; font-size:14px; }
 .back-link:hover { text-decoration:underline; }
 .meeting-meta { margin:12px 0 16px; display:flex; flex-wrap:wrap; gap:6px; }
 .meeting-meta .tag { background:#f5f5f5; padding:3px 10px; border-radius:12px; font-size:13px; color:#444; border:1px solid #e0e0e0; }
-.meeting-meta .tag.ok { background:#E8F5E9; color:#2E7D32; border-color:#A5D6A7; }
+.meeting-meta .tag.ok { background:#E8F5E9; color:#7E1B2E; border-color:#A5D6A7; }
 .meeting-meta .tag.wip { background:#FFF3E0; color:#E65100; border-color:#FFCC80; }
 .meeting-meta .tag.cat { background:#FFF9C4; color:#F57F17; border-color:#FFE082; }
-.program-table td:nth-child(3){ font-weight:600; color:#2E7D32; white-space:nowrap; }
+.program-table td:nth-child(3){ font-weight:600; color:#7E1B2E; white-space:nowrap; }
 .program-table td small{ font-weight:normal; color:#888; }
 .program-table p { margin:4px 0; }
 .program-table ul { margin:4px 0; padding-left:20px; }
 .tip { background:#FFFDE7; border-left:3px solid #F9A825; padding:6px 10px; margin:6px 0; font-size:13px; color:#5D4037; border-radius:0 4px 4px 0; }
 .script-card p { margin:8px 0; line-height:1.7; }
-.script-card p b { color:#2E7D32; display:inline-block; min-width:110px; }
-.notice-card h3, .worksheet h3 { margin-top:0; color:#2E7D32; }
-.print-btn { background:#2E7D32; color:#fff; border:none; padding:8px 20px; border-radius:6px; font-size:14px; cursor:pointer; margin-top:8px; }
-.print-btn:hover { background:#1B5E20; }
+.script-card p b { color:#7E1B2E; display:inline-block; min-width:110px; }
+.notice-card h3, .worksheet h3 { margin-top:0; color:#7E1B2E; }
+.print-btn { background:#7E1B2E; color:#fff; border:none; padding:8px 20px; border-radius:6px; font-size:14px; cursor:pointer; margin-top:8px; }
+.print-btn:hover { background:#5C1421; }
 .card label { cursor:pointer; display:flex; align-items:flex-start; gap:6px; margin:4px 0; font-size:14px; line-height:1.5; }
 .card label input[type=checkbox] { margin-top:3px; }
 .worksheet .steps li { margin:10px 0; min-height:24px; border-bottom:1px dashed #ddd; padding-bottom:6px; }
@@ -2978,7 +2981,7 @@ body.proj-on #app,body.proj-on #projfab,body.proj-on #leadroot{display:none!impo
 .proj-title{color:#FFF;font-size:1rem}
 .proj-nav{display:flex;align-items:center;gap:8px}
 .pj-btn{background:#1E4A2C;color:#E8F5E9;border-radius:9px;padding:6px 11px;font-size:.82rem;font-weight:700}
-.pj-btn:hover{background:#2E7D32}
+.pj-btn:hover{background:#7E1B2E}
 .pj-btn.close{background:#B71C1C;color:#fff}
 .pj-count{font-size:.8rem;color:#A5D6A7;min-width:46px;text-align:center}
 .proj-tools{display:flex;gap:6px;margin-left:auto}
@@ -2997,7 +3000,7 @@ body.proj-on #app,body.proj-on #projfab,body.proj-on #leadroot{display:none!impo
 .pj-page .callout,.pj-page .tip,.pj-page .safety{background:#16371F;color:#E8F5E9;border-left:4px solid #FFD54F}
 .pj-page .worksheet-line,.pj-page .write-lines{border-color:#4E6B57}
 .pj-page button{background:#1E4A2C;color:#E8F5E9;border-radius:9px;padding:7px 13px;font-weight:700;margin:3px 4px 3px 0}
-.pj-page button:hover{background:#2E7D32}
+.pj-page button:hover{background:#7E1B2E}
 .pj-note{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:#B0BEC5;font-size:.95em}
 .pj-big{font-size:2.4em;font-weight:800;text-align:center;color:#FFD54F;margin:.3em 0}
 /* 即時工具（計分板／倒數／抽籤／分組）大字版 */
@@ -3258,3 +3261,28 @@ textarea{font-family:inherit;border:1.5px solid var(--line);border-radius:12px;p
 .uniform-fig figcaption{font-size:.78rem;color:var(--mute);margin-top:6px;line-height:1.5}
 .uniform-fig.imgfail{display:none}
 .uniform-visual.no-print{display:flex;flex-direction:column;gap:6px;font-size:.8rem}
+
+/* ==== v42 Venture：深資工作紙手機版＋制服本地圖 fallback ==== */
+.ws-mobile-hint{background:#F8D8DC;border-left:4px solid #7E1B2E;padding:8px 10px;border-radius:0 8px 8px 0;font-size:.82rem;margin:8px 0}
+.ws-fields{list-style:none;padding:0}
+.ws-fields li{margin:12px 0;padding:10px 12px;background:#FFFDF9;border:1.5px solid #EACED2;border-radius:12px}
+.ws-fields li b{display:block;margin-bottom:6px;color:#5C1421}
+.ws-input input[type=text], .ws-input textarea{width:100%;min-height:44px;padding:10px 12px;border:1.5px solid #EACED2;border-radius:10px;font-size:1rem;background:#fff}
+.ws-input input[type=text]:focus, .ws-input textarea:focus{outline:none;border-color:#7E1B2E;box-shadow:0 0 0 3px #F8D8DC}
+.ws-input textarea{resize:vertical}
+.ws-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.ws-actions button{border:1.5px solid #EACED2;background:#fff;color:#5C1421;border-radius:10px;padding:8px 12px;font-weight:700;font-size:.85rem;min-height:44px}
+.ws-actions button:hover{background:#FDF6F7;border-color:#7E1B2E}
+.ws-hint{font-size:.78rem;color:#2E7D32;font-weight:700;margin-right:8px}
+.ws-sign{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;font-size:.85rem}
+.ws-sign input[type=text], .ws-sign input[type=date]{width:auto;min-width:100px;flex:1 1 100px}
+.ws-prompts li{margin:12px 0;padding:10px 12px;background:#FFFDF9;border:1.5px solid #EACED2;border-radius:12px}
+.ws-prompts li div:first-child{margin-bottom:6px}
+
+/* 制服頁本地圖 fallback 樣式強化 */
+.uniform-fig{border-color:#7E1B2E}
+.uniform-fig figcaption{color:#5C1421}
+.uniform-card{border-left-color:#7E1B2E}
+
+/* 深資品牌色覆蓋（確保無綠色殘留） */
+:root{--brand:#7E1B2E;--brand-dark:#5C1421;--brand-light:#F8D8DC;--gold:#FFB300;--bg:#FDF6F7}

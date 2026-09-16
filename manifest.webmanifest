@@ -7,8 +7,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#F3F8F4",
-  "theme_color": "#2E7D32",
+  "background_color": "#FDF6F7",
+  "theme_color": "#7E1B2E",
   "shortcuts": [
     {
       "name": "✂️ 素材庫",

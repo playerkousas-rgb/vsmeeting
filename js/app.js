@@ -353,15 +353,15 @@ App.buildSearchIndex = function(){
       text:(b.zh+' '+b.en+' '+b.k+' '+(b.req||[]).join(' ')).toLowerCase()});
   });
   var skills = [
-    {t:'繩結（9 個・文字口訣）', k:'繩結 平結 接繩結 八字結 雙套結 稱人結 繫木結 四方編結 十字編結 八字編結 bowline 打結 c13 c14', l:'#skills/rope'},
+    {t:'進階繩結與先鋒工程（9結＋3編結）', k:'繩結 平結 接繩結 八字結 雙套結 稱人結 繫木結 四方編結 十字編結 八字編結 bowline 先鋒工程 天幕 三腳架 c13 c14', l:'#skills/rope'},
     {t:'收繩與繩索保養（附圖）', k:'收繩 保養 繩索 圈繞 陰乾 報廢 圖', l:'#skills/care'},
-    {t:'地圖與指南針（附圖）', k:'地圖 指南針 比例尺 圖例 方位 compass 定向 紅針 北 等高線 圖', l:'#skills/map'},
-    {t:'執背囊（附圖）', k:'背囊 執包 行山袋 防水 分層 圖', l:'#skills/pack'},
-    {t:'營藝：帳篷／爐具／刀具（附圖）', k:'營藝 紮營 帳篷 氣爐 小刀 斧頭 手鋸 安全圈 3米 圖', l:'#skills/camp'},
-    {t:'先鋒工程入門（附圖）', k:'先鋒工程 紮作 十字紮 剪立紮 平行紮 天幕 三腳架 圖', l:'#skills/pioneer'},
-    {t:'追蹤符號（附圖）', k:'追蹤符號 追蹤 箭嘴 記號 tracking 符號 圖', l:'#skills/track'},
-    {t:'郊野守則＋求助信號（附圖）', k:'郊野守則 Leave No Trace 山火 天氣 撤退 哨子 SOS 迷路 環保 999 三短三長 圖', l:'#skills/field'},
-    {t:'急救 5 種（每種有圖）', k:'急救 出血包紮 抽筋 燒傷 燙傷 扭傷 復原臥式 RICE first aid 沖脫泡蓋送 急救卡 圖 c10', l:'#skills/aid'}
+    {t:'地圖閱讀與指南針導航（附圖）', k:'地圖 指南針 比例尺 圖例 方位 compass 定向 格網座標 正置地圖 等高線 圖', l:'#skills/map'},
+    {t:'遠足策劃與裝備（附圖）', k:'遠足 執包 背囊 行山袋 防水 分層 風險評估 裝備 圖 c15', l:'#skills/pack'},
+    {t:'露營策劃：營地建設／爐具／刀具安全（附圖）', k:'露營 紮營 帳篷 氣爐 小刀 安全圈 3米 生火 天幕 圖 c15 c16', l:'#skills/camp'},
+    {t:'野外烹調與無痕山林（附圖）', k:'野炊 烹調 營火 無痕山林 Leave No Trace 爐頭 營地清潔 圖', l:'#skills/pioneer'},
+    {t:'追蹤與求生信號（附圖）', k:'追蹤符號 追蹤 箭嘴 記號 tracking 符號 SOS 哨子 求生 圖', l:'#skills/track'},
+    {t:'郊野守則＋天氣判斷＋緊急撤退（附圖）', k:'郊野守則 天氣 撤退 哨子 SOS 迷路 環保 999 三短三長 風球 雨 圖', l:'#skills/field'},
+    {t:'急救與緊急應變（附圖）', k:'急救 出血包紮 抽筋 燒傷 燙傷 扭傷 復原臥式 RICE first aid 沖脫泡蓋送 緊急應變 圖 c10', l:'#skills/aid'}
   ];
   skills.forEach(function(sk){
     idx.push({type:'技能', title:sk.t, link:sk.l, desc:'技能卡（附圖解）', text:(sk.t+' '+sk.k).toLowerCase()});
@@ -579,11 +579,11 @@ App.renderMeeting = function(tid){
     sNotice.add(nc);
     wrap.appendChild(sNotice);
 
-    // 工作紙
+    // 工作紙（深資版：手機優先，傳 tid 以便儲存）
     if(d.worksheet){
-      var wsAudience = (d.worksheet.audience==='leader')?'領袖檢查清單':'工作紙（成員用，A4）';
+      var wsAudience = (d.worksheet.audience==='leader')?'領袖檢查清單':'工作紙（成員用・手機／iPad 直接填）';
       var sWs = App.sec('✂️ '+wsAudience,{id:tid+'-ws'});
-      sWs._body.innerHTML = App.worksheetHtml(d.worksheet);
+      sWs._body.innerHTML = App.worksheetHtml(d.worksheet, tid);
       wrap.appendChild(sWs);
     }
 
@@ -724,21 +724,103 @@ App.renderMeeting = function(tid){
   return wrap;
 };
 
-/* 工作紙 HTML（教案頁同素材庫共用同一份內容） */
-App.worksheetHtml = function(w){
-  var html = '<div class="card worksheet"><h3>'+w.title+'</h3>';
+/* 工作紙 HTML（深資版：手機／iPad 優先，離線可填，支援儲存＋分享＋列印） */
+App.wsStore = App.wsStore || {};
+App.wsSave = function(wsId, fieldIdx, val){
+  try{
+    var key='vs-ws-'+wsId;
+    var data=JSON.parse(localStorage.getItem(key)||'{}');
+    data[fieldIdx]=val;
+    localStorage.setItem(key, JSON.stringify(data));
+    var el=document.getElementById('ws-save-hint-'+wsId);
+    if(el){ el.textContent='✓ 已自動儲存到手機'; setTimeout(function(){el.textContent='';},2000); }
+  }catch(e){}
+};
+App.wsLoad = function(wsId){
+  try{
+    var key='vs-ws-'+wsId;
+    var data=JSON.parse(localStorage.getItem(key)||'{}');
+    return data;
+  }catch(e){ return {}; }
+};
+App.wsClear = function(wsId){
+  try{
+    localStorage.removeItem('vs-ws-'+wsId);
+    var root=document.querySelector('[data-ws-id="'+wsId+'"]');
+    if(root){
+      root.querySelectorAll('input,textarea').forEach(function(i){ i.value=''; });
+    }
+    App.toast('已清除本機儲存');
+  }catch(e){}
+};
+App.wsCopy = function(wsId){
+  try{
+    var root=document.querySelector('[data-ws-id="'+wsId+'"]');
+    if(!root) return;
+    var title=root.getAttribute('data-ws-title')||'工作紙';
+    var lines=[title,''];
+    root.querySelectorAll('[data-field-label]').forEach(function(li){
+      var lab=li.getAttribute('data-field-label');
+      var inp=li.querySelector('input,textarea');
+      var v=inp?inp.value.trim():'';
+      lines.push(lab+'：'+(v||'（未填）'));
+    });
+    var txt=lines.join('\n');
+    if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(function(){App.toast('✓ 已複製到剪貼簿');}); }
+    else { prompt('複製以下文字：',txt); }
+  }catch(e){}
+};
+App.wsShare = function(wsId){
+  try{
+    var root=document.querySelector('[data-ws-id="'+wsId+'"]');
+    if(!root) return;
+    var title=root.getAttribute('data-ws-title')||'工作紙';
+    var lines=[title,''];
+    root.querySelectorAll('[data-field-label]').forEach(function(li){
+      var lab=li.getAttribute('data-field-label');
+      var inp=li.querySelector('input,textarea');
+      var v=inp?inp.value.trim():'';
+      lines.push(lab+'：'+(v||''));
+    });
+    var txt=lines.join('\n');
+    if(navigator.share){ navigator.share({title:title, text:txt}); }
+    else { App.wsCopy(wsId); }
+  }catch(e){}
+};
+App.worksheetHtml = function(w, tid){
+  tid = tid || (w.id) || w.title || 'ws';
+  var wsId = 'ws-'+tid.replace(/[^a-z0-9]+/gi,'-');
+  var saved = App.wsLoad(wsId);
+  var html = '<div class="card worksheet" data-ws-id="'+wsId+'" data-ws-title="'+(w.title||'工作紙').replace(/"/g,'&quot;')+'"><h3>'+w.title+'</h3>';
+  html += '<p class="mut ws-mobile-hint">📱 深資版：直接喺手機／iPad 填寫，自動儲存喺本機，支援複製／分享，唔使印都得；要印就撳「印本節」。</p>';
   if(w.fields){
-    html += '<ul class="bullet">'+w.fields.map(function(f,i){
+    html += '<ul class="bullet ws-fields">'+w.fields.map(function(f,i){
       var lab = f.label || f.name || ('第 '+(i+1)+' 項');
       var ty = f.type || 'text';
-      var h = ty==='textarea' ? '<textarea rows="3" style="width:100%;margin-top:4px;"></textarea>' : '<input type="text" style="width:60%;margin-top:4px;">';
-      return '<li><b>'+lab+'</b> '+h+'</li>';
+      var val = (saved[i]||'').replace(/"/g,'&quot;');
+      var h = '';
+      if(ty==='textarea'){
+        h = '<textarea rows="3" data-idx="'+i+'" oninput="App.wsSave(\''+wsId+'\','+i+',this.value)" placeholder="喺度輸入…">'+(saved[i]||'')+'</textarea>';
+      } else if(ty==='check'){
+        var chk = saved[i] ? 'checked' : '';
+        h = '<label><input type="checkbox" data-idx="'+i+'" '+chk+' onchange="App.wsSave(\''+wsId+'\','+i+',this.checked?\'✓\':\'\')"> 已完成／已檢查</label>';
+      } else {
+        h = '<input type="text" data-idx="'+i+'" value="'+val+'" oninput="App.wsSave(\''+wsId+'\','+i+',this.value)" placeholder="喺度輸入…">';
+      }
+      return '<li data-field-label="'+lab.replace(/"/g,'&quot;')+'"><b>'+lab+'</b><div class="ws-input">'+h+'</div></li>';
     }).join('')+'</ul>';
     if(w.footer) html += '<p class="tip">'+w.footer+'</p>';
   } else if(w.prompts){
-    html += '<ol class="steps">'+w.prompts.map(function(p){return '<li>'+p+'</li>';}).join('')+'</ol>';
+    html += '<ol class="steps ws-prompts">'+w.prompts.map(function(p,i){
+      var val = saved[i]||'';
+      return '<li data-field-label="'+('Q'+(i+1)).replace(/"/g,'&quot;')+'"><div>'+p+'</div><div class="ws-input"><textarea rows="2" data-idx="'+i+'" oninput="App.wsSave(\''+wsId+'\','+i+',this.value)" placeholder="喺度輸入你嘅想法…">'+val+'</textarea></div></li>';
+    }).join('')+'</ol>';
   }
-  html += '<div class="ws-sign">姓名：＿＿＿＿＿＿　旅團：＿＿＿＿＿＿　日期：＿＿＿＿　組長／執委核對：□</div></div>';
+  html += '<div class="ws-actions no-print"><span id="ws-save-hint-'+wsId+'" class="ws-hint"></span> '
+    + '<button onclick="App.wsCopy(\''+wsId+'\')">📋 複製文字</button> '
+    + '<button onclick="App.wsShare(\''+wsId+'\')">📤 分享</button> '
+    + '<button onclick="App.wsClear(\''+wsId+'\')" class="mut">🗑️ 清除</button></div>';
+  html += '<div class="ws-sign">姓名：<input type="text" data-idx="name" style="width:120px" oninput="App.wsSave(\''+wsId+'\',\'name\',this.value)" value="'+(saved['name']||'').replace(/"/g,'&quot;')+'" placeholder="你個名">　旅團：<input type="text" data-idx="troop" style="width:100px" oninput="App.wsSave(\''+wsId+'\',\'troop\',this.value)" value="'+(saved['troop']||'').replace(/"/g,'&quot;')+'" placeholder="旅團">　日期：<input type="date" data-idx="date" oninput="App.wsSave(\''+wsId+'\',\'date\',this.value)" value="'+(saved['date']||'')+'">　執委核對：□</div></div>';
   return html;
 };
 
@@ -903,17 +985,17 @@ App.pages.uniform = function(sub){
 
   var byKey = {};
   UNIFORM.types.forEach(function(t){ byKey[t.k]=t; });
-  var BRANCH = {vs_b:'vsland',vs_g:'vsland',vs_sea_b:'vssea',vs_sea_g:'vssea',vs_air_b:'vsair',vs_air_g:'vsair'};
+  var BRANCH = {vs_b:'vsland',vs_g:'vsland',vs_g_pants:'vsland',vs_sea_b:'vssea',vs_sea_g:'vssea',vs_sea_g_pants:'vssea',vs_air_b:'vsair',vs_air_g:'vsair',vs_air_g_pants:'vsair'};
   function typeCard(t){
     var rows = t.items.map(function(i){return '<tr><th>'+i[0]+'</th><td>'+i[1]+'</td></tr>';}).join('');
     var br = BRANCH[t.k] || 'land';
     var uni = (typeof UNIFORMFIG!=='undefined' && UNIFORMFIG) ? UNIFORMFIG[br] : null;
     var figHtml = '';
     if(uni){
-      /* 主圖：官方服式圖（本地 AVIF，離線都睇得到）；load 唔到先連返總會官網原圖 */
-      figHtml = '<figure class="uniform-fig"><img src="'+uni.src+'" width="'+uni.w+'" height="'+uni.h+'" alt="'+t.name+'：'+uni.alt+'" loading="lazy" decoding="async"'
+      var src = t.localImg || uni.src;
+      figHtml = '<figure class="uniform-fig"><img src="'+src+'" width="'+uni.w+'" height="'+uni.h+'" alt="'+t.name+'：'+uni.alt+'" loading="lazy" decoding="async"'
         + ' onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src=\''+t.img+'\';}else{var f=this.closest(\'.uniform-fig\');if(f)f.classList.add(\'imgfail\');}">'
-        + '<figcaption>'+t.name+'官方服式圖（'+uni.branch+'男／女團員）｜實物以<a href="'+UNIFORM.shop.url+'" target="_blank" rel="noopener">童軍物品供應社</a>及《儀容與制服手冊》為準</figcaption></figure>';
+        + '<figcaption>'+t.name+'官方服式圖（'+uni.branch+'）｜本地版 '+src+'，官網原圖備用｜實物以<a href="'+UNIFORM.shop.url+'" target="_blank" rel="noopener">童軍物品供應社</a>及《儀容與制服手冊》為準（多謝團友提供第二章制服原文）</figcaption></figure>';
     }
     return '<div class="card uniform-card"><h3>'+t.name+'</h3>'+figHtml+
       '<div class="uniform-split">'+
@@ -926,11 +1008,14 @@ App.pages.uniform = function(sub){
   if(cur==='badge'){
     var P = UNIFORM.placement;
     wrap.appendChild(App.h('p','lede','徽章位置表：按《儀容與制服手冊》4.6／4.7。圖上 ①–⑨ 對返下面各行；同一位置上下可以疊幾層。手冊本身有局部放大插圖，下面兩張放大圖就係照住嗰啲位置畫，方便對位同列印。'));
-    var CIR = ['','①','②','③','④','⑤','⑥','⑦','⑧','⑨'];
+    var CIR = ['','①','②','③','④','④½','⑤','⑥','⑦','⑧','⑨'];
+    // 兼容 4.5 這種小數編號
     function pTable(rows){
       return '<table class="meeting-table"><thead><tr><th width="46">圖上</th><th>位置</th><th>擺咩章</th></tr></thead><tbody>'+
         rows.map(function(r){
-          return '<tr><td class="pt-num">'+(CIR[r.n]||r.n)+'</td><td><b>'+r.side+'</b>'+(r.note?'<br><small class="mut">'+r.note+'</small>':'')+
+          var cir = CIR[Math.floor(r.n)] || '';
+          if(r.n===4.5) cir = '④½';
+          return '<tr><td class="pt-num">'+(cir||r.n)+'</td><td><b>'+r.side+'</b>'+(r.note?'<br><small class="mut">'+r.note+'</small>':'')+
             '</td><td>'+r.items.map(function(x){return '・'+x;}).join('<br>')+'</td></tr>';
         }).join('')+'</tbody></table>';
     }
@@ -981,8 +1066,27 @@ App.pages.uniform = function(sub){
       +'<div class="card"><ul class="bullet">'+KW.points.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'
       +'<p class="mut">'+KW.note+'</p>'
       +'<ul class="bullet">'+KW.wear.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
-    wrap.appendChild(App.block('👖 皮帶・皮鞋・襪',
-      '<div class="card"><ul class="bullet">'+BS.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
+    wrap.appendChild(App.block('👖 皮帶・皮鞋・襪（按第三章原文）',
+      '<div class="card"><ul class="bullet">'+BS.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul><p class="mut">'+BS.source+'</p></div>'));
+    // 毛衣（3.7）＋附加配件（3.8）
+    if(UNIFORM.sweater){
+      var SW = UNIFORM.sweater;
+      wrap.appendChild(App.block('🧶 制服毛衣（冬天／體質需要）',
+        '<div class="card"><ul class="bullet">'+SW.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul><p class="mut">'+SW.source+'</p></div>'));
+    }
+    if(UNIFORM.extras){
+      var EX = UNIFORM.extras;
+      wrap.appendChild(App.block('🎒 附加配件（名牌／眼鏡／手錶／腰包）',
+        '<div class="card"><ul class="bullet">'+EX.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul><p class="mut">'+EX.source+'</p></div>'));
+    }
+    // 領帶制服（官方手冊第二章49頁，團友提供原文）
+    if(UNIFORM.tieUniform){
+      var TU = UNIFORM.tieUniform;
+      var tuHtml = '<div class="card"><p>'+TU.note+'</p><table class="meeting-table"><thead><tr><th>支部</th><th>領帶</th><th>男團員</th><th>女團員</th></tr></thead><tbody>'
+        + TU.types.map(function(x){return '<tr><td>'+x.branch+'</td><td>'+x.tie+'</td><td>'+x.male+'</td><td>'+x.female+'</td></tr>';}).join('')
+        + '</tbody></table><ul class="bullet">'+TU.wear.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
+      wrap.appendChild(App.block('👔 深資童軍領帶制服（典禮／會議）', tuHtml, {id:'uni-tie'}));
+    }
     var CP = UNIFORM.cap;
     wrap.appendChild(App.block('🧢 制服帽佩戴（帽章・帽邊・髮式）',
       '<div class="svg-steps"><figure>'+(bd.cap||'')+
@@ -1110,7 +1214,9 @@ App.pages.book = function(sub){
   var ul3 = App.h('ul','bullet');
   ul3.innerHTML = '<li><a href="'+DATA.source.url+'" target="_blank" rel="noopener">《深資童軍訓練綱要》網上版（深資支部）</a></li>'+
     '<li><a href="'+EXTERNAL.officialPack+'" target="_blank" rel="noopener">官方集會套包 2026-09-01 版 PDF</a></li>'+
-    '<li><a href="'+EXTERNAL.circulars+'" target="_blank" rel="noopener">通告圖書館（訓練班／活動通告＋推送訂閱）</a></li>'+
+    '<li><a href="'+EXTERNAL.circulars+'" target="_blank" rel="noopener">📚 通告圖書館（訓練班／活動通告＋推送訂閱）</a></li>'+
+    '<li><a href="'+EXTERNAL.vsbadge+'" target="_blank" rel="noopener">🎖️ 徽章進度追蹤（段章金帶 vsbadge）</a></li>'+
+    '<li><a href="'+EXTERNAL.ecportal+'" target="_blank" rel="noopener">🧑‍💼 執委會管理（ecportal・自務自治）</a></li>'+
     '<li><a href="'+EXTERNAL.aypGuide+'" target="_blank" rel="noopener">🌟 AYP 童軍接駁指南（領袖轉給團員）</a></li>'+
     '<li><a href="'+EXTERNAL.upgradeGuide+'" target="_blank" rel="noopener">⬆️ 升團準備指南（制服＋升團過渡）</a></li>';
   wrap.appendChild(App.sec('🔗 參考資料').add(ul3));
@@ -1163,7 +1269,7 @@ App.printPanel = function(cat){
           + '<a class="mut ws-goto" href="#plan/'+m.tid+'">睇完整教案 ↗</a>'
           + '<button class="print-btn" onclick="App.printSec(this.closest(\'div.ws-item\'))">🖨️ 只印呢張</button>'
           + '<button class="proj-btn" onclick="App.projSec(this.closest(\'div.ws-item\'))">🖥️ 投呢張</button></div>'
-          + App.worksheetHtml(m.data.worksheet)
+          + App.worksheetHtml(m.data.worksheet, m.tid)
           + '</div>';
       });
     });
@@ -1270,21 +1376,24 @@ App.pages.play = function(){
   return wrap;
 };
 
-/* 🪢 技能（小分頁＋圖解；按用戶要求唔出繩結逐步卡） */
+/* 🪢 技能（深資版：唔係童軍版放大，係執委會／AYP／職涯／服務導向） */
 App.pages.skills = function(sub){
   var wrap = App.h('div','page');
-  wrap.appendChild(App.h('h1',null,'🪢 技能'));
-  wrap.appendChild(App.h('p','lede','除繩結（只出口訣，唔出逐步圖）外，每樣技能都附圖。'));
+  wrap.appendChild(App.h('h1',null,'🪢 技能・深資版'));
+  wrap.appendChild(App.h('p','lede','深資童軍（15–20歲，大學生為主）唔係學多幾個結就叫進階。呢度分兩層：<b>基礎戶外技能</b>（要識教細嘅）＋<b>深資核心技能</b>（執委會／策劃／服務／生涯）。除繩結只出口訣外，其他都附圖，可投屏教學。'));
   var subs = [
     {k:'rope',ic:'🪢',n:'繩結口訣'},
     {k:'care',ic:'🧵',n:'收繩保養'},
-    {k:'map',ic:'🗺️',n:'地圖指南針'},
-    {k:'pack',ic:'🎒',n:'背囊'},
-    {k:'camp',ic:'🏕️',n:'營藝'},
-    {k:'pioneer',ic:'🪚',n:'先鋒工程'},
-    {k:'track',ic:'👣',n:'追蹤符號'},
-    {k:'field',ic:'🌳',n:'郊野守則'},
-    {k:'aid',ic:'🩹',n:'急救'}
+    {k:'map',ic:'🗺️',n:'地圖導航'},
+    {k:'pack',ic:'🎒',n:'遠征策劃'},
+    {k:'camp',ic:'🏕️',n:'營地管理'},
+    {k:'pioneer',ic:'🪚',n:'先鋒烹調'},
+    {k:'track',ic:'👣',n:'追蹤求生'},
+    {k:'field',ic:'🌳',n:'無痕山林'},
+    {k:'aid',ic:'🩹',n:'急救應變'},
+    {k:'lead',ic:'🧑‍🤝‍🧑',n:'領導執委會'},
+    {k:'plan',ic:'📋',n:'策劃風險'},
+    {k:'service',ic:'🤝',n:'服務社區'}
   ];
   var cur = subs.some(function(x){return x.k===sub;}) ? sub : subs[0].k;
   wrap.appendChild(App.subnav('skills',subs,cur));
@@ -1295,68 +1404,106 @@ App.pages.skills = function(sub){
     return App.ph(k, fcap, sk[name] || '');
   }
   var secs = {};
-  secs.rope = App.block('🪢 繩結（9 個・文字口訣為準）',
-    '<div class="card"><ul class="bullet">'+C13.knots.concat(C14.knots).map(function(k){
-      return '<li><b>'+k.n+'</b>（'+k.en+'）：'+k.use+'</li>';
+  secs.rope = App.block('🪢 繩結（9個・文字口訣為準・深資要識教）',
+    '<div class="card"><p class="mut">深資唔係為自己打得快，係為教童軍＋檢查安全。考核時要講得出用途同檢查點。</p><ul class="bullet">'+C13.knots.concat(C14.knots).map(function(k){
+      return '<li><b>'+k.n+'</b>（'+k.en+'）：'+k.use+'<br><small>教學點：點樣示範？常見錯處？點樣檢查？</small></li>';
     }).join('')+'</ul>'+
-    '<div class="callout warn">🚫 本 app <b>唔設「繩結逐步圖卡」</b>——圖解好易畫錯誤導人。打法請跟 <a href="#plan/c13">c13</a>／<a href="#plan/c14">c14</a> 教案嘅文字口訣（例：平結「左壓右」、稱人結「兔仔出洞繞樹返洞」），並由領袖現場示範＋檢查。</div></div>');
-  secs.care = App.block('🧵 收繩與繩索保養',
-    '<div class="card"><p><b>圈繞收法：</b>'+C14.ropeCare.coil+'</p>'+figFor('ropecare','收繩步驟＋保養五要点')+
-    '<ul class="bullet">'+C14.ropeCare.care.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>');
-  secs.map = App.block('🗺️ 地圖與指南針',
+    '<div class="callout warn">🚫 本app <b>唔設繩結逐步圖卡</b>——圖解好易畫錯。請跟 <a href="#plan/c13">c13</a>／<a href="#plan/c14">c14</a> 文字口訣（例：平結「左壓右、右壓左」、稱人結「兔仔出洞繞樹返洞」），由領袖現場示範＋檢查。深資考核要識教，唔係淨係識打。</div><p class="tip">💡 連結段章「自立」— 自我技能；連結金帶 — 探險組先鋒工程要用四方／十字／八字編結。</p></div>');
+  secs.care = App.block('🧵 收繩與繩索保養・深資管理',
+    '<div class="card"><p><b>圈繞收法：</b>'+C14.ropeCare.coil+'（深資要識教＋管理倉庫）</p>'+figFor('ropecare','收繩步驟＋保養五要點')+
+    '<ul class="bullet">'+C14.ropeCare.care.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul><p class="tip">💡 深資職責：康樂／總務要定期檢查繩索，有起毛／硬化即報廢，記錄入ecportal物資表。</p></div>');
+  secs.map = App.block('🗺️ 地圖與指南針・由識睇到識教',
     '<div class="card"><ul class="bullet">'+
-    '<li><b>比例尺 1:20,000</b>：地圖 1cm = 實際 200 米；圖上 5cm = 1 公里（c11）。</li>'+
-    '<li><b>常用圖例</b>：行山徑/馬路/河流/橋/涼亭/廁所/士多/巴士站/村屋/廟/高度點/三角測量站；等高線密=斜、疏=平（c11）。</li>'+
-    '<li><b>8 方位</b>：東南西北＋東北、東南、西南、西北（c12 定向）。</li>'+
-    '<li><b>指南針</b>：放平，轉身令紅針對住 N，前面就係北；避開鐵器/磁石/電話；正置地圖（c12）。</li></ul>'+
-    '<div class="svg-steps"><figure>'+DIAGRAMS.compass+'<figcaption>指南針八方位：紅針永遠指北（N）</figcaption></figure>'+figFor('legend','地圖圖例（示意）')+'</div></div>');
-  secs.pack = App.block('🎒 背囊收拾',
+    '<li><b>比例尺 1:20,000</b>：地圖1cm=實際200米；圖上5cm=1公里（c11）。深資要識計時間：平路4km/h，上山每100m爬升加10分鐘。</li>'+
+    '<li><b>常用圖例</b>：行山徑／馬路／河流／橋／涼亭／廁所／士多／巴士站／村屋／廟／高度點／三角測量站；等高線密=斜、疏=平（c11）。</li>'+
+    '<li><b>8方位＋16方位</b>：深資要識16方位報方位角，配合AYP野外鍛鍊科。</li>'+
+    '<li><b>指南針＋GPS</b>：放平，紅針對N；避開鐵器／磁石／電話；正置地圖（c12）。深資要識用手機離線地圖作後備，但唔依賴，學識無電點算。</li>'+
+    '<li><b>風險評估</b>：出發前睇天氣、查山火、水位、封路；定撤退路線及集合點，執委會寫計劃書。</li></ul>'+
+    '<div class="svg-steps"><figure>'+DIAGRAMS.compass+'<figcaption>指南針八方位：紅針永遠指北（N）</figcaption></figure>'+figFor('legend','地圖圖例（示意）')+'</div><p class="tip">💡 遊戲：<a href="#play">城市定向追蹤</a>／<a href="#play">遠征策劃桌遊</a></p></div>');
+  secs.pack = App.block('🎒 遠征策劃與裝備（深資版・由跟隊到帶隊）',
     '<div class="card"><ul class="bullet">'+
-    '<li><b>執包三步</b>：輕重分佈（重貼背中上）→常用在外→防水（密實袋）。</li>'+
-    '<li><b>一日郊野</b>（c15 執包比賽）：水/乾糧/帽/雨具/防曬蚊怕水/哨子/電話/電筒/小急救包/證件錢。</li>'+
-    '<li><b>露營</b>（c15/c16）：50–70L，睡袋放底、衫放中、煮食用具放頂；唔超過體重 1/4。</li></ul>'+
-    '<div class="svg-steps"><figure>'+DIAGRAMS.pack+'<figcaption>背囊分層圖：重貼背中上，常用放外，底放睡袋</figcaption></figure></div></div>');
-  secs.camp = App.block('🏕️ 營藝（帳篷・爐具・刀具安全）',
+    '<li><b>策劃五問＋風險</b>：邊度去？幾多人？幾耐？天氣點？撤退路線喺邊？保險？家長同意？— 執委會要寫計劃書＋風險評估表（參考AYP計劃書）。</li>'+
+    '<li><b>執包三步＋檢查</b>：輕重分佈（重貼背中上）→常用在外→防水（密實袋）。深資60L左右，唔超過體重1/4。執委會要做裝備檢查表：水、糧、雨衣、頭燈、哨子、電話＋尿袋、藥物、地圖指南針、急救包齊未？</li>'+
+    '<li><b>個人必備（大學版）</b>：水2L+、乾糧、雨衣、頭燈、哨子、電話＋尿袋＋power bank、個人藥物、地圖指南針、急救包、身份證、八達通。</li>'+
+    '<li><b>團隊裝備＋分工</b>：天幕、地布、爐具、後備糧、團急救包、對講機／哨子、垃圾袋（Leave No Trace）。每人負責一樣，唔好靠晒一個人。</li>'+
+    '<li><b>由學到教</b>：深資要識教童軍執包，唔係幫佢執；用「你做我睇、我做你睇、你做我唔睇」三步。</li></ul>'+
+    '<div class="svg-steps"><figure>'+DIAGRAMS.pack+'<figcaption>背囊分層圖：重貼背中上，常用放外，底放睡袋</figcaption></figure></div>'+
+    '<p class="tip">💡 教案：<a href="#plan/c15">c15露營策劃</a>有執包比賽＋路線卡；連結段章「探險」及金帶。</p></div>');
+  secs.camp = App.block('🏕️ 露營營地管理：由紮營到管營（深資版）',
     '<div class="card"><ul class="bullet">'+
-    '<li><b>紮營</b>：平地→清石→地布→穿柱→起篷→45 度拉營繩→打營釘（c16）。</li>'+
-    '<li><b>氣爐</b>：通風、離帳篷 3 米、檢查漏氣、煮食唔離人、熄火先關氣（c15）。</li>'+
-    '<li><b>刀具</b>：傳刀刀柄先、切嘢貓爪手、唔用即收；未過安全測驗者唔准掂刀（c15）。</li></ul>'+
-    '<div class="svg-steps">'+figFor('tent','搭帳六步（側視）')+figFor('stove','爐具 3 米安全圈（俯視）')+figFor('knife','小刀安全圈＝一臂長')+'</div></div>');
-  secs.pioneer = App.block('🪚 先鋒工程入門',
+    '<li><b>選址＋環評</b>：平地、排水好、離水源30米外、上風位生火；避開山坳／大樹下／落石位；考慮無痕山林，唔破壞植被。</li>'+
+    '<li><b>紮營流程＋檢查</b>：清地→地布→穿柱→起篷→45度拉營繩→打營釘；天幕先起，帳篷後起（c16）。執委會要做營地安全檢查：營釘有冇突出絆腳？營繩有冇螢光？</li>'+
+    '<li><b>爐具安全＋管理</b>：離帳篷3米＋通風＋唔離人；檢查漏氣（肥皂水）；熄火先關氣，氣罐唔曬太陽；設「爐區管理員」輪更。</li>'+
+    '<li><b>刀具安全＋教導</b>：安全圈一臂長、傳刀合埋柄向人、切嘢貓爪手、唔用即收鞘；未過測驗唔准掂刀；深資要識考童軍刀具。</li>'+
+    '<li><b>營地管理＋執委會</b>：廚房、睡房、廁所分區；垃圾分類帶走；熄燈後唔嘈；執委會編更表（康樂／總務／炊事／安全），用ecportal記錄。</li>'+
+    '<li><b>永續營地</b>：廚餘點處理？垃圾點減？污水點倒？連結永續發展挑戰遊戲。</li></ul>'+
+    '<div class="svg-steps">'+figFor('tent','搭帳六步（側視）')+figFor('stove','爐具3米安全圈（俯視）')+figFor('knife','小刀安全圈＝一臂長')+'</div></div>');
+  secs.pioneer = App.block('🪚 先鋒工程＋野外烹調＋無痕山林（深資項目管理）',
     '<div class="card"><ul class="bullet">'+
-    '<li><b>基礎</b>：9 個繩結（見「繩結口訣」分頁）＋收繩保養——c13/c14 已教齊。</li>'+
-    '<li><b>三編結</b>：四方編結（直角木）、十字編結（交叉木）、八字編結（平行木／A 字架）——c14 已教，起雙套、繞、收緊、半結收尾。</li>'+
-    '<li><b>應用</b>：天幕、營門、橋、瞭望台——c16 營地建設已實習天幕；正式紮作留活動組 A-102／A-104 單元。</li></ul>'+
+    '<li><b>無具野炊＋營養</b>：只給食材＋卡路里要求，自創菜單；分工：炊事、燃料、安全、清潔；600kcal/人為目標，留意過敏及宗教飲食。</li>'+
+    '<li><b>營養＋預算</b>：碳水＋蛋白＋菜，帶後備乾糧；要計預算，唔好超支。</li>'+
+    '<li><b>無痕山林7原則＋香港版</b>：計劃準備→硬地行露營→垃圾帶走→唔郁自然嘢→減營火影響→尊重野生動物→顧及其他人（c16）。香港加：唔好喺非指定地生火、唔好餵猴子。</li>'+
+    '<li><b>先鋒工程＝項目管理</b>：天幕、三腳架、營門、橋——用四方／十字／八字編結；要畫圖、計材料、計受力、分工、計時、安全檢查；搭高過頭要有人扶，戴頭盔手套。</li>'+
+    '<li><b>由做到教</b>：深資要識寫先鋒工程計劃書及風險評估，教童軍點解咁紮，唔係齋叫佢跟。</li></ul>'+
     '<div class="svg-steps">'+figFor('pioneer','先鋒工程物料／安全距離示意')+'</div>'+
-    '<div class="callout">⚠️ 紮作同繩結一樣「畫錯就教錯」，所以圖解一律以現場示範＋教案文字為準。</div></div>');
-  secs.track = App.block('👣 追蹤符號（國際通用）',
+    '<div class="callout">⚠️ 紮作同繩結一樣「畫錯就教錯」，圖解以現場示範＋教案文字為準；深資要識教細嘅，連結段章「活動」。</div></div>');
+  secs.track = App.block('👣 追蹤符號＋求生信號（深資應用）',
     '<div class="card"><ul class="bullet">'+
-    '<li><b>→ 箭嘴</b>：向前行；<b>○ 圓圈</b>：集合/終點。</li>'+
-    '<li><b>✕ 交叉</b>：唔行呢邊/行錯路；<b>↑ 轉彎箭嘴</b>：轉方向。</li>'+
-    '<li><b>～ 波浪</b>：有水/小心；<b>△ 三角</b>：留訊息喺附近。</li>'+
-    '<li><b>用法</b>：粉筆/石頭/樹枝喺路邊做記號，帶後隊跟路；做完要清走（Leave No Trace）。</li></ul>'+
+    '<li><b>→ 箭嘴</b>：向前行；<b>○ 圓圈</b>：集合/終點；<b>✕ 交叉</b>：唔行呢邊/行錯路；<b>↑ 轉彎箭嘴</b>：轉方向；<b>～ 波浪</b>：有水/小心；<b>△ 三角</b>：留訊息喺附近。</li>'+
+    '<li><b>深資用法</b>：設計城市定向追蹤遊戲（<a href="#play">#play</a>）、遠征路標；做完要清走（Leave No Trace），唔好喺古蹟／私人地方畫。</li>'+
+    '<li><b>求生信號</b>：哨子6下／分鐘（國際山難求救）、鏡反光、頭燈SOS（三短三長三短）、衫擺大字。</li></ul>'+
     '<div class="svg-steps">'+
     '<figure>'+DIAGRAMS.track.arrow+'<figcaption>向前行</figcaption></figure>'+
     '<figure>'+DIAGRAMS.track.circle+'<figcaption>集合/終點</figcaption></figure>'+
     '<figure>'+DIAGRAMS.track.cross+'<figcaption>唔行呢邊</figcaption></figure>'+
     '<figure>'+DIAGRAMS.track.turn+'<figcaption>轉方向</figcaption></figure>'+
     '<figure>'+DIAGRAMS.track.water+'<figcaption>有水/小心</figcaption></figure>'+
-    '<figure>'+DIAGRAMS.track.msg+'<figcaption>附近有訊息</figcaption></figure></div></div>');
-  secs.field = App.block('🌳 郊野守則・求助信號',
+    '<figure>'+DIAGRAMS.track.msg+'<figcaption>附近有訊息</figcaption></figure></div><p class="tip">💡 連結探險段章：點樣用追蹤符號設計一個童軍支部定向活動？</p></div>');
+  secs.field = App.block('🌳 郊野守則・無痕山林・永續發展',
     '<div class="card"><ul class="bullet">'+
-    '<li><b>Leave No Trace 七原則</b>：計劃準備→硬地行露營→垃圾帶走→唔郁自然嘢→減營火影響→尊重野生動物→顧及其他人（c16）。</li>'+
-    '<li><b>山火預防</b>：只喺指定爐位生火；離開淋熄攪拌感受冇熱；乾燥季節唔生火。</li>'+
-    '<li><b>天氣觀察</b>：黑雲/悶熱/風向轉＝落雨先兆；行雷閃電即落山，唔企大樹下。</li>'+
-    '<li><b>緊急撤退</b>：預先定撤退路線＋集合點；迷路企定＋吹哨（6 下一組求救）＋等救援（c12）。</li></ul>'+
-    '<div class="svg-steps">'+figFor('sos','SOS 哨音節拍（三短三長三短）')+figFor('lost','迷路自保三步 S.T.A.Y.')+'</div></div>');
-  secs.aid = App.block('🩹 急救 5 種＋復原臥式（逐種有圖）',
-    '<p class="mut">口訣：<b>睇環境 → 嗌救命（999）→ 先救命</b>；唔醒／流血唔止／骨折變形／大面積燒傷一律即送院。</p>'+
+    '<li><b>Leave No Trace七原則＋香港版</b>：計劃準備→硬地行露營→垃圾帶走→唔郁自然嘢→減營火影響→尊重野生動物→顧及其他人（c16）。香港加：自己垃圾自己帶走、唔餵野生動物、唔行捷徑破壞植被。</li>'+
+    '<li><b>山火預防＋法律</b>：只喺指定爐位生火；離開淋熄攪拌感受冇熱；乾燥季節／紅旗日唔生火；郊野公園法例。</li>'+
+    '<li><b>天氣觀察＋決策</b>：黑雲／悶熱／風向轉＝落雨先兆；行雷閃電即落山，唔企大樹下／山脊；黃紅黑雨／三號風球以上自動取消戶外，執委會要識做決定。</li>'+
+    '<li><b>緊急撤退＋求救</b>：預先定撤退路線＋集合點；迷路S.T.O.P.（Sit, Think, Observe, Plan）＋吹哨6下／分鐘求救＋等救援（c12）。</li>'+
+    '<li><b>永續發展</b>：點樣喺活動減少碳足跡？自備餐具、公共交通、減少即棄、廚餘處理。連結世界童軍環境章。</li></ul>'+
+    '<div class="svg-steps">'+figFor('sos','SOS哨音節拍（三短三長三短）')+figFor('lost','迷路自保三步S.T.A.Y.')+'</div><p class="tip">💡 遊戲：<a href="#play">永續發展挑戰</a>／<a href="#play">社區需求地圖</a></p></div>');
+  secs.aid = App.block('🩹 急救＋心理急救（深資進階）',
+    '<p class="mut">口訣：<b>睇環境 → 嗌救命（999／112）→ 先救命 → 心理支援</b>；唔醒／流血唔止／骨折變形／大面積燒傷／過敏休克一律即送院。深資要學「判斷＋求救＋安撫」。</p>'+
     C10.firstaid.map(function(f){ return App.aidCard(f.n, f.how, f.warn); }).join('')+
-    App.aidCard('復原臥式','唔醒但有呼吸：側臥，頭微向下、上膝屈前、上手放前面，防嘔吐物鯁親；轉身前後都要睇呼吸','有任何呼吸唔正常即打 999＋準備心肺復甦（跟有急救證書嘅領袖做）')+
-    '<p>完整教學＋情境賽：<a href="#plan/c10">c10</a>；可列印急救卡：<a href="#print">✂️ 素材庫</a>。</p>');
+    App.aidCard('復原臥式','唔醒但有呼吸：側臥，頭微向下、上膝屈前、上手放前面，防嘔吐物鯁親；轉身前後都要睇呼吸','有任何呼吸唔正常即打999＋準備心肺復甦（跟有急救證書嘅領袖做）')+
+    '<div class="card"><h3>🧠 心理急救（深資必修）</h3><ul class="bullet"><li><b>觀察</b>：留意隊友情緒變化（沉默、易怒、喊）。</li><li><b>聆聽</b>：唔打斷、唔評價、唔話「唔使驚」，用「我喺度陪你」「聽到你好擔心」。</li><li><b>連結</b>：問需要咩？水？休息？打畀屋企人？幫手聯絡領袖或專業支援。</li><li><b>唔做</b>：唔強迫講、唔承諾保密（Safe from Harm）、唔做輔導，只做支援及轉介。</li></ul><p class="mut">來源：Safe from Harm＋心理急救原則，敏感情況按青少年保護政策轉介。</p></div>'+
+    '<p>完整教學＋情境賽：<a href="#plan/c10">c10</a>；夜間情境：<a href="#play">急救夜間情境</a>；可列印急救卡：<a href="#print">✂️ 素材庫</a>。</p>');
+  secs.lead = App.block('🧑‍🤝‍🧑 領導與執委會制度（深資核心）',
+    '<div class="card"><p class="mut">深資童軍教育目標：自務自治，自立自強。唔係小隊制，係執委會制，團員大會選執委會，執委會管團務，領袖從旁指導。</p>'+
+    '<ul class="bullet">'+
+    '<li><b>執委會職位</b>：主席（主持＋對外＋統籌）、副主席（補位＋專責）、秘書（議程＋記錄＋文件）、司庫（團費＋預算＋核數）、康樂／總務（氣氛＋物資場地）— 職位由團員大會決定，唔係固定。</li>'+
+    '<li><b>會議程序5步</b>：會前準備（議程＋資料）→ 開始（點名＋通過上次記錄）→ 討論（每議題：背景→方案→風險→決議）→ 分工（邊個做咩幾時完成）→ 散會（下次時間＋記錄）。</li>'+
+    '<li><b>民主議事</b>：少數服從多數，多數尊重少數；決議要記錄，唔係口講；主席要中立，唔好帶風向。</li>'+
+    '<li><b>領導3大職責</b>：做事（策劃執行跟進）、開會（主持／參與）、帶頭（自己做到先叫人做）。執委唔係官，係做嘢，做得差下次冇人選你。</li>'+
+    '<li><b>常見陷阱</b>：主席一言堂、秘書唔記分工、司庫冇預留後備、康樂只識玩唔識收、總務唔檢查裝備。</li></ul>'+
+    '<p class="tip">💡 遊戲：<a href="#play">執委會急案</a>／<a href="#play">衝突調解角色扮演</a>／<a href="#play">60秒電梯演講</a>；工具：<a href="#book/tools">集會工具</a>計分板／分組可投屏。</p><p class="tip">💡 表格：<a href="#book/exec">執委會會議記錄表</a>可列印；iPad直接填，用ecportal管理。</p></div>');
+  secs.plan = App.block('📋 活動策劃與風險管理（深資策劃）',
+    '<div class="card"><ul class="bullet">'+
+    '<li><b>策劃六格</b>：目標（SMART）／對象／流程／預算／風險／評估。深資計劃書唔係得個流程，要有數據及後備。</li>'+
+    '<li><b>風險評估四步</b>：辨識風險（天氣／地形／人手／裝備）→ 評估可能性及嚴重性 → 控制措施（避開／減低／轉移／接受）→ 記錄及覆檢。參考AYP計劃書及總會風險評估表。</li>'+
+    '<li><b>預算管理</b>：收入（團費／資助）／支出（交通／營費／食物／保險／後備10%）／結餘；用ecportal記帳，公開透明，團員大會報告。</li>'+
+    '<li><b>時間管理＋艾森豪</b>：緊急重要四象限，學識講不，唔好咩都攬上身。</li>'+
+    '<li><b>溝通與提案</b>：60秒電梯演講、會議記錄、WhatsApp群組管理、家長通知點寫（<a href="#plan">集會通知範例</a>）。</li>'+
+    '<li><b>評估與反思</b>：活動後檢討：做得好／做得差／下次點改？用「欣賞＋建議」方式，唔人身攻擊。</li></ul>'+
+    '<p class="tip">💡 遊戲：<a href="#play">預算大作戰</a>／<a href="#play">遠征策劃桌遊</a>／<a href="#play">期望拍賣會</a>；連結段章「責任」及「活動」。</p></div>');
+  secs.service = App.block('🤝 服務與社區參與（深資服務）',
+    '<div class="card"><ul class="bullet">'+
+    '<li><b>服務唔係為做而做</b>：先做社區需求評估（<a href="#play">社區需求地圖</a>），問社區想要咩，唔係我覺得佢需要。</li>'+
+    '<li><b>服務策劃五步</b>：需求評估 → 定目標 → 聯絡持份者（社福機構／學校／區議會）→ 執行 → 評估成效（人數／回饋／改變）。</li>'+
+    '<li><b>服務類型（大學版）</b>：長者數碼共融（教手機）、環境保育（淨灘／種樹）、青少年支援（功課輔導）、社區營造（社區地圖）、國際服務（海外交流）。</li>'+
+    '<li><b>AYP服務科</b>：銅章6個月／銀章6個月／金章12個月，每月至少1小時，要有導師簽名及反思，連結vsbadge。</li>'+
+    '<li><b>世界童軍環境章／社區參與章</b>：完成指定時數及項目，可佩戴在右袖地域區章下（按你提供第四章原文）。</li>'+
+    '<li><b>永續服務</b>：點樣令服務持續？培訓接班人、寫手冊、建立社區關係，唔係一次性。</li></ul>'+
+    '<p class="tip">💡 遊戲：<a href="#play">社區需求地圖</a>／<a href="#play">服務提案路演</a>／<a href="#play">永續發展挑戰</a>；連結段章「責任」及「自立」。</p></div>');
   wrap.appendChild(secs[cur]);
   return wrap;
 };
+
 
 /* 🎖️ 興趣章章樣：用官方圖（img/badge/*.avif）；冇圖／load 唔到就出文字章名，唔會用 emoji 代替 */
 App.badgeFig = function(k){
