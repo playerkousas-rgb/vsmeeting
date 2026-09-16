@@ -16,6 +16,7 @@ UNIFORM.types = [
     k:'vs_b',
     name:'深資童軍男團員',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_B.jpg',
+    localImg:'img/uni/venture-land.png',
     items:[
       ['帽', '棗紅色軟帽（連童軍帽章）'],
       ['恤衫', '杏色、短袖、兩胸袋、無褶、肩帶'],
@@ -29,8 +30,9 @@ UNIFORM.types = [
   },
   {
     k:'vs_g',
-    name:'深資童軍女團員',
+    name:'深資童軍女團員（半截裙）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_G_dress.jpg',
+    localImg:'img/uni/venture-land.png',
     items:[
       ['帽', '棗紅色軟帽（連童軍帽章）'],
       ['恤衫', '杏色、短袖、兩胸袋、無褶、肩帶'],
@@ -43,9 +45,27 @@ UNIFORM.types = [
     ]
   },
   {
+    k:'vs_g_pants',
+    name:'深資童軍女團員（長褲）',
+    img:'https://www.scout.org.hk/uploads/member/venture_scouts_B.jpg',
+    localImg:'img/uni/venture-land.png',
+    items:[
+      ['帽', '棗紅色軟帽（連童軍帽章）'],
+      ['恤衫', '杏色、短袖、兩胸袋、無褶、肩帶'],
+      ['長褲', '草青色、兩斜袋、兩後袋、有褶（女性長褲制服）'],
+      ['皮帶', '棕色（連童軍徽皮帶扣）'],
+      ['襪', '黑色、短襪（長褲時）'],
+      ['皮鞋', '黑色、無花紋、綁帶（長褲時）'],
+      ['領巾', '旅巾（連童軍巾圈）'],
+      ['徽章', '世界童軍會員章、香港章、地域章、區章、旅章'],
+      ['備註', '舊款單右後袋長褲仍可穿至更換為止']
+    ]
+  },
+  {
     k:'vs_sea_b',
     name:'深資海童軍男團員',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_sea_B.jpg',
+    localImg:'img/uni/venture-sea.png',
     items:[
       ['帽', '海童軍男領袖白頂帽（連深資海童軍帽章）'],
       ['恤衫', '白色、短袖、兩胸袋、無褶、肩帶'],
@@ -59,8 +79,9 @@ UNIFORM.types = [
   },
   {
     k:'vs_sea_g',
-    name:'深資海童軍女團員',
+    name:'深資海童軍女團員（半截裙）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_sea_G_dress.jpg',
+    localImg:'img/uni/venture-sea.png',
     items:[
       ['帽', '海童軍女領袖白頂帽（連深資海童軍帽章）'],
       ['恤衫', '白色、短袖、兩胸袋、無褶、肩帶'],
@@ -73,9 +94,26 @@ UNIFORM.types = [
     ]
   },
   {
+    k:'vs_sea_g_pants',
+    name:'深資海童軍女團員（長褲）',
+    img:'https://www.scout.org.hk/uploads/member/venture_scouts_sea_B.jpg',
+    localImg:'img/uni/venture-sea.png',
+    items:[
+      ['帽', '海童軍女領袖白頂帽（連深資海童軍帽章）'],
+      ['恤衫', '白色、短袖、兩胸袋、無褶、肩帶'],
+      ['長褲', '深藍色、兩斜袋、兩後袋、有褶（女性長褲制服）'],
+      ['皮帶', '棕色（連童軍徽皮帶扣）'],
+      ['襪', '黑色、短襪（長褲時）'],
+      ['皮鞋', '黑色、無花紋、綁帶（長褲時）'],
+      ['領巾', '旅巾（連童軍巾圈）'],
+      ['徽章', '世界童軍會員章、香港章、地域章、區章、旅章']
+    ]
+  },
+  {
     k:'vs_air_b',
     name:'深資空童軍男團員',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_air_B.jpg',
+    localImg:'img/uni/venture-air.png',
     items:[
       ['帽', '灰藍色軟帽（連童軍帽章）'],
       ['恤衫', '淺藍色、短袖、兩胸袋、無褶、肩帶'],
@@ -89,8 +127,9 @@ UNIFORM.types = [
   },
   {
     k:'vs_air_g',
-    name:'深資空童軍女團員',
+    name:'深資空童軍女團員（半截裙）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_air_G_dress.jpg',
+    localImg:'img/uni/venture-air.png',
     items:[
       ['帽', '灰藍色軟帽（連童軍帽章）'],
       ['恤衫', '淺藍色、短袖、兩胸袋、無褶、肩帶'],
@@ -98,6 +137,22 @@ UNIFORM.types = [
       ['皮帶', '棕色（連童軍徽皮帶扣）'],
       ['襪', '肉色、尼龍、無花、襪褲'],
       ['皮鞋', '黑色、無花紋、非綁帶、中跟'],
+      ['領巾', '旅巾（連童軍巾圈）'],
+      ['徽章', '世界童軍會員章、香港章、地域章、區章、旅章']
+    ]
+  },
+  {
+    k:'vs_air_g_pants',
+    name:'深資空童軍女團員（長褲）',
+    img:'https://www.scout.org.hk/uploads/member/venture_scouts_air_B.jpg',
+    localImg:'img/uni/venture-air.png',
+    items:[
+      ['帽', '灰藍色軟帽（連童軍帽章）'],
+      ['恤衫', '淺藍色、短袖、兩胸袋、無褶、肩帶'],
+      ['長褲', '深藍色、兩斜袋、兩後袋、有褶（女性長褲制服）'],
+      ['皮帶', '棕色（連童軍徽皮帶扣）'],
+      ['襪', '黑色、短襪（長褲時）'],
+      ['皮鞋', '黑色、無花紋、綁帶（長褲時）'],
       ['領巾', '旅巾（連童軍巾圈）'],
       ['徽章', '世界童軍會員章、香港章、地域章、區章、旅章']
     ]
@@ -267,14 +322,29 @@ UNIFORM.winter = {
   note: '冬天可穿長袖恤（陸＝杏色／海＝白色／空＝淺藍色）、總會認可童軍外套；應按總會最新通告為準。'
 };
 
-// v19：三大分支小分頁（方便直接點進自己團屬嘅制服資料）
+// v19：三大分支小分頁（方便直接點進自己團屬嘅制服資料）+ 女性長褲版（官方手冊第二章）
 UNIFORM.branches = [
-  { k:'land', ic:'⛰️', n:'陸深資', types:['vs_b','vs_g'],
-    note:'一般深資團屬陸深資：棗紅色軟帽＋杏色恤＋草青色長褲／半截裙。差異重點喺帽同恤衫色。' },
-  { k:'sea', ic:'⚓', n:'海深資', types:['vs_sea_b','vs_sea_g'],
-    note:'深資海童軍：白色恤＋深藍色長褲／半截裙＋黑短襪／肉色襪褲，配白頂帽（連深資海童軍帽章）；領巾同徽章佩戴方法與陸深資相同。' },
-  { k:'air', ic:'🛩️', n:'空深資', types:['vs_air_b','vs_air_g'],
-    note:'深資空童軍：淺藍色恤＋深藍色長褲／半截裙＋黑短襪／肉色襪褲，配灰藍色軟帽（連童軍帽章）；領巾同徽章佩戴方法與陸深資相同。' }
+  { k:'land', ic:'⛰️', n:'陸深資', types:['vs_b','vs_g','vs_g_pants'],
+    note:'一般深資團屬陸深資：棗紅色軟帽＋杏色恤＋草青色長褲／半截裙。女團員可選半截裙（肉色襪褲＋中跟鞋）或長褲（黑短襪＋綁帶鞋），以旅團決定。差異重點喺帽同恤衫色。' },
+  { k:'sea', ic:'⚓', n:'海深資', types:['vs_sea_b','vs_sea_g','vs_sea_g_pants'],
+    note:'深資海童軍：白色恤＋深藍色長褲／半截裙＋黑短襪／肉色襪褲，配白頂帽（連深資海童軍帽章）；女長褲版同男同款鞋襪。領巾同徽章佩戴方法與陸深資相同。' },
+  { k:'air', ic:'🛩️', n:'空深資', types:['vs_air_b','vs_air_g','vs_air_g_pants'],
+    note:'深資空童軍：淺藍色恤＋深藍色長褲／半截裙＋黑短襪／肉色襪褲，配灰藍色軟帽；女長褲版同男同款鞋襪。領巾同徽章佩戴方法與陸深資相同。' }
 ];
+
+// 領帶制服（官方手冊第二章 49 頁）：深資童軍領帶制服
+UNIFORM.tieUniform = {
+  note: '深資童軍領帶制服：出席典禮、儀式及會議時可穿著。男團員穿長褲、女團員穿半截裙（或長褲版），配領帶。',
+  types: [
+    { branch:'陸深資', tie:'棗紅色領帶', male:'杏色短袖恤＋草青色長褲', female:'杏色短袖恤＋草青色半截裙／長褲' },
+    { branch:'海深資', tie:'黑色領帶', male:'白色短袖恤＋深藍色長褲', female:'白色短袖恤＋深藍色半截裙／長褲' },
+    { branch:'空深資', tie:'深藍色領帶', male:'淺藍色短袖恤＋深藍色長褲', female:'淺藍色短袖恤＋深藍色半截裙／長褲' }
+  ],
+  wear: [
+    '男性成員佩戴領帶時穿長褲；女性成員佩戴領帶時穿半截裙（長褲版可穿長褲）。',
+    '扣好恤衫衣領鈕扣，用 Windsor 結等對稱結，寬帶尖觸及皮帶扣上端，唔超越皮帶扣。',
+    '皮帶棕色連童軍徽扣，襪同皮鞋按長褲／半截裙規則。'
+  ]
+};
 
 if (typeof module !== 'undefined' && module.exports) module.exports = UNIFORM;

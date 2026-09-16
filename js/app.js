@@ -985,17 +985,17 @@ App.pages.uniform = function(sub){
 
   var byKey = {};
   UNIFORM.types.forEach(function(t){ byKey[t.k]=t; });
-  var BRANCH = {vs_b:'vsland',vs_g:'vsland',vs_sea_b:'vssea',vs_sea_g:'vssea',vs_air_b:'vsair',vs_air_g:'vsair'};
+  var BRANCH = {vs_b:'vsland',vs_g:'vsland',vs_g_pants:'vsland',vs_sea_b:'vssea',vs_sea_g:'vssea',vs_sea_g_pants:'vssea',vs_air_b:'vsair',vs_air_g:'vsair',vs_air_g_pants:'vsair'};
   function typeCard(t){
     var rows = t.items.map(function(i){return '<tr><th>'+i[0]+'</th><td>'+i[1]+'</td></tr>';}).join('');
     var br = BRANCH[t.k] || 'land';
     var uni = (typeof UNIFORMFIG!=='undefined' && UNIFORMFIG) ? UNIFORMFIG[br] : null;
     var figHtml = '';
     if(uni){
-      /* 主圖：官方服式圖（本地 AVIF，離線都睇得到）；load 唔到先連返總會官網原圖 */
-      figHtml = '<figure class="uniform-fig"><img src="'+uni.src+'" width="'+uni.w+'" height="'+uni.h+'" alt="'+t.name+'：'+uni.alt+'" loading="lazy" decoding="async"'
+      var src = t.localImg || uni.src;
+      figHtml = '<figure class="uniform-fig"><img src="'+src+'" width="'+uni.w+'" height="'+uni.h+'" alt="'+t.name+'：'+uni.alt+'" loading="lazy" decoding="async"'
         + ' onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src=\''+t.img+'\';}else{var f=this.closest(\'.uniform-fig\');if(f)f.classList.add(\'imgfail\');}">'
-        + '<figcaption>'+t.name+'官方服式圖（'+uni.branch+'男／女團員）｜實物以<a href="'+UNIFORM.shop.url+'" target="_blank" rel="noopener">童軍物品供應社</a>及《儀容與制服手冊》為準</figcaption></figure>';
+        + '<figcaption>'+t.name+'官方服式圖（'+uni.branch+'）｜本地版 '+src+'，官網原圖備用｜實物以<a href="'+UNIFORM.shop.url+'" target="_blank" rel="noopener">童軍物品供應社</a>及《儀容與制服手冊》為準（多謝團友提供第二章制服原文）</figcaption></figure>';
     }
     return '<div class="card uniform-card"><h3>'+t.name+'</h3>'+figHtml+
       '<div class="uniform-split">'+
@@ -1065,6 +1065,14 @@ App.pages.uniform = function(sub){
       +'<ul class="bullet">'+KW.wear.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
     wrap.appendChild(App.block('👖 皮帶・皮鞋・襪',
       '<div class="card"><ul class="bullet">'+BS.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
+    // 領帶制服（官方手冊第二章49頁，團友提供原文）
+    if(UNIFORM.tieUniform){
+      var TU = UNIFORM.tieUniform;
+      var tuHtml = '<div class="card"><p>'+TU.note+'</p><table class="meeting-table"><thead><tr><th>支部</th><th>領帶</th><th>男團員</th><th>女團員</th></tr></thead><tbody>'
+        + TU.types.map(function(x){return '<tr><td>'+x.branch+'</td><td>'+x.tie+'</td><td>'+x.male+'</td><td>'+x.female+'</td></tr>';}).join('')
+        + '</tbody></table><ul class="bullet">'+TU.wear.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
+      wrap.appendChild(App.block('👔 深資童軍領帶制服（典禮／會議）', tuHtml, {id:'uni-tie'}));
+    }
     var CP = UNIFORM.cap;
     wrap.appendChild(App.block('🧢 制服帽佩戴（帽章・帽邊・髮式）',
       '<div class="svg-steps"><figure>'+(bd.cap||'')+
