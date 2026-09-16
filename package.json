@@ -1,0 +1,11 @@
+{
+  "name": "vs-meeting-helper",
+  "version": "0.1.0",
+  "description": "🧭 深資童軍團集會助手 — 靜態PWA，無build step；上方新領袖跟住做，下方資深領袖搵材料。Scout System 出品",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 8090 --bind 0.0.0.0",
+    "test": "node tests/smoke.mjs && node tests/runtime.mjs",
+    "test:runtime": "node tests/runtime.mjs"
+  }
+}

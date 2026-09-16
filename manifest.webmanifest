@@ -1,0 +1,54 @@
+{
+  "name": "深資童軍團集會助手",
+  "short_name": "深資助手",
+  "description": "深資童軍支部（15–20 歲）集會工具：16 場完整教案（會員章＋肩章）、遊戲場地圖、技能圖解、儀式卡、制服同徽章佩戴位置、獎章要求、AYP；可列印、可投屏、離線用得。Scout System 出品。",
+  "lang": "zh-HK",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F3F8F4",
+  "theme_color": "#2E7D32",
+  "shortcuts": [
+    {
+      "name": "✂️ 素材庫",
+      "short_name": "素材庫",
+      "url": "./index.html#print"
+    },
+    {
+      "name": "🪢 技能",
+      "short_name": "技能",
+      "url": "./index.html#skills"
+    },
+    {
+      "name": "🎖️ 獎章",
+      "short_name": "獎章",
+      "url": "./index.html#badges"
+    },
+    {
+      "name": "🌟 AYP",
+      "short_name": "AYP",
+      "url": "./index.html#ayp"
+    }
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
