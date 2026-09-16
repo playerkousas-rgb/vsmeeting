@@ -1008,11 +1008,14 @@ App.pages.uniform = function(sub){
   if(cur==='badge'){
     var P = UNIFORM.placement;
     wrap.appendChild(App.h('p','lede','徽章位置表：按《儀容與制服手冊》4.6／4.7。圖上 ①–⑨ 對返下面各行；同一位置上下可以疊幾層。手冊本身有局部放大插圖，下面兩張放大圖就係照住嗰啲位置畫，方便對位同列印。'));
-    var CIR = ['','①','②','③','④','⑤','⑥','⑦','⑧','⑨'];
+    var CIR = ['','①','②','③','④','④½','⑤','⑥','⑦','⑧','⑨'];
+    // 兼容 4.5 這種小數編號
     function pTable(rows){
       return '<table class="meeting-table"><thead><tr><th width="46">圖上</th><th>位置</th><th>擺咩章</th></tr></thead><tbody>'+
         rows.map(function(r){
-          return '<tr><td class="pt-num">'+(CIR[r.n]||r.n)+'</td><td><b>'+r.side+'</b>'+(r.note?'<br><small class="mut">'+r.note+'</small>':'')+
+          var cir = CIR[Math.floor(r.n)] || '';
+          if(r.n===4.5) cir = '④½';
+          return '<tr><td class="pt-num">'+(cir||r.n)+'</td><td><b>'+r.side+'</b>'+(r.note?'<br><small class="mut">'+r.note+'</small>':'')+
             '</td><td>'+r.items.map(function(x){return '・'+x;}).join('<br>')+'</td></tr>';
         }).join('')+'</tbody></table>';
     }
@@ -1063,8 +1066,19 @@ App.pages.uniform = function(sub){
       +'<div class="card"><ul class="bullet">'+KW.points.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'
       +'<p class="mut">'+KW.note+'</p>'
       +'<ul class="bullet">'+KW.wear.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
-    wrap.appendChild(App.block('👖 皮帶・皮鞋・襪',
-      '<div class="card"><ul class="bullet">'+BS.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
+    wrap.appendChild(App.block('👖 皮帶・皮鞋・襪（按第三章原文）',
+      '<div class="card"><ul class="bullet">'+BS.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul><p class="mut">'+BS.source+'</p></div>'));
+    // 毛衣（3.7）＋附加配件（3.8）
+    if(UNIFORM.sweater){
+      var SW = UNIFORM.sweater;
+      wrap.appendChild(App.block('🧶 制服毛衣（冬天／體質需要）',
+        '<div class="card"><ul class="bullet">'+SW.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul><p class="mut">'+SW.source+'</p></div>'));
+    }
+    if(UNIFORM.extras){
+      var EX = UNIFORM.extras;
+      wrap.appendChild(App.block('🎒 附加配件（名牌／眼鏡／手錶／腰包）',
+        '<div class="card"><ul class="bullet">'+EX.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul><p class="mut">'+EX.source+'</p></div>'));
+    }
     // 領帶制服（官方手冊第二章49頁，團友提供原文）
     if(UNIFORM.tieUniform){
       var TU = UNIFORM.tieUniform;

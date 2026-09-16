@@ -1,4 +1,4 @@
-var CACHE = "venture-v43-pants-20260918";
+var CACHE = "venture-v44-acc-20260918";
 var ASSETS = [
   "./img/uni/venture-land.png", "./img/uni/venture-sea.png", "./img/uni/venture-air.png",
   "./img/uni/land.avif", "./img/uni/sea.avif", "./img/uni/air.avif",
