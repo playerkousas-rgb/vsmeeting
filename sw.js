@@ -1,5 +1,7 @@
-var CACHE = "scout-v41-topbar-20260917";
+var CACHE = "venture-v42-maroon-20260918";
 var ASSETS = [
+  "./img/uni/venture-land.png", "./img/uni/venture-sea.png", "./img/uni/venture-air.png",
+  "./img/uni/land.avif", "./img/uni/sea.avif", "./img/uni/air.avif",
   "./", "./index.html", "./manifest.webmanifest", "./css/app.css",
   "./js/data.js", "./js/interests.js", "./js/ceremony.js", "./js/uniform.js", "./js/dia.js", "./js/ayp.js",
   "./js/figs.js", "./js/projector.js",

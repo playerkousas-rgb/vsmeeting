@@ -318,7 +318,10 @@ var BADGE_FIG = {
 var UNIFORMFIG = {
   land: { src:'img/uni/land.avif', w:900, h:930, branch:'陸童軍', alt:'陸童軍男團員（深綠軟帽、杏色短袖恤、草青色短褲、棕色皮帶、深草青色長襪）同女團員（同款恤衫配草青色裙褲）並排嘅官方服式圖' },
   sea:  { src:'img/uni/sea.avif',  w:900, h:899, branch:'海童軍', alt:'海童軍男團員（白頂海童軍帽連帽帶、白色短袖恤、深藍色短褲、深藍長襪）同女團員（白色恤配深藍色裙褲）並排嘅官方服式圖' },
-  air:  { src:'img/uni/air.avif',  w:900, h:941, branch:'空童軍', alt:'空童軍男團員（灰藍色軟帽、淺藍色短袖恤、深藍色短褲、深藍長襪）同女團員（淺藍色恤配深藍色裙褲）並排嘅官方服式圖' }
+  air:  { src:'img/uni/air.avif',  w:900, h:941, branch:'空童軍', alt:'空童軍男團員（灰藍色軟帽、淺藍色短袖恤、深藍色短褲、深藍長襪）同女團員（淺藍色恤配深藍色裙褲）並排嘅官方服式圖' },
+  vsland: { src:'img/uni/venture-land.png', w:900, h:930, branch:'陸深資', alt:'陸深資男團員（棗紅色軟帽、杏色短袖恤、草青色長褲、棕色皮帶）同女團員（杏色恤配草青色半截裙）並排嘅官方服式圖，本地版離線都睇到' },
+  vssea:  { src:'img/uni/venture-sea.png',  w:900, h:899, branch:'海深資', alt:'海深資男團員（白頂帽連深資海童軍帽章、白色短袖恤、深藍色長褲）同女團員（白色恤配深藍色半截裙）並排嘅官方服式圖，本地版' },
+  vsair:  { src:'img/uni/venture-air.png',  w:900, h:941, branch:'空深資', alt:'空深資男團員（灰藍色軟帽、淺藍色短袖恤、深藍色長褲）同女團員（淺藍色恤配深藍色半截裙）並排嘅官方服式圖，本地版' }
 };
 
 if (typeof module !== 'undefined' && module.exports) { module.exports = FIGS; module.exports.GAME_FIG = GAME_FIG; module.exports.SKILL_FIG = SKILL_FIG; module.exports.AID_FIG = AID_FIG; module.exports.BADGE_FIG = BADGE_FIG; module.exports.UNIFORMFIG = UNIFORMFIG; }
