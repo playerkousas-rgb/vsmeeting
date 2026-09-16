@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <!-- Scout Hub v19 icon 源檔：森林綠圓角底＋金色百合花飾＋白星＋交叉童軍棍 -->
+  <!-- ⚠️ 正式 PNG（icons/icon-192.png／icon-512.png／icon-maskable-512.png）由 generate_image 1024 原圖用 ImageMagick 縮圖產生；本 SVG 作日後手動改圖參考 -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="75%">
+      <stop offset="0" stop-color="#33803B"/>
+      <stop offset="1" stop-color="#1B5E20"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="192" height="192" rx="42" fill="url(#bg)"/>
+  <g transform="translate(96,88)">
+    <!-- 中央主瓣 -->
+    <path d="M0 -66 C -7 -46 -12 -30 -12 -12 C -12 0 -7 8 0 14 C 7 8 12 0 12 -12 C 12 -30 7 -46 0 -66 Z" fill="#F9A825"/>
+    <!-- 左瓣 -->
+    <path d="M-14 -2 C -34 -20 -56 -16 -58 -2 C -60 12 -44 20 -26 16 C -18 14 -13 8 -12 2 Z" fill="#F9A825"/>
+    <!-- 右瓣 -->
+    <path d="M14 -2 C 34 -20 56 -16 58 -2 C 60 12 44 20 26 16 C 18 14 13 8 12 2 Z" fill="#F9A825"/>
+    <!-- 橫帶 -->
+    <rect x="-17" y="10" width="34" height="9" rx="4.5" fill="#F9A825"/>
+    <!-- 下裙擺 -->
+    <path d="M0 48 C -6 40 -12 34 -12 24 C -12 20 -7 19 0 19 C 7 19 12 20 12 24 C 12 34 6 40 0 48 Z" fill="#F9A825"/>
+    <!-- 中央白星 -->
+    <path transform="translate(0,-30) scale(0.8)" d="M0 -12 L2.9 -3.7 L11.4 -3.7 L4.6 1.5 L7 9.7 L0 4.6 L-7 9.7 L-4.6 1.5 L-11.4 -3.7 L-2.9 -3.7 Z" fill="#fff"/>
+  </g>
+  <!-- 交叉童軍棍 -->
+  <g stroke="#5D4037" stroke-width="6" stroke-linecap="round" opacity=".85">
+    <line x1="76" y1="150" x2="116" y2="172"/>
+    <line x1="116" y1="150" x2="76" y2="172"/>
+  </g>
+  <g stroke="#5D4037" stroke-width="4" stroke-linecap="round" opacity=".85">
+    <line x1="82" y1="156" x2="90" y2="150"/>
+    <line x1="110" y1="156" x2="102" y2="150"/>
+  </g>
+</svg>
