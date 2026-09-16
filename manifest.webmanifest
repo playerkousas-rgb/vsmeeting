@@ -1,7 +1,7 @@
 {
   "name": "深資童軍團集會助手",
   "short_name": "深資助手",
-  "description": "深資童軍支部（15–20 歲）集會工具：16 場完整教案（會員章＋肩章）、遊戲場地圖、技能圖解、儀式卡、制服同徽章佩戴位置、獎章要求、營火會歌紙；可列印、可投屏、離線用得。Scout System 出品。",
+  "description": "深資童軍支部（15–20 歲）集會工具：16 場完整教案（會員章＋肩章）、遊戲場地圖、技能圖解、儀式卡、制服同徽章佩戴位置、獎章要求、AYP；可列印、可投屏、離線用得。Scout System 出品。",
   "lang": "zh-HK",
   "start_url": "./index.html",
   "scope": "./",
@@ -26,9 +26,9 @@
       "url": "./index.html#badges"
     },
     {
-      "name": "🔥 營火會",
-      "short_name": "營火會",
-      "url": "./index.html#songs"
+      "name": "🌟 AYP",
+      "short_name": "AYP",
+      "url": "./index.html#ayp"
     }
   ],
   "icons": [

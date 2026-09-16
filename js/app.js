@@ -27,11 +27,16 @@ App.route = function(){
     location.replace('#book/exec');
     return;
   }
+  // 舊連結兼容：營火會已由 AYP 取代
+  if(raw==='songs' || raw.indexOf('songs/')===0){
+    location.replace('#ayp');
+    return;
+  }
   var parts = raw.split('/');
   var tab = parts[0];
   var sub = null;
   try{ sub = parts[1] ? decodeURIComponent(parts[1]) : null; }catch(e){ sub = parts[1]||null; }
-  var allowed = ['plan','ceremony','uniform','official','book','print','play','skills','badges','songs','search'];
+  var allowed = ['plan','ceremony','uniform','official','book','print','play','skills','badges','ayp','search'];
   if(allowed.indexOf(tab)<0){ tab = 'plan'; sub=null; }
   document.querySelectorAll('#topnav a, #tabbar a').forEach(function(a){
     a.classList.toggle('active', a.getAttribute('data-tab')===tab);
@@ -371,18 +376,13 @@ App.buildSearchIndex = function(){
   idx.push({type:'手冊', title:'誓詞規律銘言＋執委會制度＋報班', link:'#book', desc:'', text:'誓詞 規律 銘言 準備 報班 訓練班 考章 執委會'});
   idx.push({type:'手冊', title:'執委會制度＋執委職責＋會議記錄表', link:'#book/exec', desc:'已併入手冊', text:'執委會 執委 制度 會議記錄 主席 秘書 司庫 自務自治'});
   idx.push({type:'手冊', title:'集會工具（計分板・抽籤・倒數・分組・投屏）', link:'#book/tools', desc:'可投屏', text:'計分板 抽籤 倒數 分組 工具 投屏 分組數 投影 大電視'});
-  idx.push({type:'素材', title:'工作紙（16 場直接印）＋急救卡（6 張連圖）＋營火會歌紙', link:'#print', desc:'可印可投屏', text:'工作紙 列印 素材 急救卡 家長通知 歌紙 誓詞卡 投屏'});
-  idx.push({type:'營火會', title:'🇨🇳 國歌《義勇軍進行曲》＋升旗禮儀', link:'#print', desc:'素材庫', text:'國歌 義勇軍進行曲 升旗 禮儀 唱國歌'});
-  (typeof SONGS!=='undefined' ? SONGS.sheets : []).forEach(function(s){
-    idx.push({type:'營火會', title:'🔥 '+s.zh+(s.en?'（'+s.en+'）':''), link:'#songs/'+s.k, desc:s.cat,
-      text:(s.zh+' '+(s.en||'')+' 營火會 營火歌 唱歌 歌紙 歌詞 香港 '+s.cat+' '+(s.lines||[]).map(function(l){return l[1];}).join(' ')).toLowerCase()});
-  });
-  if(typeof SONGS!=='undefined'){
-    idx.push({type:'營火會', title:'90 分鐘時間表＋三段氣氛', link:'#songs/flow', desc:'流程', text:'營火會 營火 時間表 程序 熱身 高潮 寧靜結尾 90分鐘'});
-    idx.push({type:'營火會', title:'歡呼／吶喊＋分組歡呼創作', link:'#songs/cheers', desc:'歡呼', text:'營火會 歡呼 吶喊 bravo 童子軍食雲吞 香港童軍好精神 分組歡呼'});
-    idx.push({type:'營火會', title:'工作人員＋點火頌詞＋設備', link:'#songs/staff', desc:'人手設備', text:'營火會 人手 工作人員 領唱 歡呼領袖 設備管理員 點火 頌詞 柴火 水 沙 電筒'});
-    idx.push({type:'營火會', title:'冇樂器帶唱＋領唱 5 招', link:'#songs/lead', desc:'帶唱', text:'營火會 領唱 帶唱 冇樂器 手勢 快歌 慢歌 唱歌環節'});
-    idx.push({type:'營火會', title:'安全底線＋營火章必識歌', link:'#songs/safety', desc:'安全考章', text:'營火會 安全 營火章 熊熊烈火 campfire burning kookaburra 友誼之光 必識'});
+  idx.push({type:'素材', title:'工作紙（16 場直接印）＋急救卡（6 張連圖）', link:'#print', desc:'可印可投屏', text:'工作紙 列印 素材 急救卡 家長通知 歌紙 誓詞卡 投屏'});
+  idx.push({type:'素材', title:'🇨🇳 國歌《義勇軍進行曲》＋升旗禮儀', link:'#print', desc:'素材庫', text:'國歌 義勇軍進行曲 升旗 禮儀 唱國歌'});
+  if(typeof AYP!=='undefined'){
+    idx.push({type:'AYP', title:'🌟 AYP 係乜（香港青年獎勵計劃・14–24 歲）', link:'#ayp/about', desc:'概覽', text:'ayp 香港青年獎勵計劃 hkayp 愛丁堡 銅章 銀章 金章 獎勵計劃 概覽 14歲 24歲'});
+    idx.push({type:'AYP', title:'三級要求（主項副項＋時數月份）', link:'#ayp/levels', desc:'銅銀金', text:'ayp 銅章 銀章 金章 直接 漸進 主項 副項 major minor 時數 月份 26小時 52小時 78小時'});
+    idx.push({type:'AYP', title:'五科介紹（服務・野外・技能・康體・團體生活）', link:'#ayp/sections', desc:'五科', text:'ayp 服務科 野外鍛鍊科 技能科 康樂體育科 團體生活科 service skills physical recreation adventurous journey residential 遠足 獨木舟'});
+    idx.push({type:'AYP', title:'點參加（執行處・紀錄簿・評核 7 步）', link:'#ayp/join', desc:'參加', text:'ayp 報名 參加 執行處 執行機構 紀錄簿 導師 評核員 計劃書 簽署 領獎 參加辦法'});
   }
   App.searchIndex = idx;
   return idx;
@@ -392,12 +392,12 @@ App.searchGo = function(){
   var out = document.getElementById('q-out');
   if(!input||!out) return;
   var q = (input.value||'').trim().toLowerCase();
-  if(!q){ out.innerHTML = '<p class="mut">輸入關鍵字即時搵：16 場集會＋遊戲＋獎章＋技能＋儀式＋營火會。</p>'; return; }
+  if(!q){ out.innerHTML = '<p class="mut">輸入關鍵字即時搵：16 場集會＋遊戲＋獎章＋技能＋儀式＋AYP。</p>'; return; }
   var keys = q.split(/\s+/);
   var res = App.buildSearchIndex().filter(function(e){
     return keys.every(function(k){ return e.text.indexOf(k)>=0; });
   }).slice(0,30);
-  if(!res.length){ out.innerHTML = '<p>😅 冇結果，試吓：儀式 / 急救 / 露營 / 地圖 / 歌 / 獎章。</p>'; return; }
+  if(!res.length){ out.innerHTML = '<p>😅 冇結果，試吓：儀式 / 急救 / 露營 / 地圖 / AYP / 獎章。</p>'; return; }
   out.innerHTML = '<p>🔍 搵到 '+res.length+' 項：</p><ul class="bullet">'+res.map(function(e){
     return '<li><span class="tag">'+e.type+'</span> <a href="'+e.link+'">'+e.title+'</a>'+(e.desc?' <small>（'+e.desc+'）</small>':'')+'</li>';
   }).join('')+'</ul>';
@@ -749,9 +749,9 @@ App.pages.search = function(sub){
   var q0 = '';
   try{ q0 = sub?decodeURIComponent(sub):''; }catch(e){ q0 = sub||''; }
   var box = App.h('div','card');
-  box.innerHTML = '<label class="search-field" for="q-input"><span>🔍 關鍵字</span><input id="q-input" type="search" inputmode="search" autocomplete="off" placeholder="例：儀式 / 急救 / 背囊 / 營火會…" value="'+q0.replace(/"/g,'&quot;')+'" oninput="App.searchGo()"></label>'+
-    '<p>熱門：<a href="#search/儀式">儀式</a> · <a href="#search/急救">急救</a> · <a href="#search/背囊">背囊</a> · <a href="#search/地圖">地圖</a> · <a href="#search/營火會">營火會</a> · <a href="#search/獎章">獎章</a></p>'+
-    '<div id="q-out"><p class="mut">輸入關鍵字即時搵，全站 16 場集會＋遊戲＋獎章＋技能＋儀式＋歌都搵到。</p></div>';
+  box.innerHTML = '<label class="search-field" for="q-input"><span>🔍 關鍵字</span><input id="q-input" type="search" inputmode="search" autocomplete="off" placeholder="例：儀式 / 急救 / 背囊 / AYP…" value="'+q0.replace(/"/g,'&quot;')+'" oninput="App.searchGo()"></label>'+
+    '<p>熱門：<a href="#search/儀式">儀式</a> · <a href="#search/急救">急救</a> · <a href="#search/背囊">背囊</a> · <a href="#search/地圖">地圖</a> · <a href="#search/AYP">AYP</a> · <a href="#search/獎章">獎章</a></p>'+
+    '<div id="q-out"><p class="mut">輸入關鍵字即時搵，全站 16 場集會＋遊戲＋獎章＋技能＋儀式＋AYP都搵到。</p></div>';
   wrap.appendChild(box);
   return wrap;
 };
@@ -761,8 +761,8 @@ App.pages.plan = function(){
   var wrap = App.h('div','page plan-page');
   wrap.appendChild(App.h('h1',null,'📅 集會目錄'));
   var guide = App.h('div','role-guide');
-  guide.innerHTML = '<div><span class="role-ic">🧭</span><p><b>第一次帶集會</b><br>先揀一場，再由「領袖預備」逐頁做到「安全注意」。</p></div>'+
-    '<div><span class="role-ic">⚡</span><p><b>熟手即場搵料</b><br>用畫面下方「素材庫／活動／技能／獎章／營火會」。</p></div>';
+  guide.innerHTML = '<div><span class="role-ic">🧭</span><p><b>第一次帶集會</b><br>先揀一場跟程序表做；儀式／制服／手冊係必修知識。</p></div>'+
+    '<div><span class="role-ic">⚡</span><p><b>熟手領袖搵料</b><br>心中有想法，直接去下方「素材庫／活動／技能／獎章／AYP」攞料。</p></div>';
   wrap.appendChild(guide);
   wrap.appendChild(App.h('p','lede','16 場完整集會：會員章 c01–c06、肩章・認識 c07–c09、肩章・技能 c10–c16。撳任何一張就開教案。'));
 
@@ -1064,7 +1064,6 @@ App.pages.book = function(sub){
       '<tr><th>分工</th><td colspan="3">邊個：__________ 做咩：__________ 幾時完成：__________</td></tr>'+
       '<tr><th>下次開會</th><td colspan="3">______年____月____日</td></tr>'+
       '</tbody></table>'));
-    wrap.appendChild(App.h('p','tip','📣 歡呼庫：<a href="#songs">🔥 營火會</a>。'));
     return wrap;
   }
 
@@ -1108,8 +1107,7 @@ App.printCats = [
   {k:'aid',  ic:'🩹', n:'急救卡（6 張）'},
   {k:'text', ic:'⚜️', n:'誓詞規律銘言'},
   {k:'rope', ic:'🧵', n:'收繩保養'},
-  {k:'flag', ic:'🇨🇳', n:'國歌升旗'},
-  {k:'song', ic:'🔥', n:'營火會歌紙'}
+  {k:'flag', ic:'🇨🇳', n:'國歌升旗'}
 ];
 App.pages.print = function(){
   var wrap = App.h('div','page');
@@ -1196,32 +1194,10 @@ App.printPanel = function(cat){
     return box;
   }
 
-  /* 營火會歌紙：直接印某一首／投屏 */
-  var songHtml = '';
-  songHtml += '<table class="meeting-table"><thead><tr><th>歌名</th><th>場合</th><th>第一句</th><th>點用</th></tr></thead><tbody>';
-  SONGS.sheets.forEach(function(sg){
-    songHtml += '<tr><td><b>'+sg.zh+'</b></td><td><span class="tag cat">'+sg.cat+'</span></td>'
-      + '<td class="mut">'+((sg.lines&&sg.lines[0])?sg.lines[0][1]:'').slice(0,18)+'…</td>'
-      + '<td class="nowrap"><button class="print-btn" onclick="App.printSong(\''+sg.k+'\')">🖨️ 印呢首</button>'
-      + '<button class="proj-btn" onclick="App.projSong(\''+sg.k+'\')">🖥️ 投呢首</button></td></tr>';
-  });
-  songHtml += '</tbody></table>';
-  box.appendChild(App.block('🔥 營火會歌紙（14 首）', songHtml, {print:false,proj:false}));
   return box;
 };
 
-/* 印／投一首歌（唔使跳去 🔥 營火會 tab 都做得到） */
-App.printSong = function(k){
-  var sg = SONGS.sheets.filter(function(x){return x.k===k;})[0];
-  if (!sg) return;
-  App.printSec(App.songSec(sg, true));
-};
-App.projSong = function(k){
-  var sg = SONGS.sheets.filter(function(x){return x.k===k;})[0];
-  if (!sg) return;
-  var html = '<h3>🔥 '+sg.zh+'</h3>' + App.songSheetHtml(sg);
-  if (typeof Projector !== 'undefined') Projector.html('🔥 '+sg.zh, html);
-};
+
 
 /* 🎮 活動（每個遊戲附場地圖） */
 App.pages.play = function(){
@@ -1420,157 +1396,48 @@ App.pages.badges = function(){
   return wrap;
 };
 
-/* 🔥 營火會（程序、歡呼、時間表＋香港旅團唱開嘅歌） */
-App.campTabs = [
-  {k:'flow',ic:'🗓️',n:'流程'},
-  {k:'cheers',ic:'📣',n:'歡呼'},
-  {k:'staff',ic:'👥',n:'人手設備'},
-  {k:'lead',ic:'🎤',n:'帶唱'},
-  {k:'library',ic:'🎵',n:'歌單（14）'},
-  {k:'safety',ic:'⚠️',n:'安全考章'}
+/* 🌟 AYP（香港青年獎勵計劃：概覽、三級要求、五科、點參加） */
+App.aypTabs = [
+  {k:'about',ic:'🌟',n:'概覽'},
+  {k:'levels',ic:'🥉',n:'三級要求'},
+  {k:'sections',ic:'📋',n:'五科介紹'},
+  {k:'join',ic:'📝',n:'點參加'}
 ];
-App.pages.songs = function(sub){
-  var wrap = App.h('div','page camp-page');
-  var sheets = SONGS.sheets;
-  var song = sub ? sheets.filter(function(x){return x.k===sub;})[0] : null;
-  var cur = song ? 'library' : (App.campTabs.some(function(x){return x.k===sub;}) ? sub : 'flow');
-  wrap.appendChild(App.h('h1',null,'🔥 營火會'));
-  wrap.appendChild(App.subnav('songs',App.campTabs,cur));
-
-  /* 單首歌紙：保留舊深層連結，但主導航只列六類，唔再將 14 首歌塞入總覽。 */
-  if(song){
-    var i0 = sheets.indexOf(song);
-    var prev = sheets[i0-1], next = sheets[i0+1];
-    var bar = App.h('div','cer-nav song-nav');
-    bar.innerHTML = '<a class="back-link" href="#songs/library">← 14 首歌單</a>'
-      + (prev?'<a class="cer-prev" href="#songs/'+prev.k+'" aria-label="上一首：'+prev.zh+'">← '+prev.zh+'</a>':'')
-      + (next?'<a class="cer-next" href="#songs/'+next.k+'" aria-label="下一首：'+next.zh+'">'+next.zh+' →</a>':'');
-    wrap.appendChild(bar);
-    wrap.appendChild(App.songSec(song, true));
-    return wrap;
-  }
-
-  var source = '<p class="source-note">📚 營火會程序依據：'+SONGS.hostNote+'；歌詞來源：'+SONGS.sources.join('、')+'。旅團版本如有出入，以自己旅團／區訓練組版本為準。</p>';
-
-  if(cur==='flow'){
-    wrap.appendChild(App.h('p','lede','第一次帶就照住呢個 90 分鐘次序：準備 → 熱身 → 高潮 → 歌唱 → 寧靜結尾 → 完全熄火。其他資料已拆到上面五個分頁。'));
-    var hero = App.h('div','card song-hero camp-hero');
-    hero.innerHTML = '<h3>🔥 營火會點樣帶</h3><div class="svg-steps"><figure>'+(DIAGRAMS.fire?DIAGRAMS.fire.flow:'')+'<figcaption>三段氣氛：熱身 → 高潮 → 寧靜結尾</figcaption></figure></div>';
-    wrap.appendChild(hero);
-    wrap.appendChild(App.block('🗓️ 一般營火會時間表（約 90 分鐘）',
-      '<div class="card"><ol class="steps camp-timeline">'+SONGS.programme.map(function(x){return '<li><b>'+x.t+'</b><br>'+x.d+'</li>';}).join('')+'</ol>'+
-      '<p class="tip">✅ '+SONGS.programmeTip+'</p></div>'));
-    wrap.appendChild(App.h('div','camp-next','下一步：<a href="#songs/staff">分人手、執設備 →</a>'));
-    wrap.appendChild(App.h('div','',source));
-    return wrap;
-  }
-
-  if(cur==='cheers'){
-    wrap.appendChild(App.h('p','lede','每個表演完用一款歡呼代替鼓掌。由歡呼領袖叫第一句，全體跟；同一晚輪流用 3–4 款。'));
-    var call = App.h('div','cheer-flow');
-    call.innerHTML = '<div><b>1</b><span>歡呼領袖<br><small>叫名＋做動作</small></span></div><i>→</i><div><b>2</b><span>全體<br><small>齊聲回應</small></span></div><i>→</i><div><b>3</b><span>即刻收<br><small>接下一節目</small></span></div>';
-    wrap.appendChild(call);
-    wrap.appendChild(App.block('📣 歡呼／吶喊（代替鼓掌）',
-      '<div class="card cheer-list"><ul class="bullet">'+SONGS.cheers.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul>'+
-      '<p class="tip">💡 '+SONGS.cheersTip+'</p></div>'));
-    wrap.appendChild(App.block('📣 分組自己嘅歡呼點作',
-      '<div class="card"><ul class="bullet">'+
-      '<li><b>準備三連呼</b>：準備！準備！準備！耶！（右拳每次舉高，最後跳起）</li>'+
-      '<li><b>組名威風呼</b>：（組名）！最威！最叻！耶！（圍圈搭膊，嗌名向圓心踏一步）</li>'+
-      '<li><b>勝利 V 呼</b>：贏！贏！贏！我哋係第一！（雙手 V 字舉高）</li>'+
-      '<li><b>動物吶喊</b>：分組代表叫聲＋一個動作，由組長帶。</li></ul>'+
-      '<p>分組旗創作見 <a href="#plan/c01">c01 教案</a>；營火晚會見 <a href="#plan/c16">c16 教案</a>。</p></div>'));
-    wrap.appendChild(App.h('div','',source));
-    return wrap;
-  }
-
-  if(cur==='staff'){
-    wrap.appendChild(App.h('p','lede','小型營火會四個人已經帶得到：一人控流程、一人控歡呼、兩人管場同器材。'));
-    var setup = App.h('div','camp-visual');
-    setup.innerHTML = App.ph('fire-circle', FIGS&&FIGS['fire-circle']?FIGS['fire-circle'].cap:'營火場座位與安全設備位置');
-    wrap.appendChild(setup);
-    wrap.appendChild(App.block('👥 營火會工作人員',
-      '<div class="card"><ul class="bullet">'+SONGS.staff.map(function(x){return '<li><b>'+x.r+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
-    wrap.appendChild(App.block('🔥 點火儀式＋營火頌詞',
-      '<div class="card"><p>'+SONGS.ignition.how+'</p><ul class="bullet">'+SONGS.ignition.words.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'));
-    wrap.appendChild(App.block('🎒 設備清單',
-      '<div class="card"><ul class="check-list">'+SONGS.gear.map(function(x){return '<li><span aria-hidden="true">□</span>'+x+'</li>';}).join('')+'</ul></div>'));
-    wrap.appendChild(App.h('div','',source));
-    return wrap;
-  }
-
-  if(cur==='lead'){
-    wrap.appendChild(App.h('p','lede','帶唱唔靠器材：自己唱第一句、手勢請全體接、快歌先慢歌後。圖只示圍圈同領唱位置。'));
-    var banner = App.h('div','song-banner');
-    banner.innerHTML = App.ph('fire-song', FIGS&&FIGS['fire-song']?FIGS['fire-song'].cap:'營火唱歌現場');
-    wrap.appendChild(banner);
-    wrap.appendChild(App.block('🎤 冇樂器都帶得',
-      '<div class="card"><ul class="bullet">'+SONGS.musicTips.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div>', {print:false}));
-    wrap.appendChild(App.block('🎤 領唱 5 招',
-      '<div class="card"><ol class="steps">'+SONGS.leaderTips.map(function(t,i){return '<li><b>第'+(i+1)+'招：</b>'+t+'</li>';}).join('')+'</ol></div>', {print:false}));
-    wrap.appendChild(App.block('📋 唱歌環節編排（10–15 分鐘）',
-      '<div class="card"><ol class="steps">'+SONGS.hostPlan.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ol></div>'));
-    wrap.appendChild(App.h('div','camp-next','揀歌：<a href="#songs/library">開 14 首歌單 →</a>'));
-    wrap.appendChild(App.h('div','',source));
-    return wrap;
-  }
-
-  if(cur==='library'){
-    wrap.appendChild(App.h('p','lede','14 首香港旅團唱開嘅歌。每張只顯示歌名、場合同第一句；撳入去先睇完整歌詞、玩法、領唱提示。'));
-    var grid = App.h('div','song-grid');
-    sheets.forEach(function(sg){
-      var card = App.h('a','card song-card');
-      card.href = '#songs/'+sg.k;
-      card.innerHTML = '<h3>🎵 '+sg.zh+(sg.en?'<br><small>'+sg.en+'</small>':'')+'</h3>'+
-        '<p><span class="tag cat">'+sg.cat+'</span>'+(sg.meter?' <span class="tag">'+sg.meter+'</span>':'')+'</p>'+
-        '<p class="mut">'+((sg.lines&&sg.lines[0])?sg.lines[0][1]:'').slice(0,30)+'…</p>'+
-        '<p class="ws-open">開歌紙 →</p>';
-      grid.appendChild(card);
+App.pages.ayp = function(sub){
+  var wrap = App.h('div','page ayp-page');
+  var cur = App.aypTabs.some(function(x){return x.k===sub;}) ? sub : 'about';
+  wrap.appendChild(App.h('h1',null,'🌟 AYP 青年獎勵計劃'));
+  wrap.appendChild(App.subnav('ayp',App.aypTabs,cur));
+  wrap.appendChild(App.h('p','lede','香港青年獎勵計劃（AYP／HKAYP）：14–24 歲，銅銀金三級。深資團員 15–20 歲正係銀章 → 金章主力——呢頁只查唔記，詳情以官方為準。'));
+  if(cur==='about'){
+    var intro = AYP.about.map(function(t){return '<li>'+t+'</li>';}).join('');
+    wrap.appendChild(App.block('🌟 AYP 係乜', '<ul class="tight">'+intro+'</ul>', {print:true}));
+    wrap.appendChild(App.block('🎯 三級一眼睇晒', '<table class="meeting-table"><thead><tr><th>級別</th><th>年齡</th><th>點報</th></tr></thead><tbody>'+
+      '<tr><td>🥉 銅章級</td><td>14 歲或以上</td><td rowspan="3">可直接報任何一級，亦可順序考；25 歲生日前完成</td></tr>'+
+      '<tr><td>🥈 銀章級</td><td>15 歲或以上</td></tr>'+
+      '<tr><td>🥇 金章級</td><td>16 歲或以上（加團體生活科）</td></tr>'+
+      '</tbody></table><p class="tip">💡 時數＋月份＋評核旅程數字：<a href="#ayp/levels">三級要求</a>。</p>', {print:true}));
+  } else if(cur==='levels'){
+    var lt = AYP.levelTable;
+    var th = lt.cols.map(function(c){return '<th>'+c+'</th>';}).join('');
+    var tr = lt.rows.map(function(r){
+      return '<tr>'+r.map(function(c,i){return (i===0?'<th>':'<td>')+c+(i===0?'</th>':'</td>');}).join('')+'</tr>';
+    }).join('');
+    var notes = lt.notes.map(function(t){return '<li>'+t+'</li>';}).join('');
+    wrap.appendChild(App.block('🥉 三級要求比較', '<table class="meeting-table"><thead><tr>'+th+'</tr></thead><tbody>'+tr+'</tbody></table><ul class="tight">'+notes+'</ul>', {print:true}));
+  } else if(cur==='sections'){
+    AYP.sections.forEach(function(sx){
+      var ex = sx.examples.map(function(e){return '<span class="tag">'+e+'</span>';}).join(' ');
+      wrap.appendChild(App.block('📋 '+sx.n+'（'+sx.en+'）', '<p>'+sx.purpose+'</p><p>例子：'+ex+'</p><p class="tip">💡 '+sx.note+'</p>', {print:true}));
     });
-    wrap.appendChild(grid);
-    wrap.appendChild(App.h('div','',source));
-    return wrap;
+  } else {
+    var steps = AYP.join.map(function(st,i){return '<li><b>'+(i+1)+'．'+st.t+'</b>：'+st.d+'</li>';}).join('');
+    var docs = AYP.docs.map(function(d){return '<li><a class="external-link" href="'+d.url+'" target="_blank" rel="noopener">🔗 '+d.n+'</a>（'+d.d+'）</li>';}).join('');
+    wrap.appendChild(App.block('📝 點參加（7 步）', '<ol class="tight">'+steps+'</ol>', {print:true}));
+    wrap.appendChild(App.block('🔗 官方文件', '<ul class="tight">'+docs+'</ul>', {print:false}));
   }
-
-  var must = SONGS.mustKnow;
-  var mustHtml = '<div class="card"><p>'+must.why+'</p><ul class="bullet">'+must.list.map(function(m){
-    return '<li>'+(m.must?'⭐必學：':'')+'<b>'+m.n+'</b> — '+m.tip+'</li>';
-  }).join('')+'</ul><p class="tip">✅ '+must.check+'</p><p>考章資料：<a href="#badges">🎖️ 獎章查閱</a>。</p></div>';
-  wrap.appendChild(App.h('p','lede','出發前逐項核對安全；考營火章要識歌名同實際帶領，唔係淨係睇歌紙。'));
-  wrap.appendChild(App.block('⚠️ 安全底線',
-    '<div class="card safety-card"><ul class="check-list">'+SONGS.safety.map(function(x){return '<li><span aria-hidden="true">□</span>'+x+'</li>';}).join('')+'</ul></div>'));
-  wrap.appendChild(App.block('⭐ 營火章要識嘅歌（有版權嗰幾首）', mustHtml, {print:false}));
-  wrap.appendChild(App.h('div','',source));
+  wrap.appendChild(App.h('p','tip','📚 資料來源：'+AYP.source.title+'。'+AYP.source.note));
   return wrap;
-};
-
-/* 歌紙內容（🔥 營火會分頁同 ✂️ 素材庫共用） */
-App.songSheetHtml = function(sg){
-  var html = '<div class="card song-sheet">';
-  html += '<p><span class="tag cat">'+sg.cat+'</span>'
-    + (sg.meter?'<span class="tag">拍子 '+sg.meter+'</span>':'')
-    + (sg.tempo?'<span class="tag">'+sg.tempo+'</span>':'')+'</p>';
-  if (sg.tune) html += '<p><b>旋律：</b>'+sg.tune+'</p>';
-  if (sg.form) html += '<p><b>曲式：</b>'+sg.form+'</p>';
-  html += '<div class="song-lines">';
-  (sg.lines||[]).forEach(function(pair){
-    html += '<div class="song-pair">'+(pair[0]?'<div class="chord">'+pair[0]+'</div>':'')+'<div class="ly">'+pair[1]+'</div></div>';
-  });
-  html += '</div>';
-  if (sg.acts && sg.acts.length) html += '<p><b>玩法／動作：</b></p><ul class="bullet">'+sg.acts.map(function(a){return '<li>'+a+'</li>';}).join('')+'</ul>';
-  if (sg.howto && sg.howto.length) html += '<p><b>領唱提示：</b></p><ul class="bullet">'+sg.howto.map(function(a){return '<li>'+a+'</li>';}).join('')+'</ul>';
-  if (sg.from) html += '<p class="source-note">📚 '+sg.from+'</p>';
-  html += '</div>';
-  return html;
-};
-
-/* 一首歌嘅歌紙卡（可列印／可投屏） */
-App.songSec = function(sg, single){
-  var sec = App.sec('🎵 '+sg.zh+(sg.en?'（'+sg.en+'）':''), {id:'song-'+sg.k});
-  var html = App.songSheetHtml(sg);
-  sec._body.innerHTML = html
-
-  return sec;
 };
 
 /* 一張急救卡（技能 tab 同素材庫共用）：圖＋處理＋注意 */

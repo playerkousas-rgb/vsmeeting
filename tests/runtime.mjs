@@ -60,7 +60,7 @@ sb.window = sb; sb.globalThis = sb;
 vm.createContext(sb);
 
 const lessons = fs.readdirSync(path.join(root, 'js')).filter(f => /^c\d\d-/.test(f)).sort().map(f => 'js/' + f);
-const files = lessons.concat(['js/data.js', 'js/interests.js', 'js/ceremony.js', 'js/uniform.js', 'js/dia.js', 'js/songs.js', 'js/figs.js', 'js/projector.js', 'js/app.js']);
+const files = lessons.concat(['js/data.js', 'js/interests.js', 'js/ceremony.js', 'js/uniform.js', 'js/dia.js', 'js/ayp.js', 'js/figs.js', 'js/projector.js', 'js/app.js']);
 for (const f of files) vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), sb, { filename: f });
 ok(true, '載入次序正確：c01–c16 → data → 模組 → app（' + files.length + ' 個檔案）');
 
@@ -68,7 +68,7 @@ const App = sb.App, DATA = sb.DATA;
 ok(!App.__err, 'app.js 載入冇 throw');
 
 /* 全部頁面 render 一次 */
-const pages = ['plan', 'play', 'skills', 'uniform', 'ceremony', 'book', 'badges', 'print', 'songs', 'search'];
+const pages = ['plan', 'play', 'skills', 'uniform', 'ceremony', 'book', 'badges', 'print', 'ayp', 'search'];
 for (const p of pages) {
   if (typeof App.pages[p] !== 'function') { ok(false, 'pages.' + p + ' 唔存在'); continue; }
   try { const node = App.pages[p](); ok(!!node, 'pages.' + p + ' render'); }
@@ -85,11 +85,8 @@ for (const s of ['land', 'sea', 'air', 'badge', 'acc', 'check']) {
 for (const c of sb.CEREMONY.cards) {
   try { App.pages.ceremony(c.k); ok(true, 'ceremony/' + c.k + ' render'); } catch (e) { ok(false, 'ceremony/' + c.k + '：' + e.message); }
 }
-for (const k of ['flow','cheers','staff','lead','library','safety']) {
-  try { App.pages.songs(k); ok(true, 'songs/' + k + ' render'); } catch (e) { ok(false, 'songs/' + k + '：' + e.message); }
-}
-for (const s of sb.SONGS.sheets) {
-  try { App.pages.songs(s.k); ok(true, 'songs/' + s.k + ' render'); } catch (e) { ok(false, 'songs/' + s.k + '：' + e.message); }
+for (const k of ['about','levels','sections','join']) {
+  try { App.pages.ayp(k); ok(true, 'ayp/' + k + ' render'); } catch (e) { ok(false, 'ayp/' + k + '：' + e.message); }
 }
 
 /* 16 場教案全部 render（分頁化之後每節都要落到 pane） */
