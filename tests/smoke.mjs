@@ -662,8 +662,8 @@ if(!rm.includes('深資童軍團集會助手') || !rm.includes('Scout System 出
   const allJs = ctx_files_join();
   const re2=/src="((?:img|icons)\/[^"]+\.(?:png|jpg|jpeg|webp|gif|svg))"/g;
   while ((m = re2.exec(allJs))) bad.push('js 引用 '+m[1]);
-  if (bad.length) { console.error('❌ 有唔係 AVIF 嘅本地图引用：\n   '+bad.join('\n   ')); process.exit(1); }
-  console.log('✅ v42 圖片格式：本地图一律 AVIF（PNG 只作 <picture>／manifest 後備）');
+  if (bad.length) { console.error('❌ 有唔係 AVIF 嘅本地圖引用：\n   '+bad.join('\n   ')); process.exit(1); }
+  console.log('✅ v42 圖片格式：本地圖一律 AVIF（PNG 只作 <picture>／manifest 後備）');
   function ctx_files_join(){
     return ['js/app.js','js/data.js','js/uniform.js','js/dia.js','js/figs.js','js/items.js','js/ceremony.js','js/interests.js','js/teach.js','js/teach2.js']
       .concat(['c01','c02','c03','c04','c05','c06','c07','c08','c09','c10','c11','c12','c13','c14','c15','c16'].map(c=>'js/'+c+'-lesson.js')).map(f=>readFileSync(root+f,'utf8')).join('\n');
@@ -1121,4 +1121,4 @@ console.log('✅ v34：新／熟手定位・手機 44px・安全圖片 fallback�
   console.log('✅ v42：獎章 34 項（第十一版 8 類＋第十版對照）・考章報班各 7 步・制服 6 款官網圖・16 場分鐘數啱');
 }
 
-console.log('\n🎉 全部 smoke test 通過（v42：16 場教材＋8 套儀式卡＋第十一版獎章路＋手冊原文章位・前端零 SVG・本地图全 AVIF）');
+console.log('\n🎉 全部 smoke test 通過（v43：16 場教材＋8 套儀式卡＋單項項目庫＋第十一版獎章路＋手冊原文章位・前端零 SVG・本地圖全 AVIF）');
