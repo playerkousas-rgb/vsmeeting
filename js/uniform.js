@@ -168,7 +168,7 @@ UNIFORM.placement = {
     { n:5, side:'左胸袋袋蓋上方（下層）', items:['服務年星（深資童軍＝紅色，1–6，只戴最高年份一枚）'],
       note:'各支部服務年星按次序由左至右並行；晉團後仍可戴以前支部年星，直至轉任成年成員。' },
     { n:6, side:'左胸袋中央', items:['世界童軍會員章（袋中央，宣誓後才可佩戴）'],
-      note:'世界童軍會員章與和平使者章按手冊不可同時？原文：世界會員章同和平使者章兩者只可揀一個（舊版說法），以手冊 4.6 為準。' }
+      note:'世界童軍會員章佩戴在左胸袋中央（3.2）；宣誓後才可佩戴。成年成員可佩戴在禮服上衣左胸袋中央或制服毛衣相同位置。' }
   ],
   body: [
     { n:7, side:'右袖（肩膊位下方，由上至下）',
@@ -397,11 +397,11 @@ if (typeof module !== 'undefined' && module.exports) module.exports = UNIFORM;
 UNIFORM.official = {
   note:'想睇「圖」請開以下官方檔：手冊本身有佩戴插圖（本 app 唔再自製插圖，避免畫錯教錯）。式樣如有更新，以總會網頁及最新通告為準。',
   docs:[
-    { n:'《儀容與制服手冊》第二章（制服）／第三章（制服配件）', u:'https://drive.google.com/file/d/1JrvWJmS5Uj6IC2EPNRH5v1YN5GSEQYLz/view?usp=drive_link' },
-    { n:'《儀容與制服手冊》第三章・3.6 皮帶皮鞋襪／第四章 4.1–4.3（標誌徽章）', u:'https://drive.google.com/file/d/1sgh0wjcr9fAaxbltfQE-uluOjNym4pIB/view?usp=drive_link' },
-    { n:'《儀容與制服手冊》第四章 4.4–4.7（其他／袋蓋上方／佩戴位置總圖）', u:'https://drive.google.com/file/d/12m8doAX3uZEGZ81Mvf6Fp2Dj_X7X6wwA/view?usp=sharing' },
-    { n:'《儀容與制服手冊》其餘章節（一）', u:'https://drive.google.com/file/d/1OenclJV7cifLmknCHDjCIhEOSzu5k1w_/view?usp=drive_link' },
-    { n:'《儀容與制服手冊》其餘章節（二）', u:'https://drive.google.com/file/d/1BqIREqz8JarW1WbDScXLBnQzr9KvPOnQ/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》第三章 3.1–3.6（制服配件・基本徽章・制服帽・領巾領帶・皮帶皮鞋襪）', u:'https://drive.google.com/file/d/1JrvWJmS5Uj6IC2EPNRH5v1YN5GSEQYLz/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》第三章 3.7–3.8（毛衣・附加配件）／第四章 4.1–4.3（標誌・徽章）', u:'https://drive.google.com/file/d/1sgh0wjcr9fAaxbltfQE-uluOjNym4pIB/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》第四章 4.4–4.7（其他・勳章・袋蓋上下層・佩戴位置總圖）＋第五章', u:'https://drive.google.com/file/d/12m8doAX3uZEGZ81Mvf6Fp2Dj_X7X6wwA/view?usp=sharing' },
+    { n:'《儀容與制服手冊》第二章後半（成年成員制服編號 2–6・戶外活動服裝・稱身尺寸標準）', u:'https://drive.google.com/file/d/1OenclJV7cifLmknCHDjCIhEOSzu5k1w_/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》第二章前半（深資童軍陸／海／空制服・領帶制服・男／女團員服式）', u:'https://drive.google.com/file/d/1BqIREqz8JarW1WbDScXLBnQzr9KvPOnQ/view?usp=drive_link' },
     { n:'總會網頁：深資童軍制服（官方照片）', u:'https://www.scout.org.hk/tc/youth-members/venture-scouts/index.html?sid=2' },
     { n:'2023 年第 13 號通告（支部成員徽章佩戴指引）', u:'https://www.scout.org.hk/uploads/tc/circulars/11057/p013-23.pdf' },
     { n:'《隊列和升掛國旗及區旗指引》（制服與禮儀相關）', u:'https://www.scout.org.hk/uploads/tc/circulars/16450/guidelines-of-chinese-foot-drill-and-national-flag-and-regional-flag-raising.pdf' }

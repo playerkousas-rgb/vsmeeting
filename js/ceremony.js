@@ -20,14 +20,14 @@ CEREMONY.source = {
     '《深資童軍訓練綱要》第十一版・會員章「禮節」1–4 項',
     '《儀容與制服手冊》第三章（制服帽：室外及室內進行宣誓、覆誓、升旗、展旗、降旗、授旗時佩戴）',
     '《步操手冊》（DRILL MANUAL，香港童軍總會，2003 年 7 月第二版）——本頁「集隊／報數／睇齊／解散」條文照第六章「排列隊形」抄錄；原書已分割成 8 份：'
-      +'1–30 https://drive.google.com/file/d/1gWQA1dhwATv2T_jO0MMTrOBlh7NqzpHj/view ｜'
-      +'31–60 https://drive.google.com/file/d/1rpnnuz-6FC4y3Y8CpTJiuY9MYXXDIzk_/view ｜'
-      +'61–90 https://drive.google.com/file/d/14dFFn8LKZimnFzv0yNzdn3eO-jc4H1RH/view ｜'
-      +'91–120（第五至六章・慢步及排列隊形）https://drive.google.com/file/d/1NKR6LMXPBSokJl1IbHDc8IFAEVZAcT7F/view ｜'
-      +'121–150 https://drive.google.com/file/d/10l1Hacy9appt27SxNpxrnvDt0Z_Hziku/view ｜'
-      +'151–180 https://drive.google.com/file/d/1H2DgraFDUq_1r9lXtQNlF_VYWJr2fJyB/view ｜'
-      +'181–210 https://drive.google.com/file/d/1IfuKqjKsI4QdoBxD_Lsw9NFbJkMpb2ht/view ｜'
-      +'211–220 https://drive.google.com/file/d/1ouNSbUSCv1FkjbJJoWVgCRptBhM5RZON/view'
+      +'1–30（第一至三章：述語・施教步操・口令結構・立正稍息）https://drive.google.com/file/d/1gWQA1dhwATv2T_jO0MMTrOBlh7NqzpHj/view ｜'
+      +'31–60（第三至四章：敬禮・原地轉法・快步）https://drive.google.com/file/d/1rpnnuz-6FC4y3Y8CpTJiuY9MYXXDIzk_/view ｜'
+      +'61–90（第四至五章：行進・換步・慢步開頭）https://drive.google.com/file/d/14dFFn8LKZimnFzv0yNzdn3eO-jc4H1RH/view ｜'
+      +'91–120（第五章・慢步；第六章開頭・集隊成三排）https://drive.google.com/file/d/1NKR6LMXPBSokJl1IbHDc8IFAEVZAcT7F/view ｜'
+      +'121–150（第六章・排列隊形：報數・Sizing・三排↔兩排・睇齊・開闊排）https://drive.google.com/file/d/10l1Hacy9appt27SxNpxrnvDt0Z_Hziku/view ｜'
+      +'151–180（第六章尾・轉彎及行進間注目禮；第七章 旗操：持旗立正・稍息・攜旗・托旗・換手・原地敬禮）https://drive.google.com/file/d/1H2DgraFDUq_1r9lXtQNlF_VYWJr2fJyB/view ｜'
+      +'181–210（第七章尾・行進間敬禮；第八章 集隊手號七款；附錄甲 口令一覽表）https://drive.google.com/file/d/1IfuKqjKsI4QdoBxD_Lsw9NFbJkMpb2ht/view ｜'
+      +'211–220（附錄：動令及打數表・檢閱會操・結業會操・檢閱須知）https://drive.google.com/file/d/1ouNSbUSCv1FkjbJJoWVgCRptBhM5RZON/view'
       +'。深階步操（部隊步操、步操指揮、分列式、旗操）唔入本 app：集會淨係練基本姿勢＋敬禮＋集隊＋升旗，要教深階請上訓練班。',
     '《儀容與制服手冊》（制服帽佩戴時機、徽章位置）——深資支部陸／海／空服式見綱要第一章「深資童軍制服」。分割檔：1–30 頁 https://drive.google.com/file/d/1rjD6MvA01eWUVU4b4qf9uSFYczXGMqY5/view ｜121–150 頁（配件・標誌・徽章）https://drive.google.com/file/d/1sgh0wjcr9fAaxbltfQE-uluOjNym4pIB/view',
   ],
