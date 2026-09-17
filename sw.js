@@ -1,4 +1,4 @@
-var CACHE = "venture-v46-vs-20260918";
+var CACHE = "venture-v47-vs-20260918-native";
 var ASSETS = [
   "./img/uni/venture-land.avif", "./img/uni/venture-sea.avif", "./img/uni/venture-air.avif",
   "./img/badge/venture-member.avif", "./img/badge/venture-shoulder.avif", "./img/badge/venture-award.avif",
@@ -6,7 +6,7 @@ var ASSETS = [
   "./img/badge/venture-adventure.avif", "./img/badge/dragon-award.avif",
   "./", "./index.html", "./manifest.webmanifest", "./css/app.css",
   "./js/data.js", "./js/interests.js", "./js/ceremony.js", "./js/uniform.js", "./js/dia.js", "./js/ayp.js",
-  "./js/figs.js", "./js/projector.js",
+  "./js/figs.js", "./js/projector.js", "./js/minigame.js",
   "./img/fig/cer-open.avif", "./img/fig/cer-close.avif", "./img/fig/cer-drill.avif",
   "./img/fig/cer-flag.avif", "./img/fig/cer-oath.avif", "./img/fig/cer-salute.avif",
   "./img/fig/game-banner.avif",

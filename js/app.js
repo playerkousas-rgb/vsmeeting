@@ -1225,7 +1225,7 @@ App.pages.book = function(sub){
     '<li><a href="'+EXTERNAL.ecportal+'" target="_blank" rel="noopener">🧑‍💼 執委會管理（ecportal・自務自治）</a></li>'+
     '<li><a href="'+EXTERNAL.aypGuide+'" target="_blank" rel="noopener">🌟 AYP 童軍接駁指南（領袖轉給團員）</a></li>'+
     '<li><a href="'+EXTERNAL.upgradeGuide+'" target="_blank" rel="noopener">⬆️ 升團準備指南（制服＋升團過渡）</a></li>'+
-    '<li><a href="'+EXTERNAL.minigame+'" target="_blank" rel="noopener">🎮 聚會互動 MINI GAME（開源專案・集會一起玩）</a></li>';
+    '<li><a href="#book/tools">🎮 聚會互動 MINI GAME（內建集會工具・隨開即玩）</a></li>';
   wrap.appendChild(App.sec('🔗 參考資料').add(ul3));
   return wrap;
 };
@@ -1264,12 +1264,9 @@ App.printPanel = function(cat){
   var box = App.h('div','');
   if (cat === 'ws') {
     var wsHtml = '<div class="callout ok-callout" style="margin-bottom:14px;">'
-      + '<b>📱 深資集會互動與 MINI GAME 配套：</b><br>'
-      + '深資童軍（15–20歲）不再適合小學式填字工作紙，集會推薦以互動實作、即場討論與聚會 MINI GAME 配合進行：'
-      + '<ul class="bullet" style="margin:6px 0 8px 18px;">'
-      + '<li><b>🕹️ 聚會互動 MINI GAME</b>：支援骰子工具、卡牌（德州撲克／21點／百家樂）、對話推理（狼人殺／一夜狼／誰是臥底／機密特務）、隨機分隊、多人連線計分板。集會破冰及反思一齊玩效果更好！</li>'
-      + '<li><b>🔗 開源專案庫</b>：<a href="' + (EXTERNAL.minigame || 'https://github.com/playerkousas-rgb/minigame.git') + '" target="_blank" rel="noopener" style="font-weight:bold;text-decoration:underline;">https://github.com/playerkousas-rgb/minigame.git</a></li>'
-      + '</ul>'
+      + '<b>📱 深資集會互動與內建 MINI GAME 配套：</b><br>'
+      + '深資童軍（15–20歲）不再適合小學式填字工作紙，集會已<strong>直接內建互動工具箱</strong>（誰是臥底、機密特務 5×5、21 點黑傑克、聚會擲骰/大話骰、幸運轉盤），完全離線本地運行，免外出鏈結、隨開即玩！'
+      + '<p style="margin:8px 0 4px 0;"><a class="button" href="#book/tools" style="background:#2E7D32;color:#fff;padding:6px 14px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;">🎮 立即開啟集會內建 MINI GAME 工具箱</a></p>'
       + '下方保留集會教案相關之檢討觀察表及打卡記錄表供手機／iPad 直接填寫或按需列印。</div>'
       + '<p class="mut">同集會目錄每場教案用嘅係同一份工作紙。</p>';
     [{k:'會員章 c01–c06', from:0, to:6},{k:'肩章・認識 c07–c09', from:6, to:9},
