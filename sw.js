@@ -1,8 +1,8 @@
-var CACHE = "scout-v42-textbook-20260917";
+var CACHE = "scout-v44-clean-20260917";
 var ASSETS = [
   "./", "./index.html", "./manifest.webmanifest", "./css/app.css",
   "./js/data.js", "./js/teach.js", "./js/teach2.js", "./js/interests.js", "./js/ceremony.js", "./js/uniform.js", "./js/dia.js", "./js/ayp.js",
-  "./js/figs.js", "./js/projector.js", "./js/minigame.js",
+  "./js/figs.js", "./js/projector.js", "./js/minigame.js", "./js/items.js",
   
   
   "./img/fig/game-banner.avif",

@@ -1,9 +1,11 @@
 # 深資童軍團集會助手 — Handover Notes（交下一個 Agent 用）
 
 > 最後更新：2026-09-17
-> 目前 branch：`arena/01a0a9bb-vsmeeting`（v41：**深資童軍版** — 16 場＋7 套儀式卡＋獎章查閱＋AYP＋手冊AYP指南＋頂欄直連，前端零 SVG）
+> 目前 branch：`arena/01a0ae17-vsmeeting`（**v44**：深資童軍版 — 16 場＋8 套儀式卡＋單項項目庫 18／19＋獎章 34 項＋AYP＋教材列點＋互動工具 4 個（無 21 點）；前端零 SVG・文案只留用戶需要知嘅事）
 >
-> **v41 快照（睇呢段就夠；下面 v19–v40 係歷史記錄）**
+> **最新＝§2.6 v43 大修（用家 6 項投訴）＋v44（第二／三輪：誰是臥底主持版・刪 21 點・文案清理）**；§2.5 係 v42；以下係 v41 快照（架構仍適用）。
+>
+> **v41 快照（下面 v19–v40 係歷史記錄）**
 > - **深資童軍版全量重建**：16 場教案（會員章 c01–c06／肩章認識 c07–c09／肩章技能 c10–c16）、7 套儀式卡（無團呼）、深資制服 6 款（官網原圖 link-only）、獎章 20 項（會員章 11＋肩章 7＋獎章路 2，只查不記）、繩結 9 個、地圖 1:20,000、急救 5 種＋復原臥式；v39：底部第 5 格由營火會改做 AYP（概覽＋三級＋五科＋參加，只查不記）；v40：手冊加「AYP 領袖指南」分頁（什麼是AYP＋團員參加＋領袖參與＋成立執行處支部）；v41：頂欄改姊妹 app 直連（圖書館＋AYP＋升團）。
 > - **組織**：執委會制（主席／副主席／秘書／司庫／康樂總務）＋團員大會；集隊由執委會帶，領袖監禮；考章＝團內考核 7 步，報班＝通告圖書館 7 步。
 > - **已刪走嘅童軍支部內容**：c17–c24 教案、團呼卡、拖木頭挑戰場地圖、小隊制度／小隊長、興趣組 33 章、區報章系統、童軍版繩結 10／地圖 1:25,000／急救 7 種；sw 已唔再預緩存 `img/badge/`＋`img/uni/`（檔仲喺 disk，未刪）；v39 加：營火會頁（流程／歡呼／人手／帶唱／歌單 14／安全）＋素材庫歌紙分類＋fire-circle/fire-song 插畫。
@@ -39,10 +41,10 @@
 **下方 5 tab**：
 | Tab | 狀態 | 說明 |
 |---|---|---|
-| ✂️ 素材庫（print） | ✅ 5 類真分頁 | 16 場工作紙逐張印＋6 張急救卡＋誓詞卡＋收繩卡＋國歌升旗 |
-| 🎮 活動（play） | ✅ 13 個遊戲 | 玩法/人數/物資/安全/場地圖（11 有圖＋2 破冰無圖） |
-| 🪢 技能（skills） | ✅ 9 分頁 | 繩結 9 口訣＋收繩/地圖/指南針/露營/先鋒/追蹤/郊野/急救 |
-| 🎖️ 獎章（badges） | ✅ 20 項 | 會員章 11＋肩章 7＋獎章路 2，考核要求＋建議方式＋教案連結 |
+| 🎮 聚會GAME（print） | ✅ 4 分頁 | 互動遊戲工具 5 個＋集會遊戲卡 23＋工作紙 5 張＋即印素材（急救/誓詞/收繩/國歌） |
+| 🎮 活動（play） | ✅ 18 張單項活動卡 | 目的/流程/要點/示範/檢查/安全，可分類篩選（唔再係教案摘要） |
+| 🪢 技能（skills） | ✅ 19 張單項技能卡＋肩章對照 | 露營 5／繩結 2／地圖 3／急救 5／先鋒 1／策劃 3；繩結只出口訣 |
+| 🎖️ 獎章（badges） | ✅ 34 項 | 會員章 12＋肩章 9＋四段章／金帶＋獎章路＋第十版對照，考核要求＋建議方式＋教案連結 |
 | 🌟 AYP（ayp） | ✅ 4 分頁 | 概覽/三級要求/五科介紹/點參加（只查不記） |
 
 **頂欄**（icon-only 按鈕）：🔍 全站搜尋 ＋ 📚 通告圖書館 ＋ 🌟 AYP 接駁指南 ＋ ⬆️ 升團準備指南（姊妹 app 直連，領袖可分享畀團員；深資唔用專章系統，無專章入口）。手冊 #book/refs 保留完整目錄（綱要＋套包＋圖書館＋AYP＋升團）。
@@ -78,13 +80,58 @@
 3. `js/app.js` 尚餘 `App.aidCard`／`App.badgeFig`／`UNIFORM.placement` 三個舊函數（已冇渲染呼叫），可擇機清走。
 4. 套包第 6–16 週嘅每週節目未逐週搬入嚟（現行用 c01–c16 自組流程＋套包遊戲）。
 
+## 2.6 v43 大修（2026-09-17・用家 6 項投訴）
+
+| # | 投訴 | v43 做法 | 檔案 |
+|---|------|----------|------|
+| 1 | 全文有不應出現字眼（「四條金帶」） | 深資童軍獎章＝**四個段章**；金帶屬「榮譽童軍獎章」（完成任一段章先可考該段章金帶，共四條）。全文掃字眼＋簡體字／錯字；smoke 加守門 | `js/app.js`、`js/figs.js`、`js/uniform.js`、`js/interests.js`、`js/teach*.js`、`index.html` |
+| 2 | 「聚會 GAME 互動庫」只剩標題 | 修 `minigame.js` 引號 SyntaxError（成個檔死咗 → 5 個工具靜靜唔 render）；print 頁改 4 真分頁：互動工具（4 個 mount）／遊戲卡 23／工作紙 5／即印素材 | `js/minigame.js`、`js/app.js`（`printCats`／`printPanel`） |
+| 3 | 下方 5 格定位錯（要單項材料） | 新增 `js/items.js`：`ITEMS.activities`（18）＋`ITEMS.skills`（19）＋`cats()`；`pages.play`／`pages.skills` 改單項卡（目的/流程/要點/示範/檢查/安全/對應獎章/教案連結），分類篩選；skills 加「肩章對照」分頁 | `js/items.js`（新）、`js/app.js` |
+| 4 | 儀式有「小隊」「家長接送」 | 集隊＝全團一個隊形（《步操手冊》第六章 fall-in）；分工用執委會臨時工作小組；散會自行離開，冇等家長接；儀式卡＋c04–c06／c16 逐句清 | `js/ceremony.js`、`js/c0{4,5,6}-lesson.js`、`js/c16-lesson.js`、`js/data.js` |
+| 5 | 教材字太多 | TEACH 渲染改列點（`points`→`<ul>`）＋長原文/示範/講稿收 `<details>`；自動配圖 `App.teachFigFor`（keyword→fig，17 張）＋平面 dgm fallback | `js/app.js`（`teachD`／`teachFigFor`）、`css/app.css` |
+| 6 | 用 Drive 分割手冊 | 手冊套包（步操／制服）以 Drive split file ID 存 `CEREMONY.refs`／`INTERESTS.source`；制服改用《儀容與制服手冊》原文（v42 起） | `js/ceremony.js`、`js/interests.js`、`js/uniform.js` |
+
+### v43 驗證（收尾輪）
+- **互動工具逐個行完整流程**（jsdom，`_tmp_mg*.mjs` 已刪，其內容已被下面「用戶第二輪回饋」取代）：機密特務＝隊長／隊員視角切換＋點格翻牌；骰子＝選「3 顆」即 roll 出 3 粒＋遮擋模式（🔒×3）；轉盤＝連轉 5 次每次出不同任務。**0 console error**
+- **（第二輪回饋後）誰是臥底改版流程實測**：設定 → 一次過發牌（主題後台祕密抽）→ 主持面板 summary 撳開／撳埋（投屏前收起）→ 秘密卡 6 張（卡上只有詞、冇身份標記）→ 發言計時 mm:ss 倒數 → 公投揀人被投出 → 揭曉（捉中／捉錯判定）；投影發言中唔漏身份、揭曉段顯示結果；再玩一局正常。**0 console error**
+- **Drive 手冊分割檔逐份核對實際頁碼範圍**（唔再靠估）：步操手冊 8 份＝①1–30 第一至三章 ②31–60 第三至四章 ③61–90 第四至五章 ④91–120 第五章＋第六章開頭 ⑤121–150 第六章（報數／Sizing／三排↔兩排／睇齊／開闊排）⑥151–180 第六章尾（轉彎／行進間注目禮）＋第七章旗操 §1–§11 ⑦181–210 第七章尾（§9–§12 行進間敬禮）＋第八章集隊手號七款＋附錄甲 ⑧211–220 附錄（動令及打數表／檢閱會操／結業會操／檢閱須知）；制服手冊 8 份＝第二章前半／第二章後半／3.1–3.6／3.7–3.8＋4.1–4.3／4.4–4.7＋第五章／其餘。標籤已寫入 `CEREMONY.refs`（儀式頁參考文件）＋`UNIFORM.official.docs`
+- **制服數據對返手冊原文**（第二章 p.33–51、3.2、3.3、4.3、4.6）：深資陸／海／空三款（棗紅軟帽／白頂帽連深資海章／灰藍軟帽）、杏／白／淺藍短袖恤、草青或深藍長褲・半截裙及膝、棕皮帶（童軍徽扣）、男黑短襪／女肉色尼龍襪褲、男綁帶鞋／女非綁帶中跟、旅巾（童軍巾圈）、徽章＝世界會員章・香港章・地域章・區章・旅章（**深資無小隊章**）— app 全部一致；順手清走一句冇依據嘅「世界會員章同和平使者章只可揀一個？」hedge note（改寫成手冊 3.2 原文：世界童軍會員章戴左胸袋中央、宣誓後才可佩戴）
+
+### v43.1 用戶第二輪回饋（同日）
+| 回饋 | 落地 |
+|---|---|
+| 誰是臥底唔要「逐個傳手機睇詞」（太麻煩） | 改**領袖一部手機主持**：一次過抽詞＋發身份；🖨️ **可列印秘密卡**（A4 一版 6–16 張、卡上只有詞冇身份）一次過派；👑 主持面板（summary 撳開／收起，投屏前收起）；發言倒計時 3:00（mm:ss）＋公佈後公投 → 揭曉判定 |
+| 21 點唔適合集會 | **整段程式碼刪走**（`bjState`／`bjHit`／`bjStand`／`startBjRound`／`renderBjUI`）＋移走 `mg-bj-box` 掛載點；smoke 新守門：`minigame.js` 唔准再出現 `德州撲克｜百家樂｜21點｜籌碼｜bjState｜renderBjUI｜bjHit` |
+| 參考 repo `github.com/playerkousas-rgb/minigame`（出門玩 · Pocket Play） | 借鏡：主持面板／後台祕密隨機抽詞／玩法說明先講規則／零投注聲明。**唔照搬**：PeerJS＋QR 多人連線（本 app 要離線、領袖一機搞掂），亦唔收錄卡牌賭博類 |
+| 徽章進度掣標示 | 頂欄外部掣改「深資童軍進度追蹤（vsbadge 外部工具）」；下方導覽維持「🎖️ 獎章」（內部獎章頁） |
+| 童軍版遺留清走 | 刪 10 個舊測試（audit／content／nav／practical／print-songs-art／quickkeys／ui／browser-*）+ 無用檔 `nouse`；`tests/` 只剩 `smoke.mjs`＋`runtime.mjs`（＝`npm test`） |
+
+### v44 用戶第三輪回饋（同日：APP 內只留用戶需要知嘅資訊）
+| 回饋 | 落地 |
+|---|---|
+| App 內唔可以有「特別標明／原因／交代」，唔好把對話放進 App | 全文清走「（vsbadge 外部工具）」「⚠️ 零賭注…一律唔收錄」「本 app 已刪除過往自創內容」「舊版 app 寫成…屬錯誤」「原書已分割成 8 份」「唔使逐個傳手機」等句；圖說只留設場／安全／出處（曳木結「見 c14 教案」、接力「見 c13 教案」） |
+| 手冊分章標籤要對返官方目錄 | 步操手冊 8 份＋制服手冊 8 份標籤重編（例：①1–30＝述語‧第一章‧第二章施教步操；③61–90＝第四章快步；⑥151–180＝第七章旗操；制服 181–210／211–224 兩份補回清單），`ceremony.js` refs＋`uniform.js` docs 已更新 |
+| 簡體字／錯字殘留 | `ceremony.js`「纠正」→糾正；`teach2.js` 绕／绑／湿／担／紧／炉／热／现／临／构 全部改正；`teach.js`「舉手机」「儿童」；`uniform.js`「而家長褲為主」→「以長褲為主」 |
+| 互動工具 4 張卡 HTML 收口 | `app.js` printPanel('tools') 綠框 callout 補回 `</div>`（之前刪「零賭注」句時連收口一齊刪，4 張卡會縮入綠框） |
+| smoke 守門同步 | 繩結相關圖 cap 改為「唔准出現打法字眼＋要指去 cXX 教案」（原本檢查已刪嘅「唔出結圖」字句）；團呼守門改 `/唔設團呼/`（配合新文案） |
+
+### v44 驗證（第三輪）
+- `npm test` 全綠（smoke＋runtime；runtime 誰是臥底玩法列點斷言改 3 條）。
+- 簡體字掃描（逐字表）覆蓋 `index.html`／`sw.js`／`manifest`／`css`／`js/*.js`，殘留 0。
+- 手冊分章標籤逐份對返官方目錄頁碼（見上表）。
+
+### v43 技術要點（唔好踩返）
+- `js/minigame.js` 內 HTML 字串用 `\'` 跳脫 onclick 引號——**改任何 mini-game 字串後要 `node --check js/minigame.js`**（v42 曾因未跳脫令成個檔 parse 失敗，5 個工具只剩標題）。
+- `js/items.js` 要喺 `index.html`（data.js 之後）同 `sw.js` ASSETS 出現；`tests/runtime.mjs`／`tests/smoke.mjs` 都要載入/檢查佢。
+- 教材配圖優先序：`b.fig`（FIGS 有先出）→ `App.teachFigFor(b.h/b.d)` → `b.dgm`／`App.teachDgmFor` → 冇圖就唔出（唔會出錯 icon）。
+
 ## 3. 重要用戶約定（唔可以改）
 
 0. **v39 深資版約定**：①tab 內容要分頁 ②會員章＋肩章由團內考核，獎章 tab 只查不記、唔放報章系統 ③唔出繩結逐步圖卡（文字口訣為準）④儀式/活動/技能要補圖（獎章唔使）⑤唔做營火會歌紙／歡呼庫（深資營火由團員自務）；AYP 只查不記、數字以官方為準 ⑥列印指邊印邊 ⑦工作紙：上面教案「跟住做」＋素材庫「直接印」兩邊都要 ⑧集會目錄整行可撳
 1. **唔好抄 Cubs Hub 嘅 emoji icon**——用自製森林綠+金百合花飾（v19 已更新為 192/512/maskable 三 size，原圖來自 generate_image）
 2. **完全移除森林故事**（幼童軍先有，童軍支部冇）
 3. **第 4 tab = 🪢 技能；第 5 tab 已由 🔥 營火歌改為 🌟 AYP**（v39 用戶指示：深資營火由團員自務，唔做歌紙；取代 v19 約定）
-4. **「獎章」tab 做會員章 11＋肩章 7＋獎章路 2**，只查不記；考核由團安排，訓練班經通告圖書館
+4. **「獎章」tab 做會員章 12＋肩章 9＋四段章／金帶＋獎章路（＋第十版對照）**，只查不記；考核由團安排，訓練班經通告圖書館
 5. **唔做考核記錄／獎章判定／出席記錄**
 6. **深資制服服式圖連總會官網原圖**（`https://www.scout.org.hk/uploads/member/venture_scouts_*.jpg`，link-only，唔本地存，唔好自己整/改圖）；深資軟帽唔係貝雷帽
 7. **儀式內容唔自己作**，動作要領文字化；中式隊列參考總會《中式隊列指引》PDF
@@ -142,7 +189,7 @@ vsmeeting/
 │   ├── dia.js              # IMG.map（53 張 AVIF＋尺寸＋alt）＋自動砌 DIAGRAMS（前端唯一出圖路徑；cer.howl／uniform.branch 底稿保留，app 唔用）
 │   ├── app.js              # 核心：路由、App.renderMeeting()、所有 page render
 │   ├── data.js             # DATA 物件：meetings[] 16 場、facts、games（13 個）、EXTERNAL 外連
-│   ├── interests.js        # INTERESTS：獎章 20 項（會員章 11＋肩章 7＋獎章路 2）、howToApply（團內考核＋報班流程）
+│   ├── interests.js        # INTERESTS：獎章 34 項（會員章 12＋肩章 9＋段章／金帶＋獎章路）、howToApply（團內考核＋報班流程）
 │   ├── ceremony.js         # CEREMONY：7 套儀式卡（無團呼，含 refs 連結）
 │   ├── uniform.js          # UNIFORM：深資 6 款規格＋neckwear/kilwell/beltSocks＋placement＋checklist＋shop
 │   ├── c01-lesson.js ~ c16-lesson.js  # 16 個完整教案（含 C10.firstaid/C13.knots/C14.knots/C14.ropeCare 速查表）
@@ -151,7 +198,7 @@ vsmeeting/
     └── runtime.mjs         # 全部頁面 render＋行為測試（`npm test` 兩個一齊跑）
 ```
 
-**注意**：tests/ 資料夾仲有幾個舊嘅 *.mjs 檔（audit/browser-*/content/nav/practical/print-songs-art/quickkeys/ui）係前期遺留，**唔係**現行測試——現行用 `tests/smoke.mjs`＋`tests/runtime.mjs`。唔好因為其他 test 壞而卡住，可以留低/刪除都得。
+**注意**：tests/ 資料夾**只有** `smoke.mjs`＋`runtime.mjs`（＝`npm test`）。（2026-09-17 已按用戶指示刪走 10 個舊檔：audit／content／nav／practical／print-songs-art／quickkeys／ui／browser-app-review／browser-practical／browser-print-scope——全部係上一版「童軍」app 遺留，引用已不存在嘅 `js/flow.js`、`js/jungle.js`、`.handbook`。）
 
 ## 6. 教案物件結構（重要代碼約定）
 
@@ -206,7 +253,7 @@ renderMeeting 支援新舊兩種段落格式混合（`label/min`、`n/t`、`sub/
 ## 8. PWA 與 Cache
 
 - Service Worker 檔案：`sw.js`
-- Cache 命名：`scout-v{N}-c16-YYYYMMDD`（現行 `scout-v42-textbook-20260917`）
+- Cache 命名：`scout-v{N}-c16-YYYYMMDD`（現行 `scout-v44-clean-20260917`）
 - 每加/減一個 cXX-lesson.js，要做 3 件事：
   1. `index.html` 加 `<script src="js/cXX-lesson.js"></script>`
   2. `data.js` 將對應 placeholder 替換為 `full:true, special?/outdoor?/sensitive?, data:Cxx, bag?/notice?/personalKit?/doNotBring?`
@@ -248,7 +295,7 @@ npm test    # smoke.mjs＋runtime.mjs，必須全部 ✅ 先好 merge
 3. ~~**搜尋功能（🔍）** 暫時跳去 #book~~（v18 已做真搜尋 ✅：即時搜尋＋85 項索引＋熱門關鍵字）
 4. **c01-c05 仲用舊 inline 格式**（leaderPrep 其實冇、d.script 有），將來可考慮統一到新格式，但唔強制——renderMeeting 已經兼容
 5. ~~**game/activities** 淨係得 4 個常用~~（v17 已擴充到 12 個 ✅，全部有完整玩法/物資/安全）
-6. **browser-app-review/browser-practical/browser-print-scope** 等測試檔係早期規劃遺留，未完成，可視乎需要整理或刪除
+6. ~~browser-* 測試檔~~（2026-09-17 已刪，見上）
 7. **http server（python3 -m http.server 8080）** 如果 restart 會 kill 咗之前個 process，可再 `python3 -m http.server 8080 &` 重開
 8. **assets_src/icons/icon-192.svg**（v37 前係 `img/icon-192.svg`）有 SVG 源檔，但 ImageMagick 缺 rsvg-convert 所以唔可以直接 convert 去 PNG，將來改 icon 可以繼續用 generate_image 出 1024×1024 PNG 再 resize 覆蓋 icons/icon-512.png。**前端唔可以有 SVG**（用戶要求），所以 SVG 源檔一律擺 `assets_src/`。
 9. ~~**print CSS** 未特別優化~~（早已有完整 `@media print` 系統；v17 再加咗隱藏 `.print-btn`/`.filters` ✅）
@@ -452,7 +499,7 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 
 ### 圖（三張重出＋尺寸更新）
 - `cer-oath`：其他人立正改成**握拳貼褲骨**（舊圖開掌）；二人中間真空、淨返一支旗（v4 通過 QA）
-- `cer-open`：v2 出咗**制服＋膊頭布章**（違反「唔准画制服」）→ v3 全部灰色練習衫、無帽無章；全员握拳立正
+- `cer-open`：v2 出咗**制服＋膊頭布章**（違反「唔准画制服」）→ v3 全部灰色練習衫、無帽無章；全員握拳立正
 - `cer-drill`：加**握拳放大圓圈**（拇指壓食指）＋稍息／行進拳；檔底有英文 panel 標籤（POSITION OF ATTENTION／STAND AT EASE／MARCHING）＝手冊口令原文，可接受
 - FIGS 尺寸跟住改：`cer-open 1000×558`、`cer-oath 1000×545`、`cer-drill 1000×330`（smoke test 會用 `identify` 核對實際像素）
 - 插畫總量 28 張 967KB；`sw.js` CACHE=`scout-v25-c24-20260916`
@@ -553,9 +600,9 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 - `js/app.js`：新增 `App.cerDgm(key, caption)`，支援 `steps[].dgm`／`types[].dgm`，以 `<details class="dgm-fold">` 折疊（手機唔會撐到好長）；`App.printSec` 喺 clone 之後將所有 `details` 設 `open=true`，**列印一定出到圖**（用家之前要求「列印必須指邊印邊」）。
 - `css/app.css`：加 `.dgm-fold` 樣式 ＋ `@media print` 隱藏 summary。
 
-**同步改嘅文字**（全部照手冊，唔係自己推斷）：footdrill 步驟重新編序 1–15（之前有兩個「3.」「4.」）、稍息補回打數 `Out!`、回立正 `Alert!`＝`In!`、轉法補分部口令 `Turning by numbers…`、橫移補打數序列；march 拆開「向後轉／換步」兩步並補 150mm 小步＋`左腳腳踭後`＋慢步 balance step；salute 卡「全禮」挂上 `salute3` 圖解。
+**同步改嘅文字**（全部照手冊，唔係自己推斷）：footdrill 步驟重新編序 1–15（之前有兩個「3.」「4.」）、稍息補回打數 `Out!`、回立正 `Alert!`＝`In!`、轉法補分部口令 `Turning by numbers…`、橫移補打數序列；march 拆開「向後轉／換步」兩步並補 150mm 小步＋`左腳腳踭後`＋慢步 balance step；salute 卡「全禮」掛上 `salute3` 圖解。
 
-**踩咗嘅坑（寫低以免再犯）**：我一开始把 helper 命名做 `dot`／`ln`，`js/svg-kit.js` 本身已經有同名 helper（`(x,y,r,fill)`／`(x1,y1,x2,y2,st,col,dash)`），新定義蓋住舊定義之後**弄坏咗 `D.cer.close`（fill="undefined"）同埋其他用 `ln` 嘅舊圖**。全部函數改名加 `f` 前綴後正常。**規則：喺 svg-kit.js 加 helper 一定要用獨有前綴，唔准用 `T/svg/dot/ln/box/arrow/row/sq/mkr` 呢類名。**
+**踩咗嘅坑（寫低以免再犯）**：我一開始把 helper 命名做 `dot`／`ln`，`js/svg-kit.js` 本身已經有同名 helper（`(x,y,r,fill)`／`(x1,y1,x2,y2,st,col,dash)`），新定義蓋住舊定義之後**弄坏咗 `D.cer.close`（fill="undefined"）同埋其他用 `ln` 嘅舊圖**。全部函數改名加 `f` 前綴後正常。**規則：喺 svg-kit.js 加 helper 一定要用獨有前綴，唔准用 `T/svg/dot/ln/box/arrow/row/sq/mkr` 呢類名。**
 
 **下一步（未完成）**：仲有第5章慢步全套分部、第4章§10 原地踏步、§7–9 行進間致敬七分部、第6章§1–8（斜轉／彎道／開闊排睇齊）未画圖解；`D.cer.march`／`handsign`／`colour` 已存在。想再補就照本節個做法（讀晒 chunk → 數據画圖 → data-* 斷言）。
 
@@ -563,7 +610,7 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 
 ## 25. v29：範圍收斂 — 集會套包得返會員章＋日常集會（2026-09-16）
 
-用戶本來叫「再出第二批 10 張」圖解，跟住即刻收口：「**等一下，我們這是集會套包，就只需要最基本的，深的讓領袖自己去上班學／研讀步操手冊，我們就只教會員章內容和日常集會而已**」；再確認基本清單＝「開禮・禮成・集合／解散・立正／稍息（童軍動作）・三指敬禮・升旗禮儀・宣誓・團呼 ＋ 小隊隊列／開會操前後基本整隊（立正・稍息・睇齊）＋ 隊旗升旗手站位」，处理方式揗咗「**由 app 移走**」（唔係折埋）。
+用戶本來叫「再出第二批 10 張」圖解，跟住即刻收口：「**等一下，我們這是集會套包，就只需要最基本的，深的讓領袖自己去上班學／研讀步操手冊，我們就只教會員章內容和日常集會而已**」；再確認基本清單＝「開禮・禮成・集合／解散・立正／稍息（童軍動作）・三指敬禮・升旗禮儀・宣誓・團呼 ＋ 小隊隊列／開會操前後基本整隊（立正・稍息・睇齊）＋ 隊旗升旗手站位」，處理方式揗咗「**由 app 移走**」（唔係折埋）。
 
 **刪咗乜（git 歷史有晒，要還原就 `git show 4dea5e6:js/ceremony.js` / `git show 243874a:js/svg-kit.js`）**
 - 儀式卡 **12 → 8 張**：刪走 `march`（快慢步行進 12 步）、`parade`（會操檢閱／附錄丙丁戊）、`colour`（旗操 12 節全本）、`commands`（附錄甲＋乙口令與動令時間表）。
@@ -581,7 +628,7 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 - 順手修咗兩個**睇唔到嘅真 bug**：
   1. viewBox 溢出檢查器喺 v28 升級時 group 序號遷咗位（`mm[5]/mm[6]/mm[7]` 應該係 `mm[6]/mm[7]/mm[8]`），變成實質上乢都查唔到；改返啱之後即管捉到 **`D.skillx.legend` 四條標籤喺 y=144 但 viewBox 高得 130 → 一直俾人 cut 咗**（已改 152）。而家 32 張圖解全部真係過檢查。
   2. `sw.js` 版本斷言由「硬編碼 v27」改成「sw 版本必須同 README 寫嘅一致」，以後唔使再改 test。
-- `npm test` **全綠**（圖解渲染＋每張儀式卡頁 render 都跑過）；`tests/practical.mjs`／`print-songs-art.mjs` 係舊架構遺留（引用 `Ceremony.items`／`Ceremony.get('commands')`），本来已經跑唔切、亦唔喺 `npm test` 之內 — 未動。
+- `npm test` **全綠**（圖解渲染＋每張儀式卡頁 render 都跑過）；（`tests/practical.mjs`／`print-songs-art.mjs` 等舊架構遺留已於 2026-09-17 刪走。）
 
 **以後嘅做法（重要）**：想加任何儀式／步操內容之前，先問「會員章要唔要？日常集會用唔用？」；兩樣都唔係 → 只寫一句指向手冊＋訓練班，唔好画圖、唔好列程序表。
 

@@ -3319,3 +3319,25 @@ textarea{font-family:inherit;border:1.5px solid var(--line);border-radius:12px;p
 .src-link em{display:block;font-size:11px;color:#8a7a62;word-break:break-all;font-style:normal;margin-top:3px}
 @media(min-width:720px){.src-grid{grid-template-columns:1fr 1fr}}
 @media print{.teach-card{break-inside:avoid;border-left-color:#999}.teach-card,.src-link,.teach-quote,.teach-wrong,.teach-check{background:#fff}}
+
+/* ══════════ v43：單項項目卡（技能／活動）＋教材列點收折 ══════════ */
+.item-card{border-left:4px solid var(--brand);background:#fff}
+.item-card h3{margin:0 0 6px}
+.item-card h4{margin:12px 0 4px;font-size:14px;color:var(--brand-dark)}
+.item-goal{background:#F3F7F1;border-left:3px solid #4C8C2B;border-radius:0 8px 8px 0;padding:7px 10px;margin:8px 0;font-weight:600}
+ul.bullet.tight,ol.steps.tight{padding-left:20px;line-height:1.6}
+ul.bullet.tight li,ol.steps.tight li{margin:3px 0}
+ul.bullet.sub{margin:4px 0 4px 2px;padding-left:16px;list-style:circle}
+ul.bullet.sub li{font-size:13px;color:#4a4136;margin:2px 0}
+.teach-card h5{margin:10px 0 3px;font-size:13.5px;color:#7a6a52}
+.teach-line{margin:6px 0;font-size:13.5px}
+.teach-card details.teach-demo,.teach-card details.teach-script,.teach-card details.teach-ask,.teach-card details.teach-quote{margin:8px 0;border:1px dashed #E2D6C2;border-radius:10px;background:#FDFBF6;padding:6px 10px}
+.teach-card details>summary{cursor:pointer;font-weight:700;font-size:13.5px;color:var(--brand-dark);list-style:none}
+.teach-card details>summary::-webkit-details-marker{display:none}
+.teach-card details>summary::before{content:"▸ ";color:var(--gold)}
+.teach-card details[open]>summary::before{content:"▾ "}
+.teach-card details>summary~*{margin-top:6px}
+.teach-ask{background:#F7F4FB!important;border-color:#D9CDEC!important}
+.teach-ask small{color:#5a4b73}
+.teach-script li{font-style:italic;color:#3f3a33}
+@media print{.teach-card details{display:block!important}.teach-card details>summary{list-style:none}}
