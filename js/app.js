@@ -281,10 +281,12 @@ App.dgmFigure = function(key, cap, cls){
 };
 /* 攞儀式卡嘅圖（cer-＋fig key），冇圖先退回平面圖解 */
 App.cerFig = function(c){
+  /* v42：儀式卡唔再用 AI 插畫（全部刪走）；得返 dgm 隊形／位置示意圖，配圖說講明唔係動作範本 */
   var dk = c.fig || c.dgm;
-  var svgAlt = (dk && typeof DIAGRAMS!=='undefined' && DIAGRAMS.cer && DIAGRAMS.cer[dk]) ? DIAGRAMS.cer[dk] : '';
-  if(!c.fig) return svgAlt ? '<figure class="dgm-fig"><div class="dgm-wrap">'+svgAlt+'</div><figcaption>📐 '+(c.figcap||'位置圖解')+'</figcaption></figure>' : '';
-  return App.ph('cer-'+c.fig, c.figcap || '位置示意圖解', svgAlt);
+  var dgmHtml = (dk && typeof DIAGRAMS!=='undefined' && DIAGRAMS.cer && DIAGRAMS.cer[dk]) ? DIAGRAMS.cer[dk] : '';
+  if(!dgmHtml) return '';
+  return '<figure class="dgm-fig"><div class="dgm-wrap">'+dgmHtml+'</div>'
+    + '<figcaption>📐 '+(c.figcap||'隊形／位置示意圖')+'・呢張圖只作隊形／位置示意，動作角度與手勢請照文字要領同《步操手冊》由領袖示範</figcaption></figure>';
 };
 
 /* 逐步圖解（照《步操手冊》分部動作；圖已轉 AVIF）；冇呢個 key 就乜都唔出 */
@@ -293,7 +295,7 @@ App.cerDgm = function(k, cap){
   if(!dk) return '';
   return '<details class="dgm-fold"><summary>📐 分部動作圖解（'+(cap||k)+'）</summary>'
     + '<figure class="dgm-fig"><div class="dgm-wrap">'+dk+'</div><figcaption>📐 '+(cap||'分部動作圖解')
-    + '・角度／距離已照手冊標示，可對住示範</figcaption></figure></details>';
+    + '・呢啲圖只作隊形／位置示意；動作角度同手勢請照文字要領＋《步操手冊》由領袖示範</figcaption></figure></details>';
 };
 
 App.printSec = function(el){
@@ -366,8 +368,9 @@ App.buildSearchIndex = function(){
   skills.forEach(function(sk){
     idx.push({type:'技能', title:sk.t, link:sk.l, desc:'技能卡（附圖解）', text:(sk.t+' '+sk.k).toLowerCase()});
   });
+  if(typeof TEACH!=='undefined'){ Object.keys(TEACH).forEach(function(tk){ if(tk==='sources') return; TEACH[tk].forEach(function(b,bi){ idx.push({type:'教材', title:(tk+' 教材'+(bi+1)+'・')+(b.h||''), link:'#plan/'+tk, desc:'照住講（含官方原文＋示範＋抽問）', text:((b.h||'')+' '+(b.aim||'')+" "+(b.points||[]).map(function(p){return p.t+' '+p.d;}).join(' ')+' '+(b.quote?(b.quote.text||''):'')+' '+(b.script||[]).join(' ')).toLowerCase()}); }); }); }
   CEREMONY.cards.forEach(function(c){
-    idx.push({type:'儀式', title:c.icon+' '+c.n, link:'#ceremony/'+c.k, desc:(c.fig?((typeof FIGS!=='undefined'&&FIGS['cer-'+c.fig])?'附示意插畫＋位置圖解':'附位置圖解'):'文字程序'),
+      idx.push({type:'儀式', title:c.icon+' '+c.n, link:'#ceremony/'+c.k, desc:(DIAGRAMS&&DIAGRAMS.cer&&(DIAGRAMS.cer[c.fig||c.dgm]))?'附隊形／位置示意圖（只作位置參考）':'文字程序照官方',
       text:('儀式 '+c.n+' 升旗 宣誓 步操 敬禮 隊列 點名 降旗 開始 結束 開禮 禮成 '+ (c.steps||[]).map(function(s){return s.h+' '+s.d;}).join(' ')).toLowerCase()});
   });
   idx.push({type:'制服', title:'制服佩戴（陸／海／空小分頁）＋自查清單', link:'#uniform', desc:'', text:'制服 領巾 徽章 佩戴 恤衫 褲裙 帽 皮帶 襪 鞋 儀容 海深資 空深資 陸深資 棗紅 軟帽 白頂帽 深資童軍'});
@@ -486,23 +489,10 @@ App.renderMeeting = function(tid){
       wrap.appendChild(sPrep);
     }
 
-    // 新領袖專用教材與教學指引（提供詳盡帶領步驟、講授要點與話術範本）
-    if(d.teachingGuide){
-      var tg = App.h('div','card teaching-guide-card');
-      var tgHtml = '<h3 style="color:#1B5E20;margin-top:0;">🧑‍🏫 '+d.teachingGuide.title+'</h3>'+
-        '<p class="lead" style="font-size:14px;color:#333;margin-bottom:12px;">'+d.teachingGuide.summary+'</p>';
-      d.teachingGuide.sections.forEach(function(sec){
-        tgHtml += '<div style="margin-bottom:12px;padding:10px;background:#F1F8E9;border-radius:6px;border-left:4px solid #558B2F;">'+
-          '<h4 style="margin:0 0 6px 0;color:#2E7D32;">'+sec.h+'</h4>'+
-          '<ul class="bullet" style="margin:0 0 0 16px;">'+sec.bullets.map(function(b){return '<li>'+b+'</li>';}).join('')+'</ul>'+
-          '</div>';
-      });
-      tg.innerHTML = tgHtml;
-      var sTg = App.sec('📚 新領袖備課教材與教學指引',{id:tid+'-guide'});
-      sTg.add(tg);
-      wrap.appendChild(sTg);
-    }
-
+    /* 教材（照住講）：TEACH[tid] —— 每段有講稿／知識點／官方原文／示範步驟／抽問答案 */
+    if(typeof TEACH!=='undefined' && TEACH[tid] && TEACH[tid].length){
+      var th = App.h('div','card teach-card');
+      var H = '<h3>📖 照住講（教材 '+TEACH[tid].length+' 段）</h3>'+        '<p class="mut">呢度先係「教材」：逐段有官方原文、要講嘅知識點、可以照讀嘅講稿、示範步驟同抽問答案。備課方法：由第 1 段順住做到最後一段；時間唔夠就跳「加碼」，<b>唔好跳走官方原文嗰格</b>（最易講錯嘅就係自己改字眼）。</p>';      TEACH[tid].forEach(function(b, bi){        H += '<div class="teach-block"><h4>'+(bi+1)+'. '+b.h+(b.mins?'<span class="tag">'+b.mins+'分鐘</span>':'')+'</h4>';        if(b.aim) H += '<p class="teach-aim">🎯 呢段要達到：'+b.aim+'</p>';        if(b.quote) H += '<blockquote class="teach-quote"><b>官方原文（照呢段讀／講）</b><br>'+(b.quote.text||'')+'<cite>—— '+(b.quote.src||'')+'</cite></blockquote>';        if(b.points) H += '<ul class="bullet">'+b.points.map(function(p){return '<li><b>'+p.t+'</b>：'+p.d+'</li>';}).join('')+'</ul>';        if(b.cards) H += '<table class="meeting-table"><tbody>'+b.cards.map(function(c){return '<tr><th>'+c.y+'</th><td><b>'+c.t+'</b><br>'+c.d+'</td></tr>';}).join('')+'</tbody></table>';        if(b.timetable) H += b.timetable.map(function(tp){return '<h5>⏱ '+tp.t+'</h5><ol class="steps">'+tp.rows.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ol>';}).join('');        if(b.list) H += '<ul class="bullet checklist">'+b.list.map(function(x){return '<li>☐ '+x+'</li>';}).join('')+'</ul>';        if(b.steps) H += '<div class="teach-knot"><h5>🪢 打法要領（照呢個順序教）</h5><ol class="steps">'+b.steps.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ol></div>';        if(b.use) H += '<p><b>✔ 用嚟做咩：</b>'+b.use.join('；')+'</p>';        if(b.demo) H += '<details open class="teach-demo"><summary>🛠 示範／實習：點樣帶（照做）</summary><ol class="steps">'+b.demo.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ol></details>';        if(b.script) H += '<div class="teach-script"><h5>🗣 講稿（可以照讀）</h5><ul class="bullet">'+b.script.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ul></div>';        var qa = b.ask || b.quiz;        if(qa) H += '<div class="teach-ask"><h5>❓ 抽問（附答案）</h5><ul class="bullet">'+qa.map(function(q){return '<li><b>'+q.q+'</b><br><small>答案：'+q.a+'</small></li>';}).join('')+'</ul></div>';        if(b.wrong) H += '<div class="callout warn"><b>⚠️ 常見錯</b><ul class="bullet">'+b.wrong.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';        if(b.note) H += '<p class="mut">'+b.note+'</p>';        if(b.safety) H += '<p class="safety"><b>⚠️ 安全：</b>'+b.safety+'</p>';        if(b.check) H += '<p class="teach-check">📋 做完呢段要見到：'+b.check+'</p>';        H += '</div>';      });      if(TEACH.sources) H += '<p class="source-note">📚 教材出處（要核對原文按呢度）：'+TEACH.sources.map(function(s){return '<a href="'+s.u+'" target="_blank" rel="noopener">'+s.t+'</a>';}).join('｜')+'</p>';      th.innerHTML = H;      var sTeach = App.sec('📖 照住講（教材）',{id:tid+'-teach', print:true});      sTeach.add(th);      wrap.appendChild(sTeach);    }
     // 領袖開場白
     if(d.script){
       var sc = App.h('div','card script-card');
@@ -955,12 +945,19 @@ App.pages.ceremony = function(sub){
     }
   }
 
-  wrap.appendChild(App.h('p','lede','呢度淨係<strong>會員章＋日常集會</strong>用得到嘅儀式：開禮・禮成・集合／解散・立正／稍息（童軍動作）・敬禮・升旗・宣誓・基本整隊（深資集會唔設團呼）。集隊由執委會帶，領袖監禮。<b>深嘅步操唔喺呢度教</b> —— 原地四轉、行進間轉向／換步、口令與動令時間表、旗手十二式、會操檢閱程序全部屬訓練班範圍：請上職前／進階訓練班，並人手一份《步操手冊》（香港童軍總會 2003 年 7 月第二版）照住做。實際動作必須由熟悉程序之領袖現場示範。'));
+  wrap.appendChild(App.h('p','lede','呢度淨係<strong>會員章＋日常集會</strong>用得到嘅儀式：開禮・禮成・集合／解散・隊列基本動作・敬禮・升旗・宣誓（深資集會唔設團呼，亦唔設自創口號環節）。集隊由執委會帶，領袖監禮。<b>進階步操唔喺呢度教</b> —— 原地四轉、行進間轉向／換步、旗手手法、會操檢閱程序屬訓練班範圍：請上職前／進階訓練班，並人手一份《步操手冊》照住做。實際動作必須由熟悉程序之領袖現場示範。'));
   var ref = App.h('div','callout');
-  ref.innerHTML = '📚 <b>參考文件：</b>（要教進階步操／帶會操，請用呢啲檔＋上訓練班，唔好靠記憶）<ul class="bullet" style="margin:6px 0 0 18px;">' +
-    CEREMONY.refs.map(function(r){return '<li><a href="'+r.url+'" target="_blank" rel="noopener">'+r.n+'</a></li>';}).join('') +
-    '</ul>';
+  ref.innerHTML = '📚 <b>本頁內容全部照呢啲官方檔抄錄／整理（唔自創）：</b><ul class="bullet" style="margin:6px 0 0 18px;">' +
+    CEREMONY.source.refs.map(function(r){return '<li>'+r+'</li>';}).join('') +
+    '<li><a href="https://www.scout.org.hk/uploads/tc/circulars/16450/guidelines-of-chinese-foot-drill-and-national-flag-and-regional-flag-raising.pdf" target="_blank" rel="noopener">《隊列和升掛國旗及區旗指引》（2024 年 6 月版本）PDF——動作要領原文喺呢度</a></li>' +
+    '<li><a href="https://drive.google.com/file/d/1F8aZSr_WzRbJCLy7l41iDO2tEUxpKCvE/view?usp=drive_link" target="_blank" rel="noopener">《深資童軍訓練綱要》第十一版 PDF（2026-08-15 生效）</a></li>' +
+    '</ul><p class="mut">'+CEREMONY.source.note+'</p>';
   wrap.appendChild(ref);
+  var pg = App.sec('⏱ 恆常集會程序（官方套包 8 段・每場照呢個排）', {id:'cer-program'});
+  pg._body.innerHTML = '<div class="card"><table class="meeting-table"><thead><tr><th width="8%">#</th><th width="16%">環節</th><th width="12%">時間</th><th>內容（照套包程序表）</th></tr></thead><tbody>'+
+    CEREMONY.program.rows.map(function(r){return '<tr><td>'+r[0]+'</td><td><b>'+r[1]+'</b></td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';}).join('')+
+    '</tbody></table><p class="mut">'+CEREMONY.program.note+'</p></div>';
+  wrap.appendChild(pg);
   CEREMONY.cards.forEach(function(c){
     wrap.appendChild(App.ceremonySec(c, false));
   });
@@ -977,18 +974,17 @@ App.ceremonySec = function(c, full){
   }
   if(c.prep) body += '<p><b>預備物資：</b>'+c.prep+'</p>';
   if(c.intro) body += '<p><b>動作要點：</b>'+c.intro+'</p>';
-  var pendingNote = '<div class="callout">⚠️ 呢套程序仍待官方核對，暫時只有文字＋參考文件連結；帶之前請先問熟悉程序之領袖。</div>';
+  var pendingNote = '';
   if(c.fig || c.dgm){
     body += App.cerFig(c);
-    /* 有圖但內容仍未核 — 照樣要提醒 */
-    if(c.pending && !full) body += pendingNote;
-  } else if(!full){
-    body += pendingNote;
   }
   if(c.steps) body += '<ol class="steps">'+c.steps.map(function(st){return '<li><b>'+st.h+'</b>：'+st.d+(st.dgm?App.cerDgm(st.dgm, st.dgmc||st.h):'')+'</li>';}).join('')+'</ol>';
   if(c.types) body += '<ul class="bullet">'+c.types.map(function(t){return '<li><b>'+t.t+'：</b>'+t.d+(t.dgm?App.cerDgm(t.dgm, t.dgmc||t.t):'')+'</li>';}).join('')+'</ul>';
   if(c.when_to_salute) body += '<p><b>使用場合：</b></p><ul class="bullet">'+c.when_to_salute.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
   if(c.safety) body += '<p class="safety"><b>⚠️ 注意：</b>'+c.safety+'</p>';
+  if(c.wrong) body += '<div class="callout warn"><b>⚠️ 呢度要避開</b><ul class="bullet">'+c.wrong.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
+  if(c.check) body += '<p class="mut">📋 對應考核：'+c.check+'</p>';
+  if(c.link) body += '<p class="source-note">📚 動作要領原文：<a href="'+c.link+'" target="_blank" rel="noopener">'+c.link.replace(/^https?:\/\//,'')+'</a></p>';
   if(c.note) body += '<div class="callout warn">'+c.note+'</div>';
   var link = full ? '' : '<p class="cer-open"><a href="#ceremony/'+c.k+'">睇完整程序＋圖解 →</a></p>';
   s._body.innerHTML = body + link;
@@ -1011,62 +1007,26 @@ App.pages.uniform = function(sub){
   var BRANCH = {vs_b:'vsland',vs_g:'vsland',vs_g_pants:'vsland',vs_sea_b:'vssea',vs_sea_g:'vssea',vs_sea_g_pants:'vssea',vs_air_b:'vsair',vs_air_g:'vsair',vs_air_g_pants:'vsair'};
   function typeCard(t){
     var rows = t.items.map(function(i){return '<tr><th>'+i[0]+'</th><td>'+i[1]+'</td></tr>';}).join('');
-    var br = BRANCH[t.k] || 'land';
-    var uni = (typeof UNIFORMFIG!=='undefined' && UNIFORMFIG) ? UNIFORMFIG[br] : null;
-    var figHtml = '';
-    if(uni){
-      var src = t.localImg || uni.src;
-      figHtml = '<figure class="uniform-fig"><img src="'+src+'" width="'+uni.w+'" height="'+uni.h+'" alt="'+t.name+'：'+uni.alt+'" loading="lazy" decoding="async"'
-        + ' onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src=\''+t.img+'\';}else{var f=this.closest(\'.uniform-fig\');if(f)f.classList.add(\'imgfail\');}">'
-        + '<figcaption>'+t.name+'官方服式圖（'+uni.branch+'）｜本地版 '+src+'，官網原圖備用｜實物以<a href="'+UNIFORM.shop.url+'" target="_blank" rel="noopener">童軍物品供應社</a>及《儀容與制服手冊》為準（多謝團友提供第二章制服原文）</figcaption></figure>';
-    }
-    return '<div class="card uniform-card"><h3>'+t.name+'</h3>'+figHtml+
-      '<div class="uniform-split">'+
-        '<div class="uniform-visual no-print"><a href="'+t.img+'" target="_blank" rel="noopener">🖼️ 開總會官網原圖（對最新式樣）</a>'+
-        '<small class="mut">官網原圖：深資童軍制服頁同一張。</small></div>'+
-        '<table class="uniform-table"><tbody>'+rows+'</tbody></table>'+
-      '</div></div>';
-  }
+    return '<div class="card uniform-card"><h3>'+t.name+'</h3>'+      '<div class="uniform-visual no-print" style="margin:0 0 8px 0;">'+      '<a href="'+t.img+'" target="_blank" rel="noopener">🖼️ 開總會官網原圖（官方相，對最新式樣）</a>'+      '<small class="mut"> 本 app 唔再放自製制服插圖（容易畫錯）；式樣同章位請照官方相＋《儀容與制服手冊》原文。</small></div>'+      '<table class="uniform-table"><tbody>'+rows+'</tbody></table></div>';  }
 
   if(cur==='badge'){
-    var P = UNIFORM.placement;
-    wrap.appendChild(App.h('p','lede','徽章位置表：按《儀容與制服手冊》4.6／4.7。圖上 ①–⑨ 對返下面各行；同一位置上下可以疊幾層。手冊本身有局部放大插圖，下面兩張放大圖就係照住嗰啲位置畫，方便對位同列印。'));
-    var CIR = ['','①','②','③','④','④½','⑤','⑥','⑦','⑧','⑨'];
-    // 兼容 4.5 這種小數編號
-    function pTable(rows){
-      return '<table class="meeting-table"><thead><tr><th width="46">圖上</th><th>位置</th><th>擺咩章</th></tr></thead><tbody>'+
-        rows.map(function(r){
-          var cir = CIR[Math.floor(r.n)] || '';
-          if(r.n===4.5) cir = '④½';
-          return '<tr><td class="pt-num">'+(cir||r.n)+'</td><td><b>'+r.side+'</b>'+(r.note?'<br><small class="mut">'+r.note+'</small>':'')+
-            '</td><td>'+r.items.map(function(x){return '・'+x;}).join('<br>')+'</td></tr>';
-        }).join('')+'</tbody></table>';
-    }
-    wrap.appendChild(App.block('🎖️ 胸袋上下層點排（圖上 ①–⑥）',
-      '<div class="svg-steps"><figure>'+DIAGRAMS.uniform.chest+
-      '<figcaption>恤衫正面：袋蓋上方 3cm＝上層、袋蓋上方＝下層、袋中央＝進度性獎章（圖只示位置，唔畫徽章樣式）</figcaption></figure></div>'
-      + pTable(P.chest), {id:'uni-chest'}));
-    wrap.appendChild(App.block('🔍 局部放大：最易擺錯嘅兩處（左胸袋・右袖肩膊）',
-      '<div class="svg-steps"><figure>'+DIAGRAMS.uniform.zoom+
-      '<figcaption>左：左胸袋——袋蓋上方 3cm 同袋中央係兩個唔同高度；右：右袖——旅章喺肩膊位下方 2cm，地域章（前）→ 區章（後）相距 1cm</figcaption></figure></div>'
-      +'<div class="callout">📖 對唔到就照《儀容與制服手冊》本身嘅放大插圖：'
-      +'<a href="'+UNIFORM.source.url+'" target="_blank" rel="noopener">第三章「制服配件」</a>、'
-      +'<a href="'+UNIFORM.source.badgeGuide+'" target="_blank" rel="noopener">支部成員徽章佩戴指引 PDF</a>（官方圖最準）。</div>', {id:'uni-zoom'}));
-
-    wrap.appendChild(App.block('🎖️ 全身位置：衫袖・膊頭（圖上 ⑦–⑨）',
-      '<div class="svg-steps"><figure>'+DIAGRAMS.uniform.body+
-      '<figcaption>正面位置：右袖由上至下（旅章 2cm 起）・左袖（急救／AYP／拯溺）・膊頭肩帶（肩章＋金帶）；深資唔用專章帶</figcaption></figure></div>'
-      +'<div class="svg-steps"><figure>'+DIAGRAMS.uniform.sleeve+
-      '<figcaption>右袖放大：旅章＝肩膊位下方 2cm；地域／區章＝再落 2cm，地域前區後相距 1cm；環境／社區參與／維護自然世界章；優異旅團章（佩戴一年）。深資支部唔設小隊章</figcaption></figure></div>'
-      + pTable(P.body), {id:'uni-body'}));
-    wrap.appendChild(App.h('div','callout','📚 出處：'+P.source+'。本 app 服務深資童軍支部（15–20 歲）：樂行／成年成員先有嘅章只作對照，未夠資格唔使理。<br>原文（連官方插圖）：<a href="'+UNIFORM.source.url+'" target="_blank" rel="noopener">《儀容與制服手冊》</a>｜<a href="'+UNIFORM.source.badgeGuide+'" target="_blank" rel="noopener">支部成員徽章佩戴指引（2023 年第 13 號通告）PDF</a>'));
-    wrap.appendChild(App.h('p','tip','💡 集會前逐個章對位檢查。'));
+    var P2 = UNIFORM.placementV2;
+    wrap.appendChild(App.h('p','lede','章位一律照<b>《儀容與制服手冊》</b>原文（第三章 3.2–3.4／3.6–3.8、第四章 4.2–4.4）。<b>呢度冇自製位置圖</b>——app 畫嘅圖唔係手冊嘅圖，好容易畫錯教錯人；要睇圖請開下面官方檔（手冊本身有佩戴插圖）。'));
+    wrap.appendChild(App.block('🎖️ 章位表（照手冊原文・分組）',
+      P2.groups.map(function(g){
+        return '<div class="card"><h3>'+g.g+'</h3><table class="meeting-table"><thead><tr><th width="30%">邊個章／配件</th><th width="38%">佩戴位置（原文）</th><th>備註／出處</th></tr></thead><tbody>'+          g.rows.map(function(r){return '<tr><td><b>'+r.item+'</b></td><td>'+r.where+'</td><td><small class="mut">'+(r.note||'')+'</small></td></tr>';}).join('')+          '</tbody></table></div>';
+      }).join('')+      '<p class="source-note">📚 '+P2.source+'</p>', {id:'uni-places'}));
+    wrap.appendChild(App.block('📚 官方檔（連插圖・要對圖就開呢啲）',
+      '<div class="card"><ul class="bullet">'+UNIFORM.official.docs.map(function(d){return '<li><a href="'+d.u+'" target="_blank" rel="noopener">'+d.n+'</a></li>';}).join('')+'</ul>'+      '<p class="mut">'+UNIFORM.official.note+'</p></div>', {id:'uni-docs'}));
+    wrap.appendChild(App.block('🧍 儀容・附加配件（手冊 3.3／3.8 原文）',
+      '<div class="card"><ul class="bullet">'+UNIFORM.grooming.items.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ul>'+      '<p class="source-note">📚 '+UNIFORM.grooming.source+'</p></div>', {id:'uni-groom'}));
+    wrap.appendChild(App.h('div','callout warn','⚠️ 考章／領隊提醒：制服不整齊時，禮節上只須立正、不須舉手敬禮（《隊列和升掛國旗及區旗指引》）。所以集會前用「自查清單」逐項執好，唔好靠即時補救。'));
     return wrap;
   }
+
   if(cur==='acc'){
     var NW = UNIFORM.neckwear, KW = UNIFORM.kilwell, BS = UNIFORM.beltSocks;
-    var bd = (typeof DIAGRAMS!=='undefined' && DIAGRAMS.uniform) ? DIAGRAMS.uniform : {};
-    wrap.appendChild(App.h('p','lede','領巾・巾圈・領帶：按《儀容與制服手冊》3.4–3.6。宣誓後才可佩戴；深資童軍一般集會戴旅巾＋童軍巾圈，正式場合打領帶（陸＝棗紅、海＝黑、空＝深藍）。'));
+      wrap.appendChild(App.h('p','lede','領巾・巾圈・領帶：按《儀容與制服手冊》3.4–3.6。宣誓後才可佩戴；深資童軍一般集會戴旅巾＋童軍巾圈，正式場合打領帶（陸＝棗紅、海＝黑、空＝深藍）。'));
     wrap.appendChild(App.block('🔑 四條通則',
       '<div class="card"><ul class="bullet">'+NW.rules.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'));
     wrap.appendChild(App.block('🧣 領巾 4 種（邊個戴）',
@@ -1075,20 +1035,11 @@ App.pages.uniform = function(sub){
       '<div class="card"><ul class="bullet">'+NW.rings.map(function(x){return '<li><b>'+x.n+'</b>：'+x.who+'</li>';}).join('')+'</ul>'
       +'<p class="mut">'+NW.ringsOther+'</p></div>'));
     wrap.appendChild(App.block('🧣 領巾點戴（捲巾 8 步＋規格）',
-      '<div class="svg-steps"><figure>'+(bd.scarf||'')+
-      '<figcaption>捲巾直徑約 3.5cm、底至尖 12–15cm；巾圈套喺衣領尖，巾尾唔可超越皮帶扣</figcaption></figure></div>'
-      +'<div class="card"><ol class="steps">'+NW.wear.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ol></div>'));
+      '<div class="card"><ol class="steps">'+NW.wear.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ol></div>'));
     wrap.appendChild(App.block('👔 領帶 4 色＋佩戴',
-      '<div class="svg-steps"><figure>'+(bd.ties||'')+
-      '<figcaption>棗紅（深資）・深綠（樂行＋成年）・黑（海童軍）・深藍（空童軍）</figcaption></figure></div>'
-      +'<div class="card"><ul class="bullet">'+NW.ties.map(function(x){return '<li><b>'+x.n+'</b>：'+x.who+'</li>';}).join('')+'</ul>'
-      +'<ol class="steps">'+NW.tieWear.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ol></div>'));
+      '<div class="card"><ul class="bullet">'+NW.ties.map(function(x){return '<li><b>'+x.n+'</b>：'+x.who+'</li>';}).join('')+'</ul>'+      '<ol class="steps">'+NW.tieWear.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ol></div>'));
     wrap.appendChild(App.block('🪵 基維爾巾圈・基維爾領巾・木章（成年成員對照）',
-      '<div class="svg-steps"><figure>'+(bd.kilwell||'')+
-      '<figcaption>木章皮繩位置：領巾／領帶制服掛喺前面，禮服藏翻領內只露木珠</figcaption></figure></div>'
-      +'<div class="card"><ul class="bullet">'+KW.points.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'
-      +'<p class="mut">'+KW.note+'</p>'
-      +'<ul class="bullet">'+KW.wear.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
+      '<div class="card"><ul class="bullet">'+KW.points.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'+      '<p class="mut">'+KW.note+'</p>'+      '<ul class="bullet">'+KW.wear.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
     wrap.appendChild(App.block('👖 皮帶・皮鞋・襪（按第三章原文）',
       '<div class="card"><ul class="bullet">'+BS.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul><p class="mut">'+BS.source+'</p></div>'));
     // 毛衣（3.7）＋附加配件（3.8）
@@ -1112,13 +1063,7 @@ App.pages.uniform = function(sub){
     }
     var CP = UNIFORM.cap;
     wrap.appendChild(App.block('🧢 制服帽佩戴（帽章・帽邊・髮式）',
-      '<div class="svg-steps"><figure>'+(bd.cap||'')+
-      '<figcaption>帽章＝軟帽左眼處上方 2cm；帽邊＝眼眉上方約 2cm（約一隻手指闊）；帽帶尾套入帽後端黑色膠邊內</figcaption></figure></div>'
-      +'<div class="card"><ul class="bullet">'+CP.points.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'
-      +'<p class="mut">'+CP.hard+'</p>'
-      +'<p class="mut">'+CP.sea+'</p></div>'
-      +'<div class="card"><h4>髮式（戴帽期間）</h4><ul class="bullet">'
-      +CP.hair.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
+      '<div class="card"><ul class="bullet">'+CP.points.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'+      '<p class="mut">'+CP.hard+'</p><p class="mut">'+CP.sea+'</p></div>'+      '<div class="card"><h4>髮式（戴帽期間）</h4><ul class="bullet">'+CP.hair.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
     wrap.appendChild(App.h('div','callout','🛒 <b>'+UNIFORM.shop.name+'</b>：'+UNIFORM.shop.addr+'｜電話 '+UNIFORM.shop.tel+'｜<a href="'+UNIFORM.shop.url+'" target="_blank" rel="noopener">hkscoutshop.org.hk</a><br>'+UNIFORM.shop.rule+'<br>'+UNIFORM.shop.rest));
     wrap.appendChild(App.h('div','callout','📚 出處：'+NW.source+'；'+BS.source+'；'+UNIFORM.cap.source+'。原文（連官方插圖）：<a href="'+UNIFORM.source.url+'" target="_blank" rel="noopener">《儀容與制服手冊》</a>'));
     return wrap;
@@ -1129,9 +1074,8 @@ App.pages.uniform = function(sub){
       '<p class="source-note">🖼️ '+UNIFORM.source.note+'</p>'+
       '<div class="callout">📚 <a href="'+UNIFORM.source.url+'" target="_blank" rel="noopener">儀容與制服手冊（官方網站）</a>｜🛒 <a href="'+UNIFORM.shop.url+'" target="_blank" rel="noopener">'+UNIFORM.shop.name+'</a>（'+UNIFORM.shop.tel+'）</div>'+
       '<p class="mut">'+UNIFORM.shop.rest+'</p>';
-    wrap.appendChild(App.block('🧣 旅巾點綁（巾圈・巾尾長度）',
-      '<div class="svg-steps"><figure>'+DIAGRAMS.uniform.scarf+
-      '<figcaption>捲巾直徑約 3.5cm、底至尖 12–15cm；巾圈收喺衣領尖，巾尾喺肚臍附近、唔可以超越皮帶扣</figcaption></figure></div>'));
+    wrap.appendChild(App.block('🧣 旅巾規格（照手冊 3.4，唔使睇圖）',
+      '<div class="card"><p>捲巾：由巾底捲向巾尖，捲好直徑約 <b>3.5cm</b>（與衣領高度相若）；巾底至巾尖約 <b>12–15cm</b>；巾圈套牢喺<b>衣領尖</b>位置；巾尖放<b>恤衫背後中央</b>；巾尾喺肚臍附近、<b>唔可以超越皮帶扣</b>；兩邊線條圖案對稱、長度相等。</p></div>'));
     wrap.appendChild(App.block('✅ 制服自查清單（每次集會前）', cl));
     return wrap;
   }
@@ -1401,135 +1345,48 @@ App.pages.play = function(){
 };
 
 /* 🪢 技能（深資版：唔係童軍版放大，係執委會／AYP／職涯／服務導向） */
+/* 🪢 技能頁（v42）：只收官方《深資童軍訓練綱要》第十一版「肩章（二）童軍技能」嘅四類要求。
+   用戶指示：童軍支部（Scout）嘅技能內容只作參考，唔准照抄入呢個 app。
+   教材本體喺每場教案嘅「照住講（教材）」，呢頁負責講清楚「考咩＋點準備＋去邊場」。 */
 App.pages.skills = function(sub){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🪢 技能'));
-  wrap.appendChild(App.h('p','lede','深資童軍（15–20歲，大學生為主）唔係學多幾個結就叫進階。呢度分兩層：<b>基礎戶外技能</b>（要識教細嘅）＋<b>深資核心技能</b>（執委會／策劃／服務／生涯）。除繩結只出口訣外，其他都附圖，可投屏教學。'));
-  var subs = [
-    {k:'rope',ic:'🪢',n:'繩結先鋒（指導）'},
-    {k:'care',ic:'🧵',n:'繩索保養管理'},
-    {k:'map',ic:'🧭',n:'地圖導航與山野安全'},
-    {k:'pack',ic:'🎒',n:'遠征裝備策劃'},
-    {k:'camp',ic:'🏕️',n:'營地管理與安全'},
-    {k:'pioneer',ic:'📐',n:'先鋒工程實踐'},
-    {k:'track',ic:'🎯',n:'戶外定向與應變'},
-    {k:'field',ic:'🌿',n:'無痕山林與永續'},
-    {k:'aid',ic:'🚑',n:'緊急救護與心理支援'},
-    {k:'lead',ic:'🧑‍🤝‍🧑',n:'領導執委會'},
-    {k:'plan',ic:'📋',n:'策劃風險'},
-    {k:'service',ic:'🤝',n:'服務社區'}
+  var SK = [
+    { k:'camp', ic:'🏕️', n:'露營（7 項）', badge:'s-skill-camp', lessons:['c15','c16'],
+      intro:'兩日一夜露營係肩章（二）嘅主考核場：策劃、分工、物資、營幕、爐具刀具、煮食、執包，全部要「做到＋講到」。' },
+    { k:'knot', ic:'🪢', n:'繩結（9 個）', badge:'s-skill-knot', lessons:['c13','c14'],
+      intro:'平結、接繩結、八字結、雙套結、稱人結、繫木結、四方編結、十字編結、八字編結。深資要求唔止識打，係識教＋識檢查＋識講用途同限制。' },
+    { k:'hike', ic:'🧭', n:'遠足（2 項）', badge:'s-skill-hike', lessons:['c11','c12'],
+      intro:'地圖與圖例（含本港地圖）、指南針運用與定向。進階嘅「深資童軍地圖閱讀訓練班／遠足訓練班」屬戶外探險段章前置，要經區／地域班報讀，唔係團內自己考。' },
+    { k:'aid', ic:'🩹', n:'急救（3 項）', badge:'s-skill-aid', lessons:['c10'],
+      intro:'急救目的與原則、出血與包紮、休克／復原臥式／燒燙傷／抽筋／扭傷。⚠️ 團內教學唔取代認可急救課程（社會服務段章選修(I) 要 30 小時課程證書）。' }
   ];
-  var cur = subs.some(function(x){return x.k===sub;}) ? sub : subs[0].k;
-  wrap.appendChild(App.subnav('skills',subs,cur));
-  var sk = DIAGRAMS.skillx || {};
-  function figFor(name, cap){
-    var k = (typeof SKILL_FIG!=='undefined' && SKILL_FIG[name]) ? SKILL_FIG[name] : '';
-    var fcap = (k && typeof FIGS!=='undefined' && FIGS[k] && FIGS[k].cap) ? FIGS[k].cap : cap;
-    return App.ph(k, fcap, sk[name] || '');
+  var subs = [{k:'all',ic:'📋',n:'四類總覽'}].concat(SK.map(function(x){return {k:x.k,ic:x.ic,n:x.n};}));
+  var cur = (sub && SK.some(function(x){return x.k===sub;})) ? sub : 'all';
+  wrap.appendChild(App.subnav('skills',subs,cur==='all'?'all':cur));
+  wrap.appendChild(App.h('p','lede','呢頁只列《深資童軍訓練綱要》<b>第十一版</b>「深資童軍肩章（二）童軍技能」嘅要求同準備路徑；<b>唔收錄童軍支部（Scout section）技能頁嘅內容</b>（舊版曾抄入先鋒工程、地面追蹤符號、郊野守則等，已刪除）。要教嘅知識全部喺每場教案嘅<b>📖 照住講（教材）</b>，呢度唔重複。'));
+
+  function badgeCard(bk){
+    var b = (typeof INTERESTS!=='undefined' && INTERESTS.byKey) ? INTERESTS.byKey[bk] : null;
+    if(!b) return '';
+    return '<div class="card"><h3>'+b.zh+'</h3>'+      '<h4>📋 官方要求（第十一版）</h4><ol class="req-list">'+b.req.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ol>'+      '<h4>💡 團內考核建議</h4><ul class="sug-list">'+b.suggest.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ul>'+      '<p class="source-note">查要求用<a href="#badges">🎖️ 獎章查閱</a>（只查不記）；出席／考核記錄用團內紀錄冊，本 app 唔做。</p></div>';
   }
-  var secs = {};
-  secs.rope = App.block('🪢 繩結（9個・文字口訣為準・深資要識教）',
-    '<div class="card"><p class="mut">深資唔係為自己打得快，係為教童軍＋檢查安全。考核時要講得出用途同檢查點。</p><ul class="bullet">'+C13.knots.concat(C14.knots).map(function(k){
-      return '<li><b>'+k.n+'</b>（'+k.en+'）：'+k.use+'<br><small>教學點：點樣示範？常見錯處？點樣檢查？</small></li>';
-    }).join('')+'</ul>'+
-    '<div class="callout warn">🚫 本app <b>唔設繩結逐步圖卡</b>——圖解好易畫錯。請跟 <a href="#plan/c13">c13</a>／<a href="#plan/c14">c14</a> 文字口訣（例：平結「左壓右、右壓左」、稱人結「兔仔出洞繞樹返洞」），由領袖現場示範＋檢查。深資考核要識教，唔係淨係識打。</div><p class="tip">💡 連結段章「自立」— 自我技能；連結金帶 — 探險組先鋒工程要用四方／十字／八字編結。</p></div>');
-  secs.care = App.block('🧵 繩索裝備保養與物資管理',
-    '<div class="card"><div class="callout ok-callout" style="margin-bottom:10px;"><b>深資定位（裝備管理責任）：</b>深資童軍日常集會不浪費時間反覆單純收繩，重點在於<strong>物資庫存安全監控</strong>、指導初級童軍維護繩索、以及探險遠征／先鋒工程後之繩索檢驗。</div>'+
-    '<p><b>圈繞收法：</b>'+C14.ropeCare.coil+'（深資要識教細、檢查受力及管理倉庫物資）</p>'+figFor('ropecare','收繩步驟＋保養五要點')+
-    '<ul class="bullet">'+C14.ropeCare.care.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul><p class="tip">💡 深資職責：執委會總務／器材員需定期檢查全團繩索與先鋒裝備，有起毛、斷絲、內部硬化即予報廢，記錄入物資登記表。</p></div>');
-  secs.map = App.block('🗺️ 地圖與指南針・由識睇到識教',
-    '<div class="card"><ul class="bullet">'+
-    '<li><b>比例尺 1:20,000</b>：地圖1cm=實際200米；圖上5cm=1公里（c11）。深資要識計時間：平路4km/h，上山每100m爬升加10分鐘。</li>'+
-    '<li><b>常用圖例</b>：行山徑／馬路／河流／橋／涼亭／廁所／士多／巴士站／村屋／廟／高度點／三角測量站；等高線密=斜、疏=平（c11）。</li>'+
-    '<li><b>8方位＋16方位</b>：深資要識16方位報方位角，配合AYP野外鍛鍊科。</li>'+
-    '<li><b>指南針＋GPS</b>：放平，紅針對N；避開鐵器／磁石／電話；正置地圖（c12）。深資要識用手機離線地圖作後備，但唔依賴，學識無電點算。</li>'+
-    '<li><b>風險評估</b>：出發前睇天氣、查山火、水位、封路；定撤退路線及集合點，執委會寫計劃書。</li></ul>'+
-    '<div class="svg-steps"><figure>'+DIAGRAMS.compass+'<figcaption>指南針八方位：紅針永遠指北（N）</figcaption></figure>'+figFor('legend','地圖圖例（示意）')+'</div><p class="tip">💡 遊戲：<a href="#play">城市定向追蹤</a>／<a href="#play">遠征策劃桌遊</a></p></div>');
-  secs.pack = App.block('🎒 遠征策劃與裝備（深資版・由跟隊到帶隊）',
-    '<div class="card"><ul class="bullet">'+
-    '<li><b>策劃五問＋風險</b>：邊度去？幾多人？幾耐？天氣點？撤退路線喺邊？保險？家長同意？— 執委會要寫計劃書＋風險評估表（參考AYP計劃書）。</li>'+
-    '<li><b>執包三步＋檢查</b>：輕重分佈（重貼背中上）→常用在外→防水（密實袋）。深資60L左右，唔超過體重1/4。執委會要做裝備檢查表：水、糧、雨衣、頭燈、哨子、電話＋尿袋、藥物、地圖指南針、急救包齊未？</li>'+
-    '<li><b>個人必備（大學版）</b>：水2L+、乾糧、雨衣、頭燈、哨子、電話＋尿袋＋power bank、個人藥物、地圖指南針、急救包、身份證、八達通。</li>'+
-    '<li><b>團隊裝備＋分工</b>：天幕、地布、爐具、後備糧、團急救包、對講機／哨子、垃圾袋（Leave No Trace）。每人負責一樣，唔好靠晒一個人。</li>'+
-    '<li><b>由學到教</b>：深資要識教童軍執包，唔係幫佢執；用「你做我睇、我做你睇、你做我唔睇」三步。</li></ul>'+
-    '<div class="svg-steps"><figure>'+DIAGRAMS.pack+'<figcaption>背囊分層圖：重貼背中上，常用放外，底放睡袋</figcaption></figure></div>'+
-    '<p class="tip">💡 教案：<a href="#plan/c15">c15露營策劃</a>有執包比賽＋路線卡；連結段章「探險」及金帶。</p></div>');
-  secs.camp = App.block('🏕️ 露營營地管理：由紮營到管營（深資版）',
-    '<div class="card"><ul class="bullet">'+
-    '<li><b>選址＋環評</b>：平地、排水好、離水源30米外、上風位生火；避開山坳／大樹下／落石位；考慮無痕山林，唔破壞植被。</li>'+
-    '<li><b>紮營流程＋檢查</b>：清地→地布→穿柱→起篷→45度拉營繩→打營釘；天幕先起，帳篷後起（c16）。執委會要做營地安全檢查：營釘有冇突出絆腳？營繩有冇螢光？</li>'+
-    '<li><b>爐具安全＋管理</b>：離帳篷3米＋通風＋唔離人；檢查漏氣（肥皂水）；熄火先關氣，氣罐唔曬太陽；設「爐區管理員」輪更。</li>'+
-    '<li><b>刀具安全＋教導</b>：安全圈一臂長、傳刀合埋柄向人、切嘢貓爪手、唔用即收鞘；未過測驗唔准掂刀；深資要識考童軍刀具。</li>'+
-    '<li><b>營地管理＋執委會</b>：廚房、睡房、廁所分區；垃圾分類帶走；熄燈後唔嘈；執委會編更表（康樂／總務／炊事／安全），用ecportal記錄。</li>'+
-    '<li><b>永續營地</b>：廚餘點處理？垃圾點減？污水點倒？連結永續發展挑戰遊戲。</li></ul>'+
-    '<div class="svg-steps">'+figFor('tent','搭帳六步（側視）')+figFor('stove','爐具3米安全圈（俯視）')+figFor('knife','小刀安全圈＝一臂長')+'</div></div>');
-  secs.pioneer = App.block('🪚 先鋒工程＋野外烹調＋無痕山林（深資項目管理）',
-    '<div class="card"><ul class="bullet">'+
-    '<li><b>無具野炊＋營養</b>：只給食材＋卡路里要求，自創菜單；分工：炊事、燃料、安全、清潔；600kcal/人為目標，留意過敏及宗教飲食。</li>'+
-    '<li><b>營養＋預算</b>：碳水＋蛋白＋菜，帶後備乾糧；要計預算，唔好超支。</li>'+
-    '<li><b>無痕山林7原則＋香港版</b>：計劃準備→硬地行露營→垃圾帶走→唔郁自然嘢→減營火影響→尊重野生動物→顧及其他人（c16）。香港加：唔好喺非指定地生火、唔好餵猴子。</li>'+
-    '<li><b>先鋒工程＝項目管理</b>：天幕、三腳架、營門、橋——用四方／十字／八字編結；要畫圖、計材料、計受力、分工、計時、安全檢查；搭高過頭要有人扶，戴頭盔手套。</li>'+
-    '<li><b>由做到教</b>：深資要識寫先鋒工程計劃書及風險評估，教童軍點解咁紮，唔係齋叫佢跟。</li></ul>'+
-    '<div class="svg-steps">'+figFor('pioneer','先鋒工程物料／安全距離示意')+'</div>'+
-    '<div class="callout">⚠️ 紮作同繩結一樣「畫錯就教錯」，圖解以現場示範＋教案文字為準；深資要識教細嘅，連結段章「活動」。</div></div>');
-  secs.track = App.block('🎯 戶外定向路標設計與野外應變求救',
-    '<div class="card"><div class="callout ok-callout" style="margin-bottom:10px;"><b>深資定位（策劃設計者而非低年級追蹤）：</b>深資童軍日常已具備地圖座標與數碼導航能力，單純地面石塊追蹤符號為幼童軍基礎技能。深資之應用在於<strong>為幼童軍／童軍支部設計城市定向追蹤任務</strong>，或在遠征通訊中斷時作為緊急撤退路標與求救通信。</div>'+
-    '<ul class="bullet">'+
-    '<li><b>設計路標符號</b>：<b>→ 箭嘴</b>（向前行）、<b>○ 圓圈</b>（集合/終點）、<b>✕ 交叉</b>（禁行/警示）、<b>↑ 轉彎</b>（改向）、<b>～ 波浪</b>（水險/留意障礙）、<b>△ 三角</b>（附近留有任務信封或資訊卡）。</li>'+
-    '<li><b>深資策劃原則</b>：設計城市或野外定向路線，必須遵守無痕山林（Leave No Trace），禁止在歷史古蹟、公共設施或私人產權上亂塗，活動結束必須由後隊全數撤除。</li>'+
-    '<li><b>野外求生信號與通訊應變</b>：國際山難求救（每分鐘 6 次哨音或閃光，停頓 1 分鐘後重複）、摩斯密碼 SOS（三短三長三短）、高反差反光鏡／色彩標記、地對空地面標誌，並善用離線衛星定位求救。</li></ul>'+
-    '<div class="svg-steps">'+
-    '<figure>'+DIAGRAMS.track.arrow+'<figcaption>向前行</figcaption></figure>'+
-    '<figure>'+DIAGRAMS.track.circle+'<figcaption>集合/終點</figcaption></figure>'+
-    '<figure>'+DIAGRAMS.track.cross+'<figcaption>唔行呢邊</figcaption></figure>'+
-    '<figure>'+DIAGRAMS.track.turn+'<figcaption>轉方向</figcaption></figure>'+
-    '<figure>'+DIAGRAMS.track.water+'<figcaption>有水/小心</figcaption></figure>'+
-    '<figure>'+DIAGRAMS.track.msg+'<figcaption>附近有訊息</figcaption></figure></div><p class="tip">💡 連結探險段章：如何結合地圖、座標與追蹤設計一個完整的跨支部大型定向活動？</p></div>');
-  secs.field = App.block('🌳 郊野守則・無痕山林・永續發展',
-    '<div class="card"><ul class="bullet">'+
-    '<li><b>Leave No Trace七原則＋香港版</b>：計劃準備→硬地行露營→垃圾帶走→唔郁自然嘢→減營火影響→尊重野生動物→顧及其他人（c16）。香港加：自己垃圾自己帶走、唔餵野生動物、唔行捷徑破壞植被。</li>'+
-    '<li><b>山火預防＋法律</b>：只喺指定爐位生火；離開淋熄攪拌感受冇熱；乾燥季節／紅旗日唔生火；郊野公園法例。</li>'+
-    '<li><b>天氣觀察＋決策</b>：黑雲／悶熱／風向轉＝落雨先兆；行雷閃電即落山，唔企大樹下／山脊；黃紅黑雨／三號風球以上自動取消戶外，執委會要識做決定。</li>'+
-    '<li><b>緊急撤退＋求救</b>：預先定撤退路線＋集合點；迷路S.T.O.P.（Sit, Think, Observe, Plan）＋吹哨6下／分鐘求救＋等救援（c12）。</li>'+
-    '<li><b>永續發展</b>：點樣喺活動減少碳足跡？自備餐具、公共交通、減少即棄、廚餘處理。連結世界童軍環境章。</li></ul>'+
-    '<div class="svg-steps">'+figFor('sos','SOS哨音節拍（三短三長三短）')+figFor('lost','迷路自保三步S.T.A.Y.')+'</div><p class="tip">💡 遊戲：<a href="#play">永續發展挑戰</a>／<a href="#play">社區需求地圖</a></p></div>');
-  secs.aid = App.block('🩹 急救＋心理急救（深資進階）',
-    '<p class="mut">口訣：<b>睇環境 → 嗌救命（999／112）→ 先救命 → 心理支援</b>；唔醒／流血唔止／骨折變形／大面積燒傷／過敏休克一律即送院。深資要學「判斷＋求救＋安撫」。</p>'+
-    C10.firstaid.map(function(f){ return App.aidCard(f.n, f.how, f.warn); }).join('')+
-    App.aidCard('復原臥式','唔醒但有呼吸：側臥，頭微向下、上膝屈前、上手放前面，防嘔吐物鯁親；轉身前後都要睇呼吸','有任何呼吸唔正常即打999＋準備心肺復甦（跟有急救證書嘅領袖做）')+
-    '<div class="card"><h3>🧠 心理急救（深資必修）</h3><ul class="bullet"><li><b>觀察</b>：留意隊友情緒變化（沉默、易怒、喊）。</li><li><b>聆聽</b>：唔打斷、唔評價、唔話「唔使驚」，用「我喺度陪你」「聽到你好擔心」。</li><li><b>連結</b>：問需要咩？水？休息？打畀屋企人？幫手聯絡領袖或專業支援。</li><li><b>唔做</b>：唔強迫講、唔承諾保密（Safe from Harm）、唔做輔導，只做支援及轉介。</li></ul><p class="mut">來源：Safe from Harm＋心理急救原則，敏感情況按青少年保護政策轉介。</p></div>'+
-    '<p>完整教學＋情境賽：<a href="#plan/c10">c10</a>；夜間情境：<a href="#play">急救夜間情境</a>；可列印急救卡：<a href="#print">✂️ 素材庫</a>。</p>');
-  secs.lead = App.block('🧑‍🤝‍🧑 領導與執委會制度（深資核心）',
-    '<div class="card"><p class="mut">深資童軍教育目標：自務自治，自立自強。唔係小隊制，係執委會制，團員大會選執委會，執委會管團務，領袖從旁指導。</p>'+
-    '<ul class="bullet">'+
-    '<li><b>執委會職位</b>：主席（主持＋對外＋統籌）、副主席（補位＋專責）、秘書（議程＋記錄＋文件）、司庫（團費＋預算＋核數）、康樂／總務（氣氛＋物資場地）— 職位由團員大會決定，唔係固定。</li>'+
-    '<li><b>會議程序5步</b>：會前準備（議程＋資料）→ 開始（點名＋通過上次記錄）→ 討論（每議題：背景→方案→風險→決議）→ 分工（邊個做咩幾時完成）→ 散會（下次時間＋記錄）。</li>'+
-    '<li><b>民主議事</b>：少數服從多數，多數尊重少數；決議要記錄，唔係口講；主席要中立，唔好帶風向。</li>'+
-    '<li><b>領導3大職責</b>：做事（策劃執行跟進）、開會（主持／參與）、帶頭（自己做到先叫人做）。執委唔係官，係做嘢，做得差下次冇人選你。</li>'+
-    '<li><b>常見陷阱</b>：主席一言堂、秘書唔記分工、司庫冇預留後備、康樂只識玩唔識收、總務唔檢查裝備。</li></ul>'+
-    '<p class="tip">💡 遊戲：<a href="#play">執委會急案</a>／<a href="#play">衝突調解角色扮演</a>／<a href="#play">60秒電梯演講</a>；工具：<a href="#book/tools">集會工具</a>計分板／分組可投屏。</p><p class="tip">💡 表格：<a href="#book/exec">執委會會議記錄表</a>可列印；iPad直接填，用ecportal管理。</p></div>');
-  secs.plan = App.block('📋 活動策劃與風險管理（深資策劃）',
-    '<div class="card"><ul class="bullet">'+
-    '<li><b>策劃六格</b>：目標（SMART）／對象／流程／預算／風險／評估。深資計劃書唔係得個流程，要有數據及後備。</li>'+
-    '<li><b>風險評估四步</b>：辨識風險（天氣／地形／人手／裝備）→ 評估可能性及嚴重性 → 控制措施（避開／減低／轉移／接受）→ 記錄及覆檢。參考AYP計劃書及總會風險評估表。</li>'+
-    '<li><b>預算管理</b>：收入（團費／資助）／支出（交通／營費／食物／保險／後備10%）／結餘；用ecportal記帳，公開透明，團員大會報告。</li>'+
-    '<li><b>時間管理＋艾森豪</b>：緊急重要四象限，學識講不，唔好咩都攬上身。</li>'+
-    '<li><b>溝通與提案</b>：60秒電梯演講、會議記錄、WhatsApp群組管理、家長通知點寫（<a href="#plan">集會通知範例</a>）。</li>'+
-    '<li><b>評估與反思</b>：活動後檢討：做得好／做得差／下次點改？用「欣賞＋建議」方式，唔人身攻擊。</li></ul>'+
-    '<p class="tip">💡 遊戲：<a href="#play">預算大作戰</a>／<a href="#play">遠征策劃桌遊</a>／<a href="#play">期望拍賣會</a>；連結段章「責任」及「活動」。</p></div>');
-  secs.service = App.block('🤝 服務與社區參與（深資服務）',
-    '<div class="card"><ul class="bullet">'+
-    '<li><b>服務唔係為做而做</b>：先做社區需求評估（<a href="#play">社區需求地圖</a>），問社區想要咩，唔係我覺得佢需要。</li>'+
-    '<li><b>服務策劃五步</b>：需求評估 → 定目標 → 聯絡持份者（社福機構／學校／區議會）→ 執行 → 評估成效（人數／回饋／改變）。</li>'+
-    '<li><b>服務類型（大學版）</b>：長者數碼共融（教手機）、環境保育（淨灘／種樹）、青少年支援（功課輔導）、社區營造（社區地圖）、國際服務（海外交流）。</li>'+
-    '<li><b>AYP服務科</b>：銅章6個月／銀章6個月／金章12個月，每月至少1小時，要有導師簽名及反思，連結vsbadge。</li>'+
-    '<li><b>世界童軍環境章／社區參與章</b>：完成指定時數及項目，可佩戴在右袖地域區章下（按你提供第四章原文）。</li>'+
-    '<li><b>永續服務</b>：點樣令服務持續？培訓接班人、寫手冊、建立社區關係，唔係一次性。</li></ul>'+
-    '<p class="tip">💡 遊戲：<a href="#play">社區需求地圖</a>／<a href="#play">服務提案路演</a>／<a href="#play">永續發展挑戰</a>；連結段章「責任」及「自立」。</p></div>');
-  wrap.appendChild(secs[cur]);
+  function lessonLinks(arr){
+    return arr.map(function(x){ return '<a class="tag meet" href="#plan/'+x+'">📅 '+x+'（含教材）</a>'; }).join(' ');
+  }
+  if(cur==='all'){
+    SK.forEach(function(x){
+      wrap.appendChild(App.block(x.ic+' '+x.n, '<div class="card"><p>'+x.intro+'</p>'+        '<p>'+lessonLinks(x.lessons)+'</p></div>'+badgeCard(x.badge), {id:'sk-'+x.k}));
+    });
+    wrap.appendChild(App.block('🎨 考完肩章之後（段章層級・只列方向）',
+      '<div class="card"><ul class="bullet">'+      '<li><b>活動策劃</b>：區／地域／總會認許之「深資童軍執行委員會工作坊」；金帶需實踐一項活動策劃（可含外宿五日四夜，與香港青年獎勵計劃團體生活科銜接）。準備：<a href="#plan/c07">c07</a>、<a href="#plan/c08">c08</a>、<a href="#plan/c09">c09</a>。</li>'+      '<li><b>社會服務</b>：選修(I) 30 小時急救證書或拯溺銅章；選修(II) 消防／拯溺(II)／手語（20 小時以上）／精神健康急救／SOUL Keeper Level 2／共融大使。金帶為童軍及社區服務、6 個月 52 小時志願服務或寰宇童軍計劃（三選一）。準備：<a href="#plan/c09">c09</a>。</li>'+      '<li><b>多元技能</b>：範疇一「童軍技能」（原野生活、先鋒工程知識與技巧、露營技藝及營務、先鋒工程實踐）、範疇二「康樂及體育」、範疇三「新體驗」（需兩項不同类型）。⚠️ 各範疇項數與細則以第十一版原文為準，本 app 唔憑記憶填。</li>'+      '<li><b>戶外探險</b>：前置為「深資童軍地圖閱讀訓練班／考驗」＋「深資童軍遠足訓練班」，其後為戶外探險項目；金帶例子（舊版編號）為陸上徒步遠足。準備：<a href="#plan/c11">c11</a>、<a href="#plan/c12">c12</a>、<a href="#plan/c15">c15</a>。</li>'+      '</ul><p class="mut">過渡期提醒：2026-08-15 前宣誓者有三年選擇期（至 2029-08-14）；段章名稱由「自立／責任／活動／探險」改為「活動策劃／社會服務／多元技能／戶外探險」，見<a href="#badges">獎章查閱・第十版對照</a>。</p></div>', {id:'sk-next'}));
+    return wrap;
+  }
+  var x = SK.filter(function(y){return y.k===cur;})[0];
+  wrap.appendChild(App.block(x.ic+' '+x.n, '<div class="card"><p>'+x.intro+'</p><p>'+lessonLinks(x.lessons)+'</p></div>'+badgeCard(x.badge), {id:'sk-'+x.k, print:true}));
+  wrap.appendChild(App.h('div','callout','⚠️ 安全紅線（四類通用）：刀具／爐具／火源須有持委任書領袖在場；夜間與水域活動最少三人同行；任何「疑似真傷患」即時停止練習。急救、繩結承重、野外炊煮唔准靠 app 自學上場——要由合資格人士教。'));
   return wrap;
 };
-
 
 /* 🎖️ 興趣章章樣：用官方圖（img/badge/*.avif）；冇圖／load 唔到就出文字章名，唔會用 emoji 代替 */
 App.badgeFig = function(k){
