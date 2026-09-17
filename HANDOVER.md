@@ -954,3 +954,56 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 - `sw.js` CACHE → `scout-v47-nofillerimg-20260917`；README 同步。
 - `npm test` 全綠。
 - 目前 `img/fig/` 總容量降返去 856KB（遠低於 1.2MB 上限，之後如果有真正需要嘅圖解隨時可以加）。
+
+## 40. v48：集會分頁精簡（16→5）＋國旗區旗官方圖連結＋修正插圖誤配（2026-09-18）
+
+用戶提出兩點：(1) 集會目錄每場最多有 14 個分頁掣，太散；(2) 部分本應用圖解釋嘅內容（國旗／區旗官方圖案、升旗／宣誓／隊列位置）冇圖，仲要靠成段文字講。
+
+### 改動 1：`App.renderMeeting` 分頁由「每個資料欄一個掣」改做 5 組合併掣
+舊做法：`leaderPrep`／`script`／TEACH／`program`／`bag`／`personalKit`／`notice`／`worksheet`／`pledgeCard`／`roles`／`items`／`observation`／`postCeremony`／`practical`／`scenarios`／`trivia`／`safety` 呢 17 個資料欄，每個有值就開一個獨立分頁掣（`anchors` 陣列逐項 push），令 c16 呢類欄位齊全嘅場次有 14 個掣。
+
+新做法：合併做 5 組（有值先開，`-paper`／`-follow` 兩組冇資料就唔開）：
+- `{tid}-flow`　📖 教材＋帶流程：`leaderPrep` ＋ `script`（開場白）＋ TEACH 全部教材段落 ＋ 程序表（`program`）——最大、內容最多嗰組。
+- `{tid}-pack`　🎒 執袋＋通知：`bag`（執袋清單）＋ `personalKit`（如有）＋ `notice`（家長通知單）。
+- `{tid}-paper`　📝 紙本工具（條件式）：`worksheet`／`pledgeCard`／`roles`／`items` 有任何一項先開。
+- `{tid}-follow`　👀 觀察＋跟進（條件式）：`observation`／`postCeremony` 有任何一項先開。
+- `{tid}-back`　🆘 後備＋安全：`practical`（後備教材）＋ `scenarios`（情境題）＋ `trivia`（小知識）＋ `safety`（安全提示）——固定存在。
+
+每場分頁掣數由舊時 9–14 個降到 3–5 個（c16 最多，5 個）。`anchors` 陣列同其 17 個 push 呼叫已刪走；分頁掣改由掃描實際 render 咗嘅 `.sec` 元素、由 `data-title` 開首 emoji 用 regex 抽 icon＋名。
+
+**加碼**：合併咗嘅程序表入面，任何一行標題夾中 `/儀式|升旗|隊列|宣誓|步操|敬禮/` 就自動加一句連結去 `#ceremony/{key}`（`key` 按標題判斷係 flag／oath／footdrill／close／open），畀 c01/c16 呢類冇獨立 TEACH 段落但流程表有寫儀式嘅場次都連到儀式卡圖解版。
+
+**冇改**：頂層 5-top/5-bottom nav（`#topnav`／`#tabbar`）——今次淨係處理每場入面嘅子分頁。
+
+驗證：`npm test`（`tests/smoke.mjs` ＋ `tests/runtime.mjs`）248 項全部 PASS，包括本身寫死斷言「c16 每節一個分頁掣（5 版）」「撳第 3 個掣 → 只換成第 3 版（c16-paper）」——`tests/runtime.mjs` 原來就係動態掃描實際 render 出嚟嘅分頁數／id，唔係寫死舊有 14 個分頁嘅假設，所以測試檔完全冇改都照樣反映新結構。
+
+### 改動 2：國旗／國徽／區旗／區徽官方圖案連結（c03）
+確認 app 入面從來冇一張畫緖國旗／國徽／區旗／區徽設計嘅圖（只有 `cer.flag` 呢張升旗**位置**示意圖，唔係旗嘅設計本身）。國旗國徽區旗區徽屬於法定圖案（受《國旗及國徽條例》《區旗及區徽條例》規管），唔可以自己畫或者 AI 生成——同制服圖一樣，一律連去官方原圖：
+- `TEACH.c03[0]`（國旗段）加 `note`：連去 **政府總部禮賓處**官方頁 `protocol.gov.hk/tc/flags-emblems-anthem.html`（頁內有官方國旗／國徽下載連結，並連去 gov.cn 嘅網絡標準版本）。
+- `TEACH.c03[1]`（區旗區徽段）加 `note`：同一個官方連結，並提示「紫荊花喺正中央（唔係左上角）」呢個對比重點——用官方圖對一次，比讀文字快。
+
+`b.note` 本身已經係 `App.renderMeeting` 用 `innerHTML` 直接輸出（`js/app.js` 555 行 `if(b.note) H += '<p class="mut">'+b.note+'</p>';`），所以 `note` 入面寫嘅 `<a href>` 連結會直接生效，唔使加新欄位。
+
+### 改動 3：儀式圖解接駁去 c02／c05／c06 TEACH（本身已存在但一直冇用嘅 `cer.*` 圖）
+`js/dia.js` 嘅 `cer.formup`／`cer.flag`／`cer.oath`（升旗位置圖、宣誓位置圖、集隊隊形圖）一直得儀式頁（`#ceremony/*`）用到，教案（TEACH）入面對應段落一直冇顯示。已加 `dgm:` 手動指定欄位接駁：
+- `TEACH.c02`「中式隊列基本動作」→ `dgm:'cer.formup'`
+- `TEACH.c05`「升國旗及童軍升旗禮」→ `dgm:'cer.flag'`
+- `TEACH.c06`「宣誓儀式程序」→ `dgm:'cer.oath'`
+
+同時修正 `App.renderMeeting` 嘅圖解揀選次序 bug：舊代碼一見到 `b.dgm` 就照樣行自動關鍵字配對（`App.teachFigFor`），如果自動配中一個 `FIGS` 圖，會蓋過作者手動指定嘅 `dgm`（實測：c05 升旗段落嘅「隊形」二字自動配中 `game-lineup`，蓋走咗手動指定嘅 `cer.flag`）。已改做：`b.fig` → `b.dgm`（兩者皆手動優先，唔會被自動配對蓋過）→ 冇手動先自動配 `fig` → 再自動配 `dgm`。
+
+### 改動 4：修正 3 組插圖自動配對誤配（`App.teachFigFor`／`App.teachDgmFor` 關鍵字順序＋範圍問題）
+逐場走一次全部 TEACH 段落嘅自動配圖結果，揪出 3 組錯配（用文字提及某字眼、但主題完全唔係嗰張圖）：
+1. **c11「遠足地圖點睇」** 曾被行文入面「營地關閉」「4cm」等字眼誤中 `skill-tent`（帳篷圖）／`skill-rice`（RICE 扭傷圖）；正確應該係 `skill-legend`（地圖圖例圖）。修法：`skill-legend` 關鍵字組移到 `figMap` 最前面，優先於 `skill-tent`／`skill-rice`。
+2. **c13「平結」** 因為內文寫「用嚟包紮同執袋」被誤中 `skill-pack`（背囊圖，同繩結完全無關）；已將 `執包` 關鍵字收窄做唔再夾雜喺其他技能敘述入面順帶一提嘅情況（改用更精準嘅詞組，唔再用單字「執袋」）。
+3. **c06「保護兒童」** 因為內文提到「露營帳篷」（作為要避免單獨相處嘅場景例子之一）被誤中 `skill-tent`（帳篷搭法圖，同保護兒童政策完全無關）；已將 `帳篷` 單一名詞收窄做「搭帳篷／搭營／紮營」等動詞片語，唔再匹配單純提及「帳篷」呢個名詞嘅句子。
+4. **c07 獎章路／執委會段落** 因為「戶外探險＝指南針象徵」「定向」等字眼被誤中指南針八方位圖（`compass`）；已將 `App.teachDgmFor` 嘅「定向」單字收窄做「定向術語」等更完整片語，避免夾中活動列表入面提到「定向」（活動名）嘅句子。
+5. **c14「繩索保養」** 曾被「氣爐」關鍵字組行喺 `skill-ropecare` 之前而誤中 `skill-tent`；已將 `skill-ropecare` 移到 `skill-pack`／`skill-tent` 之前。
+
+呢啲修正純粹係揀圖邏輯（`js/app.js` 嘅 `App.teachFigFor`／`App.teachDgmFor`），冇改任何 `FIGS`／`IMG.map` 資料，亦冇新增圖片檔案。逐場覆核後最終配圖結果全部人手核對過主題相符。
+
+### 版本＋測試
+- 改動檔案：`js/app.js`（`App.renderMeeting` 分頁邏輯重寫、`App.teachFigFor`／`App.teachDgmFor` 關鍵字順序修正、圖解揀選優先序修正）、`js/teach.js`（c02/c03/c05/c06 加 `note`／`dgm` 欄位）。
+- 冇新增圖片檔案；`img/fig/` 維持 856KB（1.2MB 上限內）。
+- `sw.js` CACHE → `scout-v48-tabsimg-20260918`；README.md 4 處同步。
+- `npm test`（smoke＋runtime）248 項全綠。
