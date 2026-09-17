@@ -13,7 +13,7 @@
 - **App 文案只講用戶需要知嘅事**：清走「（外部工具）」「零賭注…一律唔收錄」「本 app 已刪除過往自創內容」「原書已分割成 8 份」一類交代式字句；圖說只留設場／安全／出處（例：「曳木結打法見 c14 教案」）。
 - **手冊分章標籤按官方目錄重編**：步操手冊 8 份＋制服手冊 8 份標籤逐一對返目錄頁碼，寫入儀式頁及制服頁官方檔清單。
 - 驗證：`npm test` 全綠（smoke＋runtime）；jsdom 走過 29 條路由零 console error；互動工具 4 張卡綠框 HTML 收口修正。
-- PWA cache：`scout-v47-trimlede-20260917`。
+- PWA cache：`scout-v47-nofillerimg-20260917`。
 
 ## ✅ v43 進度（2026-09-17：用家 6 項投訴一次過還）
 
@@ -23,7 +23,7 @@
 - **儀式改正（深資＝無小隊・無家長接送）**：集隊以**全團**為單位（照《步操手冊》第六章），要分工只用執委會臨時工作小組；散會自行離開，冇「等家長接」環節。儀式卡＋c04／c05／c06／c16 逐句清。
 - **教材列點化＋自動配圖**：TEACH 每段改列點（要點／步驟／示範／檢查），長原文收 <details>；自動配圖 17 張（急救・繩結・地圖・露營・先鋒・場地），冇現成圖就出平面示意圖。
 - 驗證：jsdom 走過 29 條路由（零 undefined／零 console error）＋5 個互動工具逐個行完整流程（發牌／翻牌／要牌結算／骰子／轉盤）；手冊分割檔逐份核對頁碼範圍，標籤寫入儀式頁同制服頁官方檔清單。
-- PWA cache：`scout-v47-trimlede-20260917`。
+- PWA cache：`scout-v47-nofillerimg-20260917`。
 
 ## ✅ v41 進度（深資童軍版：16 場＋8 套儀式卡＋獎章查閱＋AYP＋手冊AYP指南＋頂欄直連）
 
@@ -36,7 +36,7 @@
 - **手冊 AYP 領袖指南**：新領袖必修——什麼是 AYP＋團員點參加＋領袖點參與＋旅團點成立執行處支部（表格 AYP/10 交地域）。
 - **頂欄直連**：📚 通告圖書館＋🌟 AYP 接駁指南＋⬆️ 升團準備指南（姊妹 app，領袖可直接分享畀團員）；深資唔用專章系統。
 - **集會工具**：分組計分板（2–8 組可加減）／抽籤／倒數／隨機分組，全部有得投屏；每節「🖥️ 投屏」＋「🖨️ 只印本節」。
-- PWA cache：`scout-v47-trimlede-20260917`。
+- PWA cache：`scout-v47-nofillerimg-20260917`。
 
 ## 10 個分頁狀態
 
@@ -85,7 +85,7 @@
 ## 技術
 
 - 純靜態 HTML/CSS/vanilla JS，無 build
-- PWA：Service Worker `scout-v47-trimlede-20260917`（逐檔 add，缺圖唔會拖冧核心預緩存）
+- PWA：Service Worker `scout-v47-nofillerimg-20260917`（逐檔 add，缺圖唔會拖冧核心預緩存）
 - 示意圖片：`img/fig/*.avif`（AVIF，36 張約 1.2MB）；資料喺 `js/figs.js`（遊戲名→`GAME_FIG`、技能→`SKILL_FIG`、急救→`AID_FIG`）。`game-chairs.avif` 係 CC BY-SA 網上相片轉檔，來源見 `img/fig/SOURCES.md`。
 - 圖解（全部 AVIF、**前端零 SVG**）：`img/dia/*.avif`＋`js/dia.js`（`IMG.map` 對照表＋自動砌 `DIAGRAMS.*`，每個 key 出 `<img>`）；手繪 SVG 底稿只留喺 `assets_src/diasvg/`（build-only，唔會下載）。圖載唔到就出 alt 文字（`IMG.fallback`），唔會退回 SVG。
 - 深資制服服式圖唔本地存檔：制服頁連去香港童軍總會官網深資童軍頁原圖（永遠最新）；`img/uni/` 舊圖已唔再預緩存。

@@ -1,4 +1,4 @@
-var CACHE = "scout-v47-trimlede-20260917";
+var CACHE = "scout-v47-nofillerimg-20260917";
 var ASSETS = [
   "./", "./index.html", "./manifest.webmanifest", "./css/app.css",
   "./js/data.js", "./js/teach.js", "./js/teach2.js", "./js/interests.js", "./js/ceremony.js", "./js/uniform.js", "./js/dia.js", "./js/ayp.js",
@@ -17,9 +17,6 @@ var ASSETS = [
   "./img/fig/skill-pack.avif",
   "./img/fig/aid-nosebleed.avif", "./img/fig/aid-cramp.avif", "./img/fig/aid-burn.avif", "./img/fig/aid-cut.avif", "./img/fig/aid-sting.avif",
   "./img/fig/skill-compass.avif", "./img/fig/skill-faint.avif",
-  "./img/fig/act-service-day.avif", "./img/fig/act-needs-visit.avif", "./img/fig/act-city-orienteering.avif",
-  "./img/fig/act-night-hike.avif", "./img/fig/act-water-bike.avif", "./img/fig/act-exco-workshop.avif",
-  "./img/fig/act-project-plan.avif", "./img/fig/act-guest-speaker.avif", "./img/fig/act-exchange-day.avif",
   "./js/c01-lesson.js", "./js/c02-lesson.js", "./js/c03-lesson.js", "./js/c04-lesson.js", "./js/c05-lesson.js", "./js/c06-lesson.js", "./js/c07-lesson.js", "./js/c08-lesson.js", "./js/c09-lesson.js", "./js/c10-lesson.js", "./js/c11-lesson.js", "./js/c12-lesson.js", "./js/c13-lesson.js", "./js/c14-lesson.js", "./js/c15-lesson.js", "./js/c16-lesson.js", "./js/app.js",
   "./img/dia/cer-close.avif",
   "./img/dia/cer-flag.avif",
