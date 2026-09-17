@@ -166,7 +166,7 @@ for (const m of DATA.meetings) {
   const st = sb.MiniGame.spyState;
   ok(!!st.pair.civil && !!st.pair.spy && st.pair.civil !== st.pair.spy, '誰是臥底抽詞：平民詞／臥底詞成對且唔同');
   ok(sb.MiniGame.spyClockText(180) === '03:00' && sb.MiniGame.spyClockText(65) === '01:05', '誰是臥底發言計時格式（mm:ss）');
-  ok(sb.MiniGame.spyRules.length === 4, '誰是臥底玩法列點（4 條）');
+  ok(sb.MiniGame.spyRules.length === 3, '誰是臥底玩法列點（3 條）');
   const gamesP = App.printPanel('games');
   const gCards = gamesP.querySelectorAll('.game-card');
   ok(gCards.length === sb.DATA.games.length, '集會遊戲卡分頁有 ' + gCards.length + ' 個遊戲（有玩法／物資／安全）');

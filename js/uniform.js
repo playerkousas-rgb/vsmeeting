@@ -150,7 +150,7 @@ UNIFORM.types = [
   }
 ];
 
-// 徽章佩戴位置（按《儀容與制服手冊》第 4.6／4.7 節；深資童軍 p170 圖＋你新提供第四章原文；本 app 服務深資童軍支部 15–20 歲）
+// 徽章佩戴位置（按《儀容與制服手冊》第 4.6／4.7 節；深資童軍 p170 圖＋第四章原文；本 app 服務深資童軍支部 15–20 歲）
 UNIFORM.placement = {
   source: '《儀容與制服手冊》3.2–3.3 基本徽章＋帽章、4.6 袋蓋上方、4.7 深資童軍（包括海／空）佩戴圖（p170）＋飛行／跳傘／社區參與／環境／AYP／拯溺／服務年星原文（第三章 2026.01.01 修訂）',
   hint: '袋蓋上方 3cm＝上層、2cm＝中層、袋蓋上方＝下層、袋中央＝進度性獎章。一層最多兩個章並行，排序前者在左。圖上 ①–⑨ 對返下面表。',
@@ -213,7 +213,7 @@ UNIFORM.shop = {
   tel: '2957 6444',
   email: 'scoutshop@scout.org.hk',
   rule: '按《儀容與制服手冊》3.1：制服配件（部份鞋襪及附加配件除外）以童軍物品供應社所供應者為標準。',
-  rest: '手冊 3.7「制服毛衣」、3.8「附加配件」本 app 唔詳列——用品款式、尺碼、價錢同供應情況會變，有需要請到童軍物品供應社查詢／購買。'
+  rest: '手冊 3.7「制服毛衣」、3.8「附加配件」有詳細規定；用品款式、尺碼、價錢同供應情況會變，有需要請到童軍物品供應社查詢／購買。'
 };
 
 // 領巾、巾圈、領帶（《儀容與制服手冊》3.4；第三章 2026.01.01 修訂）
@@ -293,7 +293,7 @@ UNIFORM.beltSocks = {
     { n:'皮鞋－非綁帶中跟', d:'女性成員穿半截裙時穿著。黑色、無花紋、非綁帶、中跟，簡潔款式，鞋跟不可超過 5cm，不可涼鞋、露跟或露趾。' },
     { n:'襪－黑色短襪', d:'童軍成員（小童軍及幼童軍除外）穿長褲時穿著。純黑色、無花紋、長度須覆蓋腳踝。' },
     { n:'襪－肉色尼龍無花襪褲', d:'女性成員穿半截裙及晚禮服時穿著。肉色、尼龍、無花紋。' },
-    { n:'襪－長襪（對照）', d:'深草青色長襪：童軍（海／空除外）穿短褲／裙褲；深藍色長襪：海童軍／空童軍穿短褲／裙褲。深資支部而家長褲為主，唔常用，但舊制對照用。' }
+    { n:'襪－長襪（對照）', d:'深草青色長襪：童軍（海／空除外）穿短褲／裙褲；深藍色長襪：海童軍／空童軍穿短褲／裙褲。深資支部以長褲為主，唔常用，但舊制對照用。' }
   ]
 };
 
@@ -392,16 +392,19 @@ if (typeof module !== 'undefined' && module.exports) module.exports = UNIFORM;
 /* ══════════ v42 新增：官方檔連結＋照原文嘅佩戴位置表（唔用自己畫圖）══════════
  * 用戶指正：app 內自製嘅「制服圖／章位疊加圖」唔係《儀容與制服手冊》的圖，而且有啲制服畫錯。
  * 處理：1) 移除所有 AI 繪畫嘅制服圖（img/uni/*.avif、DIAGRAMS.uniform.* 不再喺 UI 使用）；
- *       2) 位置一律照《儀容與制服手冊》原文＋頁碼；3) 官方檔（團友提供嘅 Drive PDF）連結俾人自己對圖。
+ *       2) 位置一律照《儀容與制服手冊》原文＋頁碼；3) 官方 PDF 連結俾人自己對圖。
  */
 UNIFORM.official = {
-  note:'想睇「圖」請開以下官方檔：手冊本身有佩戴插圖（本 app 唔再自製插圖，避免畫錯教錯）。式樣如有更新，以總會網頁及最新通告為準。',
+  note:'佩戴插圖請開以下官方檔；式樣如有更新，以總會網頁及最新通告為準。',
   docs:[
-    { n:'《儀容與制服手冊》第三章 3.1–3.6（制服配件・基本徽章・制服帽・領巾領帶・皮帶皮鞋襪）', u:'https://drive.google.com/file/d/1JrvWJmS5Uj6IC2EPNRH5v1YN5GSEQYLz/view?usp=drive_link' },
-    { n:'《儀容與制服手冊》第三章 3.7–3.8（毛衣・附加配件）／第四章 4.1–4.3（標誌・徽章）', u:'https://drive.google.com/file/d/1sgh0wjcr9fAaxbltfQE-uluOjNym4pIB/view?usp=drive_link' },
-    { n:'《儀容與制服手冊》第四章 4.4–4.7（其他・勳章・袋蓋上下層・佩戴位置總圖）＋第五章', u:'https://drive.google.com/file/d/12m8doAX3uZEGZ81Mvf6Fp2Dj_X7X6wwA/view?usp=sharing' },
-    { n:'《儀容與制服手冊》第二章後半（成年成員制服編號 2–6・戶外活動服裝・稱身尺寸標準）', u:'https://drive.google.com/file/d/1OenclJV7cifLmknCHDjCIhEOSzu5k1w_/view?usp=drive_link' },
-    { n:'《儀容與制服手冊》第二章前半（深資童軍陸／海／空制服・領帶制服・男／女團員服式）', u:'https://drive.google.com/file/d/1BqIREqz8JarW1WbDScXLBnQzr9KvPOnQ/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》1–30 頁：詞彙・序言・第一章 儀容・第二章 2.1 青少年成員制服', u:'https://drive.google.com/file/d/1rjD6MvA01eWUVU4b4qf9uSFYczXGMqY5/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》31–60 頁：第二章（幼童軍／童軍／深資童軍制服・深資領帶制服・女性長褲制服・成年成員制服）', u:'https://drive.google.com/file/d/1BqIREqz8JarW1WbDScXLBnQzr9KvPOnQ/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》61–90 頁：第二章後半（成年成員制服編號 2–6・領袖訓練班制服・戶外活動服裝・稱身尺寸）', u:'https://drive.google.com/file/d/1OenclJV7cifLmknCHDjCIhEOSzu5k1w_/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》91–120 頁：第三章 3.1–3.6（制服配件・基本徽章・制服帽・領巾領帶・皮帶皮鞋襪）', u:'https://drive.google.com/file/d/1JrvWJmS5Uj6IC2EPNRH5v1YN5GSEQYLz/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》121–150 頁：第三章 3.7–3.8（毛衣・附加配件）／第四章 4.1–4.3（標誌・徽章）', u:'https://drive.google.com/file/d/1sgh0wjcr9fAaxbltfQE-uluOjNym4pIB/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》151–180 頁：第四章 4.4–4.7（其他・勳章・袋蓋上下層・佩戴位置總圖）＋第五章', u:'https://drive.google.com/file/d/12m8doAX3uZEGZ81Mvf6Fp2Dj_X7X6wwA/view?usp=sharing' },
+    { n:'《儀容與制服手冊》181–210 頁：第五章後半（勳章佩戴方法・等級名單）＋第六章 6.1–6.2（禮服／晚禮服款式）', u:'https://drive.google.com/file/d/1sHG952U73znOwhSnZzoRpO1oSm_xZONG/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》211–224 頁：第六章 6.3–6.5（黑色硬帽・供應及訂製資料・常用項目索引）', u:'https://drive.google.com/file/d/10iW2mv4V9s95azJ57v8drOja_n4o3Y7y/view?usp=drive_link' },
     { n:'總會網頁：深資童軍制服（官方照片）', u:'https://www.scout.org.hk/tc/youth-members/venture-scouts/index.html?sid=2' },
     { n:'2023 年第 13 號通告（支部成員徽章佩戴指引）', u:'https://www.scout.org.hk/uploads/tc/circulars/11057/p013-23.pdf' },
     { n:'《隊列和升掛國旗及區旗指引》（制服與禮儀相關）', u:'https://www.scout.org.hk/uploads/tc/circulars/16450/guidelines-of-chinese-foot-drill-and-national-flag-and-regional-flag-raising.pdf' }

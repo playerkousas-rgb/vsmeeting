@@ -65,7 +65,7 @@ const ceremonySrc = readFileSync(root + 'js/ceremony.js','utf8');
   if (!ceremonySrc.includes(c)) { console.error('❌ 儀式卡缺少', c); process.exit(1); }
 });
 if (ceremonySrc.includes("k:'howl'") || /n:'[^']*團呼/.test(ceremonySrc)) { console.error('❌ 儀式卡仲有團呼（深資集會唔設）'); process.exit(1); }
-if (!ceremonySrc.includes('唔設童軍團呼')) { console.error('❌ 儀式卡冇講明深資唔設團呼'); process.exit(1); }
+if (!/唔設團呼/.test(ceremonySrc)) { console.error('❌ 儀式卡冇講明深資唔設團呼'); process.exit(1); }
 if ((ceremonySrc.match(/fig:'/g)||[]).length < 6) { console.error('❌ 儀式卡 fig 圖解欄不足 6 套'); process.exit(1); }
 console.log('✅ 7 套儀式卡存在（6 套附 AVIF 插畫＋1 套手繪平面圖解）');
 
@@ -843,7 +843,9 @@ for (const k of Object.keys(FIGSJ).filter(x=>x.indexOf('game-')===0)) {
   if (/帽章|領巾|布章|巾圈|旅巾|制服|團員|童軍帽/.test(f.alt)) { console.error('❌ '+k+' alt 描述咗制服／身份：', f.alt); process.exit(1); }
   if (/平結|稱人結|八[字字]結|水手結/.test(f.alt)) { console.error('❌ '+k+' alt 畫咗繩結打法（禁止）'); process.exit(1); }
 }
-if (!/唔出繩結逐步圖/.test(FIGSJ['game-relay-cards'].cap) || !/唔出結圖/.test(FIGSJ['game-tug'].cap)) { console.error('❌ 繩結相關遊戲冇寫明「唔出結圖」'); process.exit(1); }
+/* 繩結相關遊戲：圖只畫場地／道具，唔畫打法（玩法指去 c13／c14 教案） */
+if (/平結|稱人結|八字結|雙套結/.test(FIGSJ['game-tug'].cap) || !/c14/.test(FIGSJ['game-tug'].cap)) { console.error('❌ 曳木結遊戲圖 cap 唔啱（唔准畫打法，要指去 c14 教案）'); process.exit(1); }
+if (!/c13/.test(FIGSJ['game-relay-cards'].cap)) { console.error('❌ 結繩接力圖 cap 唔啱（要指去 c13 教案）'); process.exit(1); }
 if (!/絕對唔准衝向海邊/.test(FIGSJ['game-beachflag'].cap)) { console.error('❌ 沙灘旗圖冇寫海邊安全提示'); process.exit(1); }
 for (const k of Object.keys(FIGSJ).filter(x=>x.indexOf('game-')===0)) {
   if (!swSrc.includes(FIGSJ[k].src)) { console.error('❌ sw.js 未 cache 遊戲圖：'+k); process.exit(1); }

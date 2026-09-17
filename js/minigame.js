@@ -152,7 +152,7 @@ MiniGame.spyToggleHost = function(){
   MiniGame.renderSpyUI();
 };
 
-/* 秘密卡：A4 一版印晒，剪開一次過派（唔使逐個傳手機） */
+/* 秘密卡：A4 一版印晒，剪開派 */
 MiniGame.spyCardsHtml = function(){
   var st = MiniGame.spyState;
   return '<div id="mg-spy-cards" data-title="誰是臥底・秘密卡（剪開一次過派）" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">'
@@ -178,7 +178,6 @@ MiniGame.spyRules = [
   '每人輪流講一句：形容你手上嘅詞（唔准講出個詞本身，亦唔准太露骨）',
   '一輪發言之後，全團公投：邊個最可疑？',
   '被投出嗰位如果係臥底＝平民勝；唔係＝臥底勝',
-  '全場零賭注：唔准任何金錢或物質輸贏'
 ];
 
 MiniGame.renderSpyUI = function(){
@@ -197,7 +196,7 @@ MiniGame.renderSpyUI = function(){
 
     container.innerHTML = '<div class="card" style="background:#F9FBE7;border:1px solid #C0CA33;padding:12px;border-radius:8px;">'
       + '<h4 style="margin:0 0 6px 0;color:#33691E;">🕵️ 誰是臥底（領袖主持・一次過派卡）</h4>'
-      + '<p class="mut" style="font-size:13px;margin:0 0 10px 0;">領袖一部手機就夠：app 一次過抽好詞同身份，領袖印／抄落卡紙<b>一次過派</b>，唔使逐個傳手機——集會即開即玩。</p>'
+      + '<p class="mut" style="font-size:13px;margin:0 0 10px 0;">一部手機就玩得：一次過抽好詞同身份，跟住印秘密卡剪開派（唔想印就抄落紙仔）。</p>'
       + '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;">'
       + '<label>總人數：<input type="number" min="4" max="16" value="' + st.players + '" style="width:55px;" onchange="MiniGame.spyState.players=parseInt(this.value,10)"></label>'
       + '<label>臥底數：<input type="number" min="1" max="3" value="' + st.spies + '" style="width:45px;" onchange="MiniGame.spyState.spies=parseInt(this.value,10)"></label>'
@@ -205,7 +204,7 @@ MiniGame.renderSpyUI = function(){
       + '</div>'
       + '<button style="background:#33691E;color:#fff;border:none;padding:9px 16px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.startSpyGame()">🎲 一次過發牌（抽詞＋身份）</button>'
       + projBtn
-      + '<p class="mut" style="font-size:12px;margin:10px 0 0 0;">⚠️ 純口頭推理，零賭注；用完記得收回秘密卡。</p>'
+      + '<p class="mut" style="font-size:12px;margin:10px 0 0 0;">遊戲完之後記得收回秘密卡，下一局可以再用。</p>'
       + '</div>';
     return;
   }

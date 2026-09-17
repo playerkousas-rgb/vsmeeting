@@ -1092,12 +1092,12 @@ App.pages.uniform = function(sub){
   var BRANCH = {vs_b:'vsland',vs_g:'vsland',vs_g_pants:'vsland',vs_sea_b:'vssea',vs_sea_g:'vssea',vs_sea_g_pants:'vssea',vs_air_b:'vsair',vs_air_g:'vsair',vs_air_g_pants:'vsair'};
   function typeCard(t){
     var rows = t.items.map(function(i){return '<tr><th>'+i[0]+'</th><td>'+i[1]+'</td></tr>';}).join('');
-    return '<div class="card uniform-card"><h3>'+t.name+'</h3>'+      '<div class="uniform-visual no-print" style="margin:0 0 8px 0;">'+      '<a href="'+t.img+'" target="_blank" rel="noopener">🖼️ 開總會官網原圖（官方相，對最新式樣）</a>'+      '<small class="mut"> 本 app 唔再放自製制服插圖（容易畫錯）；式樣同章位請照官方相＋《儀容與制服手冊》原文。</small></div>'+      '<table class="uniform-table"><tbody>'+rows+'</tbody></table></div>';  }
+    return '<div class="card uniform-card"><h3>'+t.name+'</h3>'+      '<div class="uniform-visual no-print" style="margin:0 0 8px 0;">'+      '<a href="'+t.img+'" target="_blank" rel="noopener">🖼️ 開總會官網原圖（官方相，對最新式樣）</a>'+      '<small class="mut"> 式樣同章位請照官方相＋《儀容與制服手冊》原文。</small></div>'+      '<table class="uniform-table"><tbody>'+rows+'</tbody></table></div>';  }
 
   if(cur==='badge'){
     var P2 = UNIFORM.placementV2;
-    wrap.appendChild(App.h('p','lede','章位一律照<b>《儀容與制服手冊》</b>原文（第三章 3.2–3.4／3.6–3.8、第四章 4.2–4.4）。<b>呢度冇自製位置圖</b>——app 畫嘅圖唔係手冊嘅圖，好容易畫錯教錯人；要睇圖請開下面官方檔（手冊本身有佩戴插圖）。'));
-    /* 官方《儀容與制服手冊》分割檔（團友提供）——想睇手冊原圖／原文就開呢幾個 PDF */
+    wrap.appendChild(App.h('p','lede','章位一律照<b>《儀容與制服手冊》</b>原文（第三章 3.2–3.4／3.6–3.8、第四章 4.2–4.4）。要睇佩戴圖請開下面官方檔（手冊本身有佩戴插圖）。'));
+    /* 官方《儀容與制服手冊》原圖／原文 PDF（分頁連結）*/
     var manualChunks = [
       ['1–30 頁','1rjD6MvA01eWUVU4b4qf9uSFYczXGMqY5'],['31–60 頁','1BqIREqz8JarW1WbDScXLBnQzr9KvPOnQ'],
       ['61–90 頁','1OenclJV7cifLmknCHDjCIhEOSzu5k1w_'],['91–120 頁','1JrvWJmS5Uj6IC2EPNRH5v1YN5GSEQYLz'],
@@ -1105,9 +1105,9 @@ App.pages.uniform = function(sub){
       ['181–210 頁','1sHG952U73znOwhSnZzoRpO1oSm_xZONG'],['211–224 頁','10iW2mv4V9s95azJ57v8drOja_n4o3Y7y']
     ];
     var mref = App.h('div','callout');
-    mref.innerHTML = '📚 <b>《儀容與制服手冊》官方 PDF（分割檔，團友提供）：</b>'
+    mref.innerHTML = '📚 <b>《儀容與制服手冊》官方 PDF：</b>'
       + manualChunks.map(function(c){return '<a class="tag" href="https://drive.google.com/file/d/'+c[1]+'/view" target="_blank" rel="noopener">'+c[0]+'</a>';}).join(' ')
-      + '<p class="mut" style="margin:6px 0 0;">章位表每一條都標咗手冊頁／節號；圖以手冊本身嘅插圖為準（本 app 唔自製位置圖）。</p>';
+      + '<p class="mut" style="margin:6px 0 0;">章位表每一條都標咗手冊頁／節號；圖以手冊本身嘅插圖為準。</p>';
     wrap.appendChild(mref);
     wrap.appendChild(App.block('🎖️ 章位表（照手冊原文・分組）',
       P2.groups.map(function(g){
@@ -1150,7 +1150,7 @@ App.pages.uniform = function(sub){
       wrap.appendChild(App.block('🎒 附加配件（名牌／眼鏡／手錶／腰包）',
         '<div class="card"><ul class="bullet">'+EX.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul><p class="mut">'+EX.source+'</p></div>'));
     }
-    // 領帶制服（官方手冊第二章49頁，團友提供原文）
+    // 領帶制服（官方手冊第二章 49 頁）
     if(UNIFORM.tieUniform){
       var TU = UNIFORM.tieUniform;
       var tuHtml = '<div class="card"><p>'+TU.note+'</p><table class="meeting-table"><thead><tr><th>支部</th><th>領帶</th><th>男團員</th><th>女團員</th></tr></thead><tbody>'
@@ -1297,7 +1297,7 @@ App.pages.book = function(sub){
   ul3.innerHTML = '<li><a href="'+DATA.source.url+'" target="_blank" rel="noopener">《深資童軍訓練綱要》網上版（深資支部）</a></li>'+
     '<li><a href="'+EXTERNAL.officialPack+'" target="_blank" rel="noopener">官方集會套包 2026-09-01 版 PDF</a></li>'+
     '<li><a href="'+EXTERNAL.circulars+'" target="_blank" rel="noopener">📚 通告圖書館（訓練班／活動通告＋推送訂閱）</a></li>'+
-    '<li><a href="'+EXTERNAL.vsbadge+'" target="_blank" rel="noopener">🎖️ 深資童軍進度追蹤（vsbadge 外部工具）</a></li>'+
+    '<li><a href="'+EXTERNAL.vsbadge+'" target="_blank" rel="noopener">🎖️ 深資童軍進度追蹤</a></li>'+
     '<li><a href="'+EXTERNAL.ecportal+'" target="_blank" rel="noopener">🧑‍💼 執委會管理（ecportal・自務自治）</a></li>'+
     '<li><a href="'+EXTERNAL.aypGuide+'" target="_blank" rel="noopener">🌟 AYP 童軍接駁指南（領袖轉給團員）</a></li>'+
     '<li><a href="'+EXTERNAL.upgradeGuide+'" target="_blank" rel="noopener">⬆️ 升團準備指南（制服＋升團過渡）</a></li>'+
@@ -1344,9 +1344,9 @@ App.printPanel = function(cat){
   /* ── ① 互動遊戲工具（全部離線、可投屏）── */
   if (cat === 'tools') {
     box.innerHTML = '<div class="callout ok-callout" style="margin-bottom:14px;background:#E8F5E9;border-left:5px solid #2E7D32;">'
-      + '<h3 style="margin:0 0 6px 0;color:#1B5E20;">🎮 聚會互動遊戲工具（4 個・全離線・可投大電視）</h3>'
-      + '<p style="margin:0 0 4px 0;font-size:14px;">全部喺呢部機行：唔需要上網、唔需要每人一機、唔使逐個傳手機。領袖用手機操作，按每個工具下面嘅「🖥️ 投影大螢幕」就投到電視／投影機。</p>'
-      + '<p style="margin:0;font-size:13px;color:#B71C1C;">⚠️ 零賭注：帶輸贏性質嘅玩法（21 點、撲克等）一律唔收錄，唔符合童軍活動原則。</p></div>'
+      + '<h3 style="margin:0 0 6px 0;color:#1B5E20;">🎮 聚會互動遊戲工具（4 個・離線可用・可投大螢幕）</h3>'
+      + '<p style="margin:0;font-size:14px;">開會即用，唔需要上網。領袖用手機操作，撳每個工具下面嘅「🖥️ 投影大螢幕」就投到電視／投影機。</p>'
+      + '</div>'
       + '<div class="card"><h3>🕵️ 誰是臥底（領袖主持・一次過派卡）</h3><div id="mg-spy-box"></div></div>'
       + '<div class="card"><h3>🕴️ 機密特務（5×5 猜詞）</h3><div id="mg-agent-box"></div></div>'
       + '<div class="card"><h3>🎲 骰子（大話骰／遮擋模式）</h3><div id="mg-dice-box"></div></div>'
@@ -1552,7 +1552,7 @@ App.pages.skills = function(sub){
       return '<div class="card"><h3>'+b.zh+'</h3>'
         + '<h4>📋 官方要求（第十一版）</h4><ol class="req-list">'+b.req.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ol>'
         + '<h4>💡 團內考核建議</h4><ul class="sug-list">'+b.suggest.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'
-        + '<p class="source-note">查要求用<a href="#badges">🎖️ 獎章查閱</a>（只查不記）；出席／考核記錄用團內紀錄冊，本 app 唔做。</p></div>';
+        + '<p class="source-note">查要求用<a href="#badges">🎖️ 獎章查閱</a>（只查不記）；出席／考核記錄用團內紀錄冊。</p></div>';
     }
     function lessonLinks(arr){ return arr.map(function(x){ return '<a class="tag meet" href="#plan/'+x+'">📅 '+x+'</a>'; }).join(' '); }
     SK.forEach(function(x){
