@@ -85,16 +85,26 @@
 | # | 投訴 | v43 做法 | 檔案 |
 |---|------|----------|------|
 | 1 | 全文有不應出現字眼（「四條金帶」） | 深資童軍獎章＝**四個段章**；金帶屬「榮譽童軍獎章」（完成任一段章先可考該段章金帶，共四條）。全文掃字眼＋簡體字／錯字；smoke 加守門 | `js/app.js`、`js/figs.js`、`js/uniform.js`、`js/interests.js`、`js/teach*.js`、`index.html` |
-| 2 | 「聚會 GAME 互動庫」只剩標題 | 修 `minigame.js` 引號 SyntaxError（成個檔死咗 → 5 個工具靜靜唔 render）；print 頁改 4 真分頁：互動工具（5 個 mount）／遊戲卡 23／工作紙 5／即印素材 | `js/minigame.js`、`js/app.js`（`printCats`／`printPanel`） |
+| 2 | 「聚會 GAME 互動庫」只剩標題 | 修 `minigame.js` 引號 SyntaxError（成個檔死咗 → 5 個工具靜靜唔 render）；print 頁改 4 真分頁：互動工具（4 個 mount）／遊戲卡 23／工作紙 5／即印素材 | `js/minigame.js`、`js/app.js`（`printCats`／`printPanel`） |
 | 3 | 下方 5 格定位錯（要單項材料） | 新增 `js/items.js`：`ITEMS.activities`（18）＋`ITEMS.skills`（19）＋`cats()`；`pages.play`／`pages.skills` 改單項卡（目的/流程/要點/示範/檢查/安全/對應獎章/教案連結），分類篩選；skills 加「肩章對照」分頁 | `js/items.js`（新）、`js/app.js` |
 | 4 | 儀式有「小隊」「家長接送」 | 集隊＝全團一個隊形（《步操手冊》第六章 fall-in）；分工用執委會臨時工作小組；散會自行離開，冇等家長接；儀式卡＋c04–c06／c16 逐句清 | `js/ceremony.js`、`js/c0{4,5,6}-lesson.js`、`js/c16-lesson.js`、`js/data.js` |
 | 5 | 教材字太多 | TEACH 渲染改列點（`points`→`<ul>`）＋長原文/示範/講稿收 `<details>`；自動配圖 `App.teachFigFor`（keyword→fig，17 張）＋平面 dgm fallback | `js/app.js`（`teachD`／`teachFigFor`）、`css/app.css` |
 | 6 | 用 Drive 分割手冊 | 手冊套包（步操／制服）以 Drive split file ID 存 `CEREMONY.refs`／`INTERESTS.source`；制服改用《儀容與制服手冊》原文（v42 起） | `js/ceremony.js`、`js/interests.js`、`js/uniform.js` |
 
 ### v43 驗證（收尾輪）
-- **5 個互動工具逐個行完整流程**（jsdom，`_tmp_mg*.mjs` 已刪）：誰是臥底＝發牌 → 逐人查看秘密詞 → 傳下一位 → 進入發言階段＋主持人底牌面板；機密特務＝隊長／隊員視角切換＋點格翻牌；21 點＝下注 → 發牌 → 要牌 3 次 → 莊家補牌 → 勝負結算＋籌碼更新；骰子＝選「3 顆」即 roll 出 3 粒＋遮擋模式（🔒×3）；轉盤＝連轉 5 次每次出不同任務。**0 console error**
+- **互動工具逐個行完整流程**（jsdom，`_tmp_mg*.mjs` 已刪，其內容已被下面「用戶第二輪回饋」取代）：機密特務＝隊長／隊員視角切換＋點格翻牌；骰子＝選「3 顆」即 roll 出 3 粒＋遮擋模式（🔒×3）；轉盤＝連轉 5 次每次出不同任務。**0 console error**
+- **（第二輪回饋後）誰是臥底改版流程實測**：設定 → 一次過發牌（主題後台祕密抽）→ 主持面板 summary 撳開／撳埋（投屏前收起）→ 秘密卡 6 張（卡上只有詞、冇身份標記）→ 發言計時 mm:ss 倒數 → 公投揀人被投出 → 揭曉（捉中／捉錯判定）；投影發言中唔漏身份、揭曉段顯示結果；再玩一局正常。**0 console error**
 - **Drive 手冊分割檔逐份核對實際頁碼範圍**（唔再靠估）：步操手冊 8 份＝①1–30 第一至三章 ②31–60 第三至四章 ③61–90 第四至五章 ④91–120 第五章＋第六章開頭 ⑤121–150 第六章（報數／Sizing／三排↔兩排／睇齊／開闊排）⑥151–180 第六章尾（轉彎／行進間注目禮）＋第七章旗操 §1–§11 ⑦181–210 第七章尾（§9–§12 行進間敬禮）＋第八章集隊手號七款＋附錄甲 ⑧211–220 附錄（動令及打數表／檢閱會操／結業會操／檢閱須知）；制服手冊 8 份＝第二章前半／第二章後半／3.1–3.6／3.7–3.8＋4.1–4.3／4.4–4.7＋第五章／其餘。標籤已寫入 `CEREMONY.refs`（儀式頁參考文件）＋`UNIFORM.official.docs`
 - **制服數據對返手冊原文**（第二章 p.33–51、3.2、3.3、4.3、4.6）：深資陸／海／空三款（棗紅軟帽／白頂帽連深資海章／灰藍軟帽）、杏／白／淺藍短袖恤、草青或深藍長褲・半截裙及膝、棕皮帶（童軍徽扣）、男黑短襪／女肉色尼龍襪褲、男綁帶鞋／女非綁帶中跟、旅巾（童軍巾圈）、徽章＝世界會員章・香港章・地域章・區章・旅章（**深資無小隊章**）— app 全部一致；順手清走一句冇依據嘅「世界會員章同和平使者章只可揀一個？」hedge note（改寫成手冊 3.2 原文：世界童軍會員章戴左胸袋中央、宣誓後才可佩戴）
+
+### v43.1 用戶第二輪回饋（同日）
+| 回饋 | 落地 |
+|---|---|
+| 誰是臥底唔要「逐個傳手機睇詞」（太麻煩） | 改**領袖一部手機主持**：一次過抽詞＋發身份；🖨️ **可列印秘密卡**（A4 一版 6–16 張、卡上只有詞冇身份）一次過派；👑 主持面板（summary 撳開／收起，投屏前收起）；發言倒計時 3:00（mm:ss）＋公佈後公投 → 揭曉判定 |
+| 21 點唔適合集會 | **整段程式碼刪走**（`bjState`／`bjHit`／`bjStand`／`startBjRound`／`renderBjUI`）＋移走 `mg-bj-box` 掛載點；smoke 新守門：`minigame.js` 唔准再出現 `德州撲克｜百家樂｜21點｜籌碼｜bjState｜renderBjUI｜bjHit` |
+| 參考 repo `github.com/playerkousas-rgb/minigame`（出門玩 · Pocket Play） | 借鏡：主持面板／後台祕密隨機抽詞／玩法說明先講規則／零投注聲明。**唔照搬**：PeerJS＋QR 多人連線（本 app 要離線、領袖一機搞掂），亦唔收錄卡牌賭博類 |
+| 徽章進度掣標示 | 頂欄外部掣改「深資童軍進度追蹤（vsbadge 外部工具）」；下方導覽維持「🎖️ 獎章」（內部獎章頁） |
+| 童軍版遺留清走 | 刪 10 個舊測試（audit／content／nav／practical／print-songs-art／quickkeys／ui／browser-*）+ 無用檔 `nouse`；`tests/` 只剩 `smoke.mjs`＋`runtime.mjs`（＝`npm test`） |
 
 ### v43 技術要點（唔好踩返）
 - `js/minigame.js` 內 HTML 字串用 `\'` 跳脫 onclick 引號——**改任何 mini-game 字串後要 `node --check js/minigame.js`**（v42 曾因未跳脫令成個檔 parse 失敗，5 個工具只剩標題）。
@@ -174,7 +184,7 @@ vsmeeting/
     └── runtime.mjs         # 全部頁面 render＋行為測試（`npm test` 兩個一齊跑）
 ```
 
-**注意**：tests/ 資料夾仲有幾個舊嘅 *.mjs 檔（audit/browser-*/content/nav/practical/print-songs-art/quickkeys/ui）係前期遺留，**唔係**現行測試——現行用 `tests/smoke.mjs`＋`tests/runtime.mjs`。唔好因為其他 test 壞而卡住，可以留低/刪除都得。
+**注意**：tests/ 資料夾**只有** `smoke.mjs`＋`runtime.mjs`（＝`npm test`）。（2026-09-17 已按用戶指示刪走 10 個舊檔：audit／content／nav／practical／print-songs-art／quickkeys／ui／browser-app-review／browser-practical／browser-print-scope——全部係上一版「童軍」app 遺留，引用已不存在嘅 `js/flow.js`、`js/jungle.js`、`.handbook`。）
 
 ## 6. 教案物件結構（重要代碼約定）
 
@@ -229,7 +239,7 @@ renderMeeting 支援新舊兩種段落格式混合（`label/min`、`n/t`、`sub/
 ## 8. PWA 與 Cache
 
 - Service Worker 檔案：`sw.js`
-- Cache 命名：`scout-v{N}-c16-YYYYMMDD`（現行 `scout-v43-items-20260917`）
+- Cache 命名：`scout-v{N}-c16-YYYYMMDD`（現行 `scout-v44-minigame-20260917`）
 - 每加/減一個 cXX-lesson.js，要做 3 件事：
   1. `index.html` 加 `<script src="js/cXX-lesson.js"></script>`
   2. `data.js` 將對應 placeholder 替換為 `full:true, special?/outdoor?/sensitive?, data:Cxx, bag?/notice?/personalKit?/doNotBring?`
@@ -271,7 +281,7 @@ npm test    # smoke.mjs＋runtime.mjs，必須全部 ✅ 先好 merge
 3. ~~**搜尋功能（🔍）** 暫時跳去 #book~~（v18 已做真搜尋 ✅：即時搜尋＋85 項索引＋熱門關鍵字）
 4. **c01-c05 仲用舊 inline 格式**（leaderPrep 其實冇、d.script 有），將來可考慮統一到新格式，但唔強制——renderMeeting 已經兼容
 5. ~~**game/activities** 淨係得 4 個常用~~（v17 已擴充到 12 個 ✅，全部有完整玩法/物資/安全）
-6. **browser-app-review/browser-practical/browser-print-scope** 等測試檔係早期規劃遺留，未完成，可視乎需要整理或刪除
+6. ~~browser-* 測試檔~~（2026-09-17 已刪，見上）
 7. **http server（python3 -m http.server 8080）** 如果 restart 會 kill 咗之前個 process，可再 `python3 -m http.server 8080 &` 重開
 8. **assets_src/icons/icon-192.svg**（v37 前係 `img/icon-192.svg`）有 SVG 源檔，但 ImageMagick 缺 rsvg-convert 所以唔可以直接 convert 去 PNG，將來改 icon 可以繼續用 generate_image 出 1024×1024 PNG 再 resize 覆蓋 icons/icon-512.png。**前端唔可以有 SVG**（用戶要求），所以 SVG 源檔一律擺 `assets_src/`。
 9. ~~**print CSS** 未特別優化~~（早已有完整 `@media print` 系統；v17 再加咗隱藏 `.print-btn`/`.filters` ✅）
@@ -604,7 +614,7 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 - 順手修咗兩個**睇唔到嘅真 bug**：
   1. viewBox 溢出檢查器喺 v28 升級時 group 序號遷咗位（`mm[5]/mm[6]/mm[7]` 應該係 `mm[6]/mm[7]/mm[8]`），變成實質上乢都查唔到；改返啱之後即管捉到 **`D.skillx.legend` 四條標籤喺 y=144 但 viewBox 高得 130 → 一直俾人 cut 咗**（已改 152）。而家 32 張圖解全部真係過檢查。
   2. `sw.js` 版本斷言由「硬編碼 v27」改成「sw 版本必須同 README 寫嘅一致」，以後唔使再改 test。
-- `npm test` **全綠**（圖解渲染＋每張儀式卡頁 render 都跑過）；`tests/practical.mjs`／`print-songs-art.mjs` 係舊架構遺留（引用 `Ceremony.items`／`Ceremony.get('commands')`），本来已經跑唔切、亦唔喺 `npm test` 之內 — 未動。
+- `npm test` **全綠**（圖解渲染＋每張儀式卡頁 render 都跑過）；（`tests/practical.mjs`／`print-songs-art.mjs` 等舊架構遺留已於 2026-09-17 刪走。）
 
 **以後嘅做法（重要）**：想加任何儀式／步操內容之前，先問「會員章要唔要？日常集會用唔用？」；兩樣都唔係 → 只寫一句指向手冊＋訓練班，唔好画圖、唔好列程序表。
 

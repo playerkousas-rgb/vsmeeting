@@ -158,8 +158,15 @@ for (const m of DATA.meetings) {
 /* 行為測試：聚會 GAME 互動庫（每個分頁都要有內容，唔可以只剩標題） */
 {
   const tools = App.printPanel('tools');
-  ok(tools.innerHTML.includes('mg-spy-box') && tools.innerHTML.includes('mg-wheel-box'), '互動工具分頁有 5 個掛載點（唔係只剩標題）');
-  ok(typeof sb.MiniGame === 'object' && ['mount','renderSpyUI','renderAgentUI','renderBjUI','renderDiceUI','renderWheelUI'].every(k => typeof sb.MiniGame[k] === 'function'), 'minigame.js 載入成功（語法正確）＋5 個 render 函式齊');
+  ok(['mg-spy-box','mg-agent-box','mg-dice-box','mg-wheel-box'].every(k => tools.innerHTML.includes(k)), '互動工具分頁有 4 個掛載點（唔係只剩標題）');
+  ok(!tools.innerHTML.includes('mg-bj-box'), '唔再有 21 點掛載點（零賭注）');
+  ok(typeof sb.MiniGame === 'object' && ['mount','renderSpyUI','renderAgentUI','renderDiceUI','renderWheelUI','spyPrintCards','spyReveal','spyPickPair'].every(k => typeof sb.MiniGame[k] === 'function'), 'minigame.js 載入成功（語法正確）＋4 個 render 函式齊');
+  ok(typeof sb.MiniGame.renderBjUI !== 'function' && typeof sb.MiniGame.bjState === 'undefined', '21 點程式碼已移走');
+  sb.MiniGame.spyPickPair();
+  const st = sb.MiniGame.spyState;
+  ok(!!st.pair.civil && !!st.pair.spy && st.pair.civil !== st.pair.spy, '誰是臥底抽詞：平民詞／臥底詞成對且唔同');
+  ok(sb.MiniGame.spyClockText(180) === '03:00' && sb.MiniGame.spyClockText(65) === '01:05', '誰是臥底發言計時格式（mm:ss）');
+  ok(sb.MiniGame.spyRules.length === 4, '誰是臥底玩法列點（4 條）');
   const gamesP = App.printPanel('games');
   const gCards = gamesP.querySelectorAll('.game-card');
   ok(gCards.length === sb.DATA.games.length, '集會遊戲卡分頁有 ' + gCards.length + ' 個遊戲（有玩法／物資／安全）');

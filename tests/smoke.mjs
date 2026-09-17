@@ -292,6 +292,21 @@ console.log('✅ v19 全部 tab＋小分頁 render 正常');
   if(!cer.includes('Squad, fall — in')){ console.error('❌ 儀式卡未用《步操手冊》集隊口令'); process.exit(1); }
   console.log('✅ 儀式守門：深資冇小隊／冇家長接送；集隊照《步操手冊》第六章');
 }
+/* 3b) 聚會互動工具：領袖一部手機主持（唔逐個傳手機）；唔收錄賭博玩法 */
+{
+  const mg = readFileSync(root+'js/minigame.js','utf8');
+  const app = readFileSync(root+'js/app.js','utf8');
+  if(!mg.includes('一次過派卡')){ console.error('❌ 誰是臥底未改做「一次過派卡」（用戶：唔要逐個傳手機）'); process.exit(1); }
+  if(!mg.includes('spyPrintCards')){ console.error('❌ 誰是臥底冇「列印秘密卡」功能'); process.exit(1); }
+  if(/renderBjUI|bjState|bjHit|startBjRound/.test(mg)){ console.error('❌ minigame.js 仲有 21 點程式碼（唔適合集會）'); process.exit(1); }
+  if(app.includes('mg-bj-box')){ console.error('❌ app.js 仲有 21 點掛載點'); process.exit(1); }
+  for(const mk of ['mg-spy-box','mg-agent-box','mg-dice-box','mg-wheel-box']){
+    if(!app.includes(mk)){ console.error('❌ 互動工具分頁缺掛載點 '+mk); process.exit(1); }
+  }
+  if(!mg.includes('主持面板')){ console.error('❌ 誰是臥底缺領袖主持面板'); process.exit(1); }
+  if(/德州撲克|百家樂|21點|籌碼|bjState|renderBjUI|bjHit/.test(mg)){ console.error('❌ minigame.js 仲有投注輸贏類內容'); process.exit(1); }
+  console.log('✅ 互動工具：4 個（誰是臥底＝領袖主持／一次過派卡＋可印秘密卡；冇 21 點／賭博玩法）');
+}
 /* 4) 單項項目庫（技能／活動）要有內容 */
 {
   const items = readFileSync(root+'js/items.js','utf8');
@@ -1121,4 +1136,4 @@ console.log('✅ v34：新／熟手定位・手機 44px・安全圖片 fallback�
   console.log('✅ v42：獎章 34 項（第十一版 8 類＋第十版對照）・考章報班各 7 步・制服 6 款官網圖・16 場分鐘數啱');
 }
 
-console.log('\n🎉 全部 smoke test 通過（v43：16 場教材＋8 套儀式卡＋單項項目庫＋第十一版獎章路＋手冊原文章位・前端零 SVG・本地圖全 AVIF）');
+console.log('\n🎉 全部 smoke test 通過（v44：16 場教材＋8 套儀式卡＋單項項目庫＋第十一版獎章路＋手冊原文章位・前端零 SVG・本地圖全 AVIF）');

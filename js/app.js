@@ -419,7 +419,7 @@ App.buildSearchIndex = function(){
   idx.push({type:'手冊', title:'集會工具（計分板・抽籤・倒數・分組・投屏）', link:'#book/tools', desc:'可投屏', text:'計分板 抽籤 倒數 分組 工具 投屏 分組數 投影 大電視'});
   idx.push({type:'手冊', title:'AYP領袖指南（團員參加＋領袖參與＋成立執行處）', link:'#book/ayp', desc:'新領袖必修', text:'ayp 領袖指南 團員參加 執行處支部 組長 導師 評核員 成立執行處 表格 AYP/10 座談會 紀錄簿 迎新講座'});
   idx.push({type:'手冊', title:'參考資料（綱要＋套包＋圖書館＋AYP＋升團直連）', link:'#book/refs', desc:'外部連結', text:'參考資料 綱要 套包 圖書館 ayp 升團 upgrade 外部連結 分享 團員'});
-  idx.push({type:'素材', title:'🎮 互動遊戲工具（誰是臥底・機密特務・21點・骰子・轉盤）', link:'#print', desc:'全離線・可投屏', text:'遊戲 互動 破冰 誰是臥底 機密特務 21點 骰子 大話骰 轉盤 投影 投屏 聚會 game'});
+  idx.push({type:'素材', title:'🎮 互動遊戲工具（誰是臥底・機密特務・骰子・轉盤）', link:'#print', desc:'全離線・可投屏', text:'遊戲 互動 破冰 誰是臥底 機密特務 骰子 大話骰 轉盤 投影 投屏 聚會 game 派卡 秘密卡'});
   idx.push({type:'素材', title:'🎲 集會遊戲卡（23 個・有玩法物資安全）', link:'#print', desc:'即插即用', text:'遊戲卡 玩法 物資 安全 破冰 團隊 官方套包 集會遊戲'});
   idx.push({type:'素材', title:'🖨️ 即印素材（急救卡 6 張・誓詞卡・收繩卡・國歌歌紙）', link:'#print', desc:'A4 直接印', text:'急救卡 誓詞 規律 銘言 收繩 保養 國歌 義勇軍進行曲 升旗 歌紙 列印 素材 投屏'});
   if(typeof AYP!=='undefined'){
@@ -1297,7 +1297,7 @@ App.pages.book = function(sub){
   ul3.innerHTML = '<li><a href="'+DATA.source.url+'" target="_blank" rel="noopener">《深資童軍訓練綱要》網上版（深資支部）</a></li>'+
     '<li><a href="'+EXTERNAL.officialPack+'" target="_blank" rel="noopener">官方集會套包 2026-09-01 版 PDF</a></li>'+
     '<li><a href="'+EXTERNAL.circulars+'" target="_blank" rel="noopener">📚 通告圖書館（訓練班／活動通告＋推送訂閱）</a></li>'+
-    '<li><a href="'+EXTERNAL.vsbadge+'" target="_blank" rel="noopener">🎖️ 徽章進度追蹤（段章・金帶・vsbadge 外部工具）</a></li>'+
+    '<li><a href="'+EXTERNAL.vsbadge+'" target="_blank" rel="noopener">🎖️ 深資童軍進度追蹤（vsbadge 外部工具）</a></li>'+
     '<li><a href="'+EXTERNAL.ecportal+'" target="_blank" rel="noopener">🧑‍💼 執委會管理（ecportal・自務自治）</a></li>'+
     '<li><a href="'+EXTERNAL.aypGuide+'" target="_blank" rel="noopener">🌟 AYP 童軍接駁指南（領袖轉給團員）</a></li>'+
     '<li><a href="'+EXTERNAL.upgradeGuide+'" target="_blank" rel="noopener">⬆️ 升團準備指南（制服＋升團過渡）</a></li>'+
@@ -1344,11 +1344,11 @@ App.printPanel = function(cat){
   /* ── ① 互動遊戲工具（全部離線、可投屏）── */
   if (cat === 'tools') {
     box.innerHTML = '<div class="callout ok-callout" style="margin-bottom:14px;background:#E8F5E9;border-left:5px solid #2E7D32;">'
-      + '<h3 style="margin:0 0 6px 0;color:#1B5E20;">🎮 聚會互動遊戲工具（5 個・全離線・可投大電視）</h3>'
-      + '<p style="margin:0;font-size:14px;">全部喺呢部機行：唔需要上網、唔需要登入。領袖用手機操作，按每個工具下面嘅「🖥️ 投影大螢幕」就投到電視／投影機。</p></div>'
-      + '<div class="card"><h3>🕵️ 誰是臥底（傳手機看詞）</h3><div id="mg-spy-box"></div></div>'
+      + '<h3 style="margin:0 0 6px 0;color:#1B5E20;">🎮 聚會互動遊戲工具（4 個・全離線・可投大電視）</h3>'
+      + '<p style="margin:0 0 4px 0;font-size:14px;">全部喺呢部機行：唔需要上網、唔需要每人一機、唔使逐個傳手機。領袖用手機操作，按每個工具下面嘅「🖥️ 投影大螢幕」就投到電視／投影機。</p>'
+      + '<p style="margin:0;font-size:13px;color:#B71C1C;">⚠️ 零賭注：帶輸贏性質嘅玩法（21 點、撲克等）一律唔收錄，唔符合童軍活動原則。</p></div>'
+      + '<div class="card"><h3>🕵️ 誰是臥底（領袖主持・一次過派卡）</h3><div id="mg-spy-box"></div></div>'
       + '<div class="card"><h3>🕴️ 機密特務（5×5 猜詞）</h3><div id="mg-agent-box"></div></div>'
-      + '<div class="card"><h3>♠️ 21 點（單機對莊家）</h3><div id="mg-bj-box"></div></div>'
       + '<div class="card"><h3>🎲 骰子（大話骰／遮擋模式）</h3><div id="mg-dice-box"></div></div>'
       + '<div class="card"><h3>🎡 幸運轉盤（自訂任務）</h3><div id="mg-wheel-box"></div></div>';
     setTimeout(function(){ if(typeof MiniGame!=='undefined' && MiniGame.mount) MiniGame.mount(); }, 60);
@@ -1945,10 +1945,10 @@ App.toolsSecs = function(){
     '</div>';
   frag.appendChild(sGrp);
 
-  var sMini = App.sec('🎮 聚會 MINI-GAME 互動箱（誰是臥底 / 機密特務 / 轉盤）', {print:false, proj:false});
+  var sMini = App.sec('🎮 聚會 MINI-GAME 互動箱（誰是臥底 / 機密特務 / 骰子 / 轉盤）', {print:false, proj:false});
   sMini._body.innerHTML =
     '<div class="card" style="margin-bottom:12px;">'+
-    '<p class="lead">無需外出連結，集會隨開即玩：深資團破冰、露營夜話、室內活動特訓互動組件。</p>'+
+    '<p class="lead">無需外出連結、唔使每人一機：深資團破冰、露營夜話、室內活動特訓互動組件（領袖一部手機搞得掂）。</p>'+
     (typeof MiniGame !== 'undefined' ? MiniGame.htmlBlock() : '<div id="mg-spy-box"></div><div id="mg-agent-box"></div><div id="mg-wheel-box"></div>')+
     '</div>';
   frag.appendChild(sMini);

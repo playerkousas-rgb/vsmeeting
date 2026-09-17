@@ -1,12 +1,11 @@
 /* minigame.js — 聚會 MINI GAME 內建互動工具箱（完整內嵌版）
  * 完全內置於 VSMeeting 本地運行，無需任何外部連線或跳出至第三方網站。
- * 包含：
- * 1. 🕵️ 誰是臥底（離線輪流傳手機看詞）
- * 2. 🕴️ 機密特務（Codenames 5×5 隊長/隊員特務密碼板）
- * 3. 🃏 21 點黑傑克（單機對戰莊家，Crypto RNG 洗牌發牌）
- * 4. 🎲 聚會骰子與大話骰（1–6 顆骰子，防偷看遮擋模式）
- * 5. 🎡 命運幸運轉盤（自訂破冰任務與懲罰）
- * 6. 🐺 一夜狼人角色分發器（4–8 人速決版）
+ * 包含（全部領袖一部手機搞得掂，唔使逐個傳機）：
+ * 1. 🕵️ 誰是臥底（領袖主持：一次過抽詞＋可列印秘密卡一次過派）
+ * 2. 🕴️ 機密特務（Codenames 5×5 隊長／隊員特務密碼板）
+ * 3. 🎲 聚會骰子工具（1–6 顆、遮擋模式）
+ * 4. 🎡 幸運轉盤（自訂破冰任務／獎勵）
+ * 註：帶投注輸贏性質嘅玩法（21 點、撲克等）一律唔收錄，唔符合童軍活動原則。
  */
 
 var MiniGame = {};
@@ -50,126 +49,232 @@ MiniGame.spyTopics = {
 MiniGame.spyState = {
   players: 6,
   spies: 1,
-  topicKey: 'scout',
+  topicKey: 'random',          // 'random'＝後台祕密抽主題（開局前唔會顯示）
+  topicLabel: '',
+  pair: { civil: '', spy: '' },
   roles: [],
-  currentIdx: 0,
-  revealed: false,
-  phase: 'setup'
+  phase: 'setup',              // setup → play → result
+  hostOpen: false,             // 主持面板：身份同詞攤開定收起（投屏前要收起）
+  timerLeft: 180,
+  timerId: null,
+  votedIdx: -1
+};
+
+MiniGame.spyTimerStop = function(){
+  if(MiniGame.spyState.timerId){ clearInterval(MiniGame.spyState.timerId); MiniGame.spyState.timerId = null; }
+};
+
+MiniGame.spyClockText = function(sec){
+  var m = Math.floor(sec / 60), s = sec % 60;
+  return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+};
+
+/* 抽詞：主題由後台祕密抽（可自選），平民詞／臥底詞一對，開局前唔會顯示 */
+MiniGame.spyPickPair = function(){
+  var st = MiniGame.spyState;
+  var keys = Object.keys(MiniGame.spyTopics);
+  var key = st.topicKey;
+  if(key === 'random' || !MiniGame.spyTopics[key]) key = keys[Math.floor(Math.random() * keys.length)];
+  var topic = MiniGame.spyTopics[key];
+  var pair = topic.pairs[Math.floor(Math.random() * topic.pairs.length)];
+  var swap = Math.random() < 0.5;
+  st.topicLabel = topic.label + (st.topicKey === 'random' ? '（後台祕密抽出）' : '');
+  st.pair = { civil: swap ? pair[1] : pair[0], spy: swap ? pair[0] : pair[1] };
 };
 
 MiniGame.startSpyGame = function(){
   var st = MiniGame.spyState;
-  var topic = MiniGame.spyTopics[st.topicKey] || MiniGame.spyTopics.scout;
-  var pair = topic.pairs[Math.floor(Math.random() * topic.pairs.length)];
-  var swap = Math.random() < 0.5;
-  var civilianWord = swap ? pair[0] : pair[1];
-  var spyWord = swap ? pair[1] : pair[0];
+  MiniGame.spyTimerStop();
+  MiniGame.spyPickPair();
 
   var count = parseInt(st.players, 10) || 6;
+  if(count < 4) count = 4;
+  if(count > 16) count = 16;
   var spyCount = parseInt(st.spies, 10) || 1;
   if(spyCount >= count) spyCount = 1;
 
   var roles = [];
-  for(var i=0; i<count; i++){
-    roles.push({
-      id: i+1,
-      name: '隊員 ' + (i+1),
-      word: civilianWord,
-      isSpy: false
-    });
+  for(var i = 0; i < count; i++){
+    roles.push({ id: i + 1, name: '隊員 ' + (i + 1), word: st.pair.civil, isSpy: false });
   }
-
-  var indices = [];
-  while(indices.length < spyCount){
+  var picked = [];
+  while(picked.length < spyCount){
     var r = Math.floor(Math.random() * count);
-    if(indices.indexOf(r) < 0) indices.push(r);
+    if(picked.indexOf(r) < 0) picked.push(r);
   }
-  indices.forEach(function(idx){
-    roles[idx].word = spyWord;
-    roles[idx].isSpy = true;
-  });
+  picked.forEach(function(idx){ roles[idx].word = st.pair.spy; roles[idx].isSpy = true; });
 
+  st.players = count;
   st.roles = roles;
-  st.currentIdx = 0;
-  st.revealed = false;
-  st.phase = 'pass';
+  st.phase = 'play';
+  st.hostOpen = false;
+  st.votedIdx = -1;
+  st.timerLeft = 180;
   MiniGame.renderSpyUI();
 };
+
+MiniGame.spyTimerToggle = function(){
+  var st = MiniGame.spyState;
+  if(st.timerId){ MiniGame.spyTimerStop(); MiniGame.renderSpyUI(); return; }
+  if(st.timerLeft <= 0) st.timerLeft = 180;
+  st.timerId = setInterval(MiniGame.spyTick, 1000);
+  MiniGame.renderSpyUI();
+};
+
+MiniGame.spyTimerReset = function(){
+  MiniGame.spyTimerStop();
+  MiniGame.spyState.timerLeft = 180;
+  MiniGame.renderSpyUI();
+};
+
+MiniGame.spyTick = function(){
+  var st = MiniGame.spyState;
+  st.timerLeft--;
+  if(st.timerLeft <= 0){ st.timerLeft = 0; MiniGame.spyTimerStop(); }
+  var clock = document.getElementById('mg-spy-clock');
+  if(clock) clock.textContent = st.timerId ? MiniGame.spyClockText(st.timerLeft) : '時間到，開始公投！';
+  if(!st.timerId) MiniGame.renderSpyUI();
+};
+
+MiniGame.spyPick = function(idx){
+  MiniGame.spyState.votedIdx = (MiniGame.spyState.votedIdx === idx ? -1 : idx);
+  MiniGame.renderSpyUI();
+};
+
+MiniGame.spyReveal = function(){
+  MiniGame.spyTimerStop();
+  MiniGame.spyState.phase = 'result';
+  MiniGame.renderSpyUI();
+};
+
+MiniGame.spyToggleHost = function(){
+  MiniGame.spyState.hostOpen = !MiniGame.spyState.hostOpen;
+  MiniGame.renderSpyUI();
+};
+
+/* 秘密卡：A4 一版印晒，剪開一次過派（唔使逐個傳手機） */
+MiniGame.spyCardsHtml = function(){
+  var st = MiniGame.spyState;
+  return '<div id="mg-spy-cards" data-title="誰是臥底・秘密卡（剪開一次過派）" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">'
+    + st.roles.map(function(r){
+        return '<div style="border:1.5px dashed #333;border-radius:8px;padding:10px 12px;color:#000;background:#fff;page-break-inside:avoid;break-inside:avoid;">'
+          + '<div style="font-size:11px;letter-spacing:1px;color:#555;">🕵️ 誰是臥底 ｜ 秘密卡</div>'
+          + '<div style="font-size:12px;margin-top:2px;color:#333;">' + r.name + '</div>'
+          + '<div style="font-size:22px;font-weight:900;margin:4px 0;">' + r.word + '</div>'
+          + '<div style="font-size:10px;color:#555;">睇完蓋住；描述時唔准講出個詞</div>'
+          + '</div>';
+      }).join('')
+    + '</div>';
+};
+
+MiniGame.spyPrintCards = function(){
+  var node = document.getElementById('mg-spy-cards');
+  if(!node) return;
+  if(typeof App !== 'undefined' && App.printSec){ App.printSec(node); return; }
+  if(typeof window !== 'undefined' && window.print) window.print();
+};
+
+MiniGame.spyRules = [
+  '每人輪流講一句：形容你手上嘅詞（唔准講出個詞本身，亦唔准太露骨）',
+  '一輪發言之後，全團公投：邊個最可疑？',
+  '被投出嗰位如果係臥底＝平民勝；唔係＝臥底勝',
+  '全場零賭注：唔准任何金錢或物質輸贏'
+];
 
 MiniGame.renderSpyUI = function(){
   var container = document.getElementById('mg-spy-box');
   if(!container) return;
   var st = MiniGame.spyState;
 
+  var projBtn = ' <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;font-size:13px;" onclick="Projector.live(\'mg:spy\',\'🕵️ 誰是臥底\')">🖥️ 投影大螢幕</button>';
+
+  /* ── 設定 ── */
   if(st.phase === 'setup'){
-    var optHtml = Object.keys(MiniGame.spyTopics).map(function(k){
-      return '<option value="' + k + '" ' + (st.topicKey === k ? 'selected' : '') + '>' + MiniGame.spyTopics[k].label + '</option>';
-    }).join('');
+    var optHtml = '<option value="random" ' + (st.topicKey === 'random' ? 'selected' : '') + '>🎲 後台祕密抽（開局前唔顯示）</option>'
+      + Object.keys(MiniGame.spyTopics).map(function(k){
+          return '<option value="' + k + '" ' + (st.topicKey === k ? 'selected' : '') + '>' + MiniGame.spyTopics[k].label + '</option>';
+        }).join('');
 
     container.innerHTML = '<div class="card" style="background:#F9FBE7;border:1px solid #C0CA33;padding:12px;border-radius:8px;">'
-      + '<h4 style="margin:0 0 8px 0;color:#33691E;">🕵️ 誰是臥底（內建離線看詞）</h4>'
-      + '<p class="mut" style="font-size:13px;margin:0 0 10px 0;">全單機離線進行，輪流傳遞手機查看身份與秘密詞，全員看完後即開始發言抓臥底！</p>'
+      + '<h4 style="margin:0 0 6px 0;color:#33691E;">🕵️ 誰是臥底（領袖主持・一次過派卡）</h4>'
+      + '<p class="mut" style="font-size:13px;margin:0 0 10px 0;">領袖一部手機就夠：app 一次過抽好詞同身份，領袖印／抄落卡紙<b>一次過派</b>，唔使逐個傳手機——集會即開即玩。</p>'
       + '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px;">'
       + '<label>總人數：<input type="number" min="4" max="16" value="' + st.players + '" style="width:55px;" onchange="MiniGame.spyState.players=parseInt(this.value,10)"></label>'
       + '<label>臥底數：<input type="number" min="1" max="3" value="' + st.spies + '" style="width:45px;" onchange="MiniGame.spyState.spies=parseInt(this.value,10)"></label>'
       + '<label>題庫：<select onchange="MiniGame.spyState.topicKey=this.value">' + optHtml + '</select></label>'
       + '</div>'
-      + '<button class="button" style="background:#33691E;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.startSpyGame()">🎲 開始發牌（輪流傳手機）</button> <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="Projector.live(\'mg:spy\',\'🕵️ 誰是臥底\')">🖥️ 投影大螢幕</button>'
+      + '<button style="background:#33691E;color:#fff;border:none;padding:9px 16px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.startSpyGame()">🎲 一次過發牌（抽詞＋身份）</button>'
+      + projBtn
+      + '<p class="mut" style="font-size:12px;margin:10px 0 0 0;">⚠️ 純口頭推理，零賭注；用完記得收回秘密卡。</p>'
       + '</div>';
     return;
   }
 
-  if(st.phase === 'pass'){
-    var cur = st.roles[st.currentIdx];
-    var isLast = st.currentIdx >= st.roles.length - 1;
+  var wordLine = '<div style="font-size:13px;color:#33691E;margin-bottom:8px;">主題：<b>' + st.topicLabel + '</b>｜人數 <b>' + st.roles.length + '</b>｜臥底 <b>' + st.roles.filter(function(r){ return r.isSpy; }).length + '</b></div>';
 
-    var content = '';
-    if(!st.revealed){
-      content = '<div style="text-align:center;padding:24px 10px;background:#fff;border-radius:8px;border:2px dashed #9E9D24;margin-bottom:12px;">'
-        + '<div style="font-size:36px;margin-bottom:8px;">📱</div>'
-        + '<div style="font-size:18px;font-weight:bold;color:#1B5E20;margin-bottom:6px;">請交給【' + cur.name + '】</div>'
-        + '<p class="mut" style="margin:0 0 14px 0;font-size:13px;">確認旁邊無人偷看，點擊下方按鈕查看你的秘密詞。</p>'
-        + '<button style="background:#F57F17;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:15px;font-weight:bold;cursor:pointer;" onclick="MiniGame.spyState.revealed=true;MiniGame.renderSpyUI();">👁️ 點擊查看秘密詞</button>'
-        + '</div>';
-    } else {
-      content = '<div style="text-align:center;padding:20px 10px;background:#E8F5E9;border-radius:8px;border:2px solid #4CAF50;margin-bottom:12px;">'
-        + '<div style="font-size:13px;color:#2E7D32;margin-bottom:4px;">你的秘密詞是：</div>'
-        + '<div style="font-size:26px;font-weight:900;color:#1B5E20;letter-spacing:1px;margin-bottom:10px;">「' + cur.word + '」</div>'
-        + '<p class="mut" style="font-size:12px;margin:0 0 14px 0;">記住你的詞，記下後傳給下一位！</p>'
-        + (isLast
-          ? '<button style="background:#2E7D32;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:15px;font-weight:bold;cursor:pointer;" onclick="MiniGame.spyState.phase=\'playing\';MiniGame.renderSpyUI();">✅ 全員看完，進入發言階段</button>'
-          : '<button style="background:#2E7D32;color:#fff;border:none;padding:10px 20px;border-radius:6px;font-size:15px;font-weight:bold;cursor:pointer;" onclick="MiniGame.spyState.currentIdx++;MiniGame.spyState.revealed=false;MiniGame.renderSpyUI();">傳給下一位（' + (st.currentIdx + 2) + '號）→</button>'
-          )
-        + '</div>';
-    }
-
-    container.innerHTML = '<div class="card" style="background:#F9FBE7;border:1px solid #C0CA33;padding:12px;border-radius:8px;">'
-      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-      + '<b>發牌進度：第 ' + (st.currentIdx + 1) + ' / ' + st.roles.length + ' 位</b>'
-      + '<button class="mut" style="background:none;border:none;cursor:pointer;font-size:12px;text-decoration:underline;" onclick="MiniGame.spyState.phase=\'setup\';MiniGame.renderSpyUI();">重新設定</button>'
-      + '</div>'
-      + content
-      + '</div>';
-    return;
-  }
-
-  if(st.phase === 'playing'){
-    var list = st.roles.map(function(r){
-      return '<li style="padding:4px 0;"><b>' + r.name + '</b>: ' + (r.isSpy ? '<span style="color:#C62828;font-weight:bold;">[臥底]</span>' : '<span style="color:#2E7D32;">[平民]</span>') + ' 詞：「' + r.word + '」</li>';
+  /* ── 發牌後：主持面板＋發言＋公投 ── */
+  if(st.phase === 'play'){
+    var spyList = st.roles.map(function(r){
+      return '<li style="padding:3px 0;"><b>' + r.name + '</b>：'
+        + (r.isSpy ? '<span style="color:#C62828;font-weight:bold;">[臥底]</span>' : '<span style="color:#2E7D32;">[平民]</span>')
+        + ' 詞「' + r.word + '」</li>';
     }).join('');
 
+    var voteBtns = st.roles.map(function(r, i){
+      var on = st.votedIdx === i;
+      return '<button style="padding:6px 10px;border-radius:6px;cursor:pointer;font-size:13px;border:1px solid ' + (on ? '#C62828' : '#C0CA33') + ';background:' + (on ? '#FFEBEE' : '#fff') + ';font-weight:' + (on ? 'bold' : 'normal') + ';" onclick="MiniGame.spyPick(' + i + ')">' + r.name + (on ? ' ⬅ 被投出' : '') + '</button>';
+    }).join(' ');
+
     container.innerHTML = '<div class="card" style="background:#F9FBE7;border:1px solid #C0CA33;padding:12px;border-radius:8px;">'
-      + '<h4 style="margin:0 0 8px 0;color:#1B5E20;">🗣️ 發言討論與投票放逐</h4>'
-      + '<p style="font-size:14px;margin:0 0 8px 0;"><b>規則</b>：每人輪流用一句話描述自己的詞（不可直接說出該詞，也不能太露骨）。一輪發言後全團投票抓出臥底！</p>'
-      + '<details style="margin:10px 0;background:#fff;padding:8px;border-radius:6px;border:1px solid #DCEDC8;">'
-      + '<summary style="cursor:pointer;font-weight:bold;color:#33691E;">👑 主持人底牌面板（點擊揭曉）</summary>'
-      + '<ul style="margin:8px 0 0 16px;padding:0;font-size:13px;">' + list + '</ul>'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">'
+      + '<h4 style="margin:0;color:#33691E;">🕵️ 誰是臥底・已經發牌</h4>'
+      + '<button style="background:none;border:none;cursor:pointer;font-size:12px;text-decoration:underline;" onclick="MiniGame.spyTimerStop();MiniGame.spyState.phase=\'setup\';MiniGame.renderSpyUI();">⚙️ 改設定</button>'
+      + '</div>'
+      + wordLine
+      + '<details style="margin:10px 0;background:#fff;padding:8px;border-radius:6px;border:1px solid #DCEDC8;"' + (st.hostOpen ? ' open' : '') + '>'
+      + '<summary style="cursor:pointer;font-weight:bold;color:#33691E;" onclick="event.preventDefault();MiniGame.spyToggleHost();">'
+      + (st.hostOpen ? '🙈 收起主持面板（投屏前要收）' : '👑 主持面板（睇身份同詞）') + '</summary>'
+      + '<ul style="margin:8px 0 0 16px;padding:0;font-size:13px;">' + spyList + '</ul></details>'
+      + '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid #DCEDC8;border-radius:6px;padding:8px 10px;margin-bottom:10px;">'
+      + '<b>⏱️ 發言計時：</b><span id="mg-spy-clock" style="font-size:18px;font-weight:900;color:#33691E;">' + MiniGame.spyClockText(st.timerLeft) + '</span>'
+      + '<button style="background:' + (st.timerId ? '#F57F17' : '#33691E') + ';color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.spyTimerToggle()">' + (st.timerId ? '⏸️ 停一停' : '▶️ 開始計時') + '</button>'
+      + '<button style="background:#78909C;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;" onclick="MiniGame.spyTimerReset()">🔄 重設 3:00</button>'
+      + '</div>'
+      + '<div style="font-size:13px;margin-bottom:10px;"><b>🗣️ 玩法</b><ul style="margin:6px 0 0 18px;padding:0;">'
+      + MiniGame.spyRules.map(function(r){ return '<li>' + r + '</li>'; }).join('')
+      + '</ul></div>'
+      + '<div style="font-size:13px;margin-bottom:8px;"><b>🗳️ 公投（邊個被投出？）</b><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">' + voteBtns + '</div></div>'
+      + '<button style="background:#1B5E20;color:#fff;border:none;padding:9px 16px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.spyReveal()">🔎 揭曉結果</button>'
+      + projBtn
+      + '<details style="margin-top:12px;background:#fff;padding:8px;border-radius:6px;border:1px dashed #9E9D24;">'
+      + '<summary style="cursor:pointer;font-weight:bold;color:#33691E;">🖨️ 秘密卡（印出嚟剪開一次過派）</summary>'
+      + '<p class="mut" style="font-size:12px;margin:6px 0;">一版 A4 印晒全部秘密卡，剪開派俾每個人；卡上只有詞、冇身份，平民同臥底嘅卡一模一樣。</p>'
+      + '<button class="print-btn" style="background:#33691E;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;margin-bottom:8px;" onclick="MiniGame.spyPrintCards()">🖨️ 列印秘密卡</button>'
+      + MiniGame.spyCardsHtml()
       + '</details>'
-      + '<div style="margin-top:10px;">'
-      + '<button style="background:#33691E;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.startSpyGame()">🔄 再玩一局</button> '
-      + '<button style="background:#689F38;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;" onclick="MiniGame.spyState.phase=\'setup\';MiniGame.renderSpyUI();">⚙️ 修改人數/主題</button>'
-      + '</div></div>';
+      + '</div>';
+    return;
   }
+
+  /* ── 揭曉 ── */
+  var spies = st.roles.filter(function(r){ return r.isSpy; }).map(function(r){ return r.name; });
+  var judged = '';
+  if(st.votedIdx >= 0){
+    var outed = st.roles[st.votedIdx];
+    judged = '<div style="margin:8px 0;padding:8px 10px;border-radius:6px;font-weight:bold;background:' + (outed.isSpy ? '#E8F5E9' : '#FFEBEE') + ';color:' + (outed.isSpy ? '#1B5E20' : '#B71C1C') + ';">'
+      + '🗳️ 公投結果：' + outed.name + ' 被投出 → ' + (outed.isSpy ? '✅ 捉到臥底，平民勝！' : '❌ 捉錯人，臥底勝！') + '</div>';
+  }
+  container.innerHTML = '<div class="card" style="background:#E8F5E9;border:1px solid #A5D6A7;padding:12px;border-radius:8px;">'
+    + '<h4 style="margin:0 0 8px 0;color:#1B5E20;">🔎 揭曉</h4>'
+    + judged
+    + '<div style="font-size:15px;margin-bottom:6px;">平民詞：<b style="color:#2E7D32;">「' + st.pair.civil + '」</b></div>'
+    + '<div style="font-size:15px;margin-bottom:6px;">臥底詞：<b style="color:#C62828;">「' + st.pair.spy + '」</b></div>'
+    + '<div style="font-size:15px;margin-bottom:10px;">臥底係：<b>' + spies.join('、') + '</b></div>'
+    + '<div style="font-size:13px;color:#33691E;margin-bottom:10px;">主題：' + st.topicLabel + '（' + st.roles.length + ' 人）</div>'
+    + '<button style="background:#33691E;color:#fff;border:none;padding:9px 16px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.startSpyGame()">🔄 再玩一局（同設定）</button> '
+    + '<button style="background:#689F38;color:#fff;border:none;padding:9px 16px;border-radius:6px;cursor:pointer;" onclick="MiniGame.spyState.phase=\'setup\';MiniGame.renderSpyUI();">⚙️ 改設定</button>'
+    + projBtn
+    + '</div>';
 };
 
 /* ═══════════ 2. 機密特務 (5x5 Codenames) ═══════════ */
@@ -262,157 +367,7 @@ MiniGame.clickAgentCard = function(idx){
   MiniGame.renderAgentUI();
 };
 
-/* ═══════════ 3. 單機 21 點黑傑克 (Blackjack) ═══════════ */
-MiniGame.bjState = {
-  deck: [],
-  player: [],
-  dealer: [],
-  status: 'betting', // betting, playing, dealerTurn, done
-  chips: 1000,
-  bet: 100,
-  msg: '請下注後點擊發牌'
-};
-
-MiniGame.createDeck = function(){
-  var suits = ['♠','♥','♦','♣'];
-  var ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-  var d = [];
-  suits.forEach(function(s){
-    ranks.forEach(function(r){
-      var val = parseInt(r, 10);
-      if(r === 'A') val = 11;
-      else if(['J','Q','K'].indexOf(r) >= 0) val = 10;
-      d.push({ suit: s, rank: r, val: val });
-    });
-  });
-  // Crypto RNG shuffle
-  for(var i=d.length-1; i>0; i--){
-    var j = Math.floor(Math.random()*(i+1));
-    var tmp = d[i]; d[i] = d[j]; d[j] = tmp;
-  }
-  return d;
-};
-
-MiniGame.calcHand = function(hand){
-  var total = 0, aces = 0;
-  hand.forEach(function(c){
-    total += c.val;
-    if(c.rank === 'A') aces++;
-  });
-  while(total > 21 && aces > 0){
-    total -= 10;
-    aces--;
-  }
-  return total;
-};
-
-MiniGame.startBjRound = function(){
-  var st = MiniGame.bjState;
-  if(st.chips < st.bet) st.bet = st.chips;
-  if(st.chips <= 0){ st.chips = 1000; st.bet = 100; }
-  st.chips -= st.bet;
-  st.deck = MiniGame.createDeck();
-  st.player = [st.deck.pop(), st.deck.pop()];
-  st.dealer = [st.deck.pop(), st.deck.pop()];
-  st.status = 'playing';
-  st.msg = '要牌還是停牌？';
-
-  var pScore = MiniGame.calcHand(st.player);
-  if(pScore === 21){
-    st.status = 'done';
-    st.chips += Math.floor(st.bet * 2.5);
-    st.msg = '🎉 恭喜！Blackjack 直接獲勝（贏得 ' + Math.floor(st.bet * 1.5) + ' 籌碼）！';
-  }
-  MiniGame.renderBjUI();
-};
-
-MiniGame.bjHit = function(){
-  var st = MiniGame.bjState;
-  if(st.status !== 'playing') return;
-  st.player.push(st.deck.pop());
-  var p = MiniGame.calcHand(st.player);
-  if(p > 21){
-    st.status = 'done';
-    st.msg = '💥 爆牌了！輸掉 ' + st.bet + ' 籌碼。';
-  } else if(p === 21){
-    MiniGame.bjStand();
-    return;
-  }
-  MiniGame.renderBjUI();
-};
-
-MiniGame.bjStand = function(){
-  var st = MiniGame.bjState;
-  if(st.status !== 'playing') return;
-  st.status = 'dealerTurn';
-  while(MiniGame.calcHand(st.dealer) < 17){
-    st.dealer.push(st.deck.pop());
-  }
-  var p = MiniGame.calcHand(st.player);
-  var d = MiniGame.calcHand(st.dealer);
-  st.status = 'done';
-  if(d > 21){
-    st.chips += st.bet * 2;
-    st.msg = '🎉 莊家爆牌！你贏了 ' + st.bet + ' 籌碼！';
-  } else if(p > d){
-    st.chips += st.bet * 2;
-    st.msg = '🎉 你的點數 (' + p + ') 大於莊家 (' + d + ')，獲勝！';
-  } else if(p === d){
-    st.chips += st.bet;
-    st.msg = '🤝 平手，下注籌碼全額退回。';
-  } else {
-    st.msg = '😢 莊家點數 (' + d + ') 勝過你的 (' + p + ')。';
-  }
-  MiniGame.renderBjUI();
-};
-
-MiniGame.renderBjUI = function(){
-  var container = document.getElementById('mg-bj-box');
-  if(!container) return;
-  var st = MiniGame.bjState;
-
-  var renderCard = function(c, hide){
-    if(hide){
-      return '<span style="display:inline-block;width:38px;height:54px;line-height:54px;background:#263238;color:#fff;border-radius:4px;text-align:center;font-size:18px;margin-right:4px;">🂠</span>';
-    }
-    var isRed = (c.suit === '♥' || c.suit === '♦');
-    return '<span style="display:inline-block;width:38px;height:54px;background:#fff;color:' + (isRed ? '#D32F2F' : '#212121') + ';border:1px solid #B0BEC5;border-radius:4px;text-align:center;font-size:13px;font-weight:bold;margin-right:4px;padding:2px 0;vertical-align:middle;">'
-      + c.suit + '<br>' + c.rank + '</span>';
-  };
-
-  var dealerCards = '';
-  if(st.dealer.length){
-    st.dealer.forEach(function(c, i){
-      dealerCards += renderCard(c, (i === 1 && st.status === 'playing'));
-    });
-  }
-  var playerCards = st.player.map(function(c){ return renderCard(c, false); }).join('');
-  var pTotal = st.player.length ? MiniGame.calcHand(st.player) : 0;
-  var dTotal = (st.status === 'playing') ? (st.dealer[0] ? st.dealer[0].val : 0) : (st.dealer.length ? MiniGame.calcHand(st.dealer) : 0);
-
-  container.innerHTML = '<div class="card" style="background:#E8F5E9;border:1px solid #81C784;padding:12px;border-radius:8px;">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
-    + '<h4 style="margin:0;color:#1B5E20;">♠️ 21 點黑傑克（單機內建對抗）</h4>'
-    + '<div>籌碼：<b>' + st.chips + '</b> 枚</div>'
-    + '</div>'
-    + '<div style="margin-bottom:8px;">'
-    + '<b>莊家 (' + (st.status === 'playing' ? dTotal + '+?' : dTotal) + ' 點)：</b> ' + (dealerCards || '<span class="mut">等待發牌</span>')
-    + '</div>'
-    + '<div style="margin-bottom:10px;">'
-    + '<b>你 (' + pTotal + ' 點)：</b> ' + (playerCards || '<span class="mut">等待發牌</span>')
-    + '</div>'
-    + '<div style="padding:6px 10px;background:#fff;border-radius:6px;border:1px solid #C8E6C9;font-weight:bold;color:#2E7D32;margin-bottom:10px;">' + st.msg + '</div>'
-    + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
-    + (st.status === 'playing'
-      ? '<button style="background:#2E7D32;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="MiniGame.bjHit()">➕ 要牌 (Hit)</button>'
-        + '<button style="background:#F57F17;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="MiniGame.bjStand()">✋ 停牌 (Stand)</button>'
-      : '<label>下注：<input type="number" min="10" max="500" step="10" value="' + st.bet + '" style="width:65px;" onchange="MiniGame.bjState.bet=parseInt(this.value,10)"></label>'
-        + '<button style="background:#1B5E20;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="MiniGame.startBjRound()">🂡 發牌開局</button>'
-      )
-    + '</div></div>';
-};
-
-/* ═══════════ 4. 聚會 3D/防偷看骰子工具 ═══════════ */
+/* ═══════════ 3. 聚會骰子工具（1–6 顆／遮擋模式） ═══════════ */
 MiniGame.diceState = {
   count: 5,
   results: [1, 2, 3, 4, 5],
@@ -461,7 +416,7 @@ MiniGame.renderDiceUI = function(){
     + '</div>';
 };
 
-/* ═══════════ 5. 幸運轉盤 ═══════════ */
+/* ═══════════ 4. 幸運轉盤 ═══════════ */
 MiniGame.wheelItems = ['自我介紹＋個人專長', '講一件最糗的露營經驗', '伏地挺身 / 深蹲 5 下', '免罰一次（幸運過關）', '唱一句童軍歌曲或會歌', '指定在場一人回答提問', '模仿一種動物叫聲 10 秒'];
 MiniGame.spinWheel = function(){
   var idx = Math.floor(Math.random() * MiniGame.wheelItems.length);
@@ -493,7 +448,6 @@ MiniGame.htmlBlock = function(){
   return '<div class="minigame-hub" style="margin-top:14px;">'
     + '<div id="mg-spy-box" style="margin-bottom:12px;"></div>'
     + '<div id="mg-agent-box" style="margin-bottom:12px;"></div>'
-    + '<div id="mg-bj-box" style="margin-bottom:12px;"></div>'
     + '<div id="mg-dice-box" style="margin-bottom:12px;"></div>'
     + '<div id="mg-wheel-box"></div>'
     + '</div>';
@@ -502,7 +456,6 @@ MiniGame.htmlBlock = function(){
 MiniGame.mount = function(){
   MiniGame.renderSpyUI();
   MiniGame.renderAgentUI();
-  MiniGame.renderBjUI();
   MiniGame.renderDiceUI();
   MiniGame.renderWheelUI();
 };
@@ -516,24 +469,41 @@ MiniGame.projHtml = function(){
   var mode = MiniGame.projMode;
   if(mode === 'spy'){
     var st = MiniGame.spyState;
-    if(st.phase === 'playing'){
+    if(st.phase === 'play'){
+      var clock = st.timerId || st.timerLeft < 180 ? (st.timerLeft > 0 ? MiniGame.spyClockText(st.timerLeft) : '時間到！') : '3:00';
       return '<div class="pj-minigame" style="text-align:center;padding:20px;">'
-        + '<h2 style="font-size:2.2em;color:#1B5E20;margin-bottom:10px;">🕵️ 誰是臥底・全員發言與公投</h2>'
-        + '<p style="font-size:1.4em;color:#333;margin-bottom:20px;">請每位隊員輪流用一句話描述你的詞，保持神秘！</p>'
+        + '<h2 style="font-size:2.2em;color:#1B5E20;margin-bottom:10px;">🕵️ 誰是臥底・發言中</h2>'
+        + '<p style="font-size:1.4em;color:#333;margin-bottom:12px;">每人輪流講一句：形容你手上嘅詞，唔准講出個詞本身</p>'
+        + '<div style="font-size:3.4em;font-weight:900;color:#33691E;margin:10px 0 18px 0;">⏱️ ' + clock + '</div>'
         + '<div style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;max-width:900px;margin:0 auto;">'
         + st.roles.map(function(r){
             return '<div style="background:#fff;padding:15px 25px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);font-size:1.3em;font-weight:bold;color:#2E7D32;">' + r.name + '</div>';
           }).join('')
         + '</div>'
-        + '<p style="margin-top:25px;font-size:1.1em;color:#666;">（底牌隱藏於手機端操作面板，大螢幕公平無透底）</p>'
-        + '</div>';
-    } else {
-      return '<div class="pj-minigame" style="text-align:center;padding:30px;">'
-        + '<h2 style="font-size:2.4em;color:#1B5E20;margin-bottom:15px;">🕵️ 誰是臥底・秘密發牌中</h2>'
-        + '<div style="font-size:5em;margin:20px 0;">📱 ➔ 🤫</div>'
-        + '<p style="font-size:1.6em;color:#444;">手機正在離線傳遞中，請各位隊員做好準備！</p>'
+        + '<p style="margin-top:25px;font-size:1.1em;color:#666;">（身份同詞只喺領袖手機嘅主持面板，大螢幕公平無透底）</p>'
         + '</div>';
     }
+    if(st.phase === 'result'){
+      var spies = st.roles.filter(function(r){ return r.isSpy; }).map(function(r){ return r.name; });
+      var judged = '';
+      if(st.votedIdx >= 0){
+        var outed = st.roles[st.votedIdx];
+        judged = '<p style="font-size:1.5em;font-weight:bold;color:' + (outed.isSpy ? '#1B5E20' : '#B71C1C') + ';">🗳️ ' + outed.name + ' 被投出 → '
+          + (outed.isSpy ? '✅ 捉到臥底，平民勝！' : '❌ 捉錯人，臥底勝！') + '</p>';
+      }
+      return '<div class="pj-minigame" style="text-align:center;padding:24px;">'
+        + '<h2 style="font-size:2.4em;color:#1B5E20;margin-bottom:10px;">🔎 揭曉</h2>'
+        + judged
+        + '<p style="font-size:1.8em;margin:8px 0;">平民詞：<b style="color:#2E7D32;">「' + st.pair.civil + '」</b></p>'
+        + '<p style="font-size:1.8em;margin:8px 0;">臥底詞：<b style="color:#C62828;">「' + st.pair.spy + '」</b></p>'
+        + '<p style="font-size:1.8em;margin:8px 0;">臥底係：<b>' + spies.join('、') + '</b></p>'
+        + '</div>';
+    }
+    return '<div class="pj-minigame" style="text-align:center;padding:30px;">'
+      + '<h2 style="font-size:2.4em;color:#1B5E20;margin-bottom:15px;">🕵️ 誰是臥底</h2>'
+      + '<div style="font-size:5em;margin:20px 0;">🃏 ✂️</div>'
+      + '<p style="font-size:1.6em;color:#444;">秘密卡由領袖一次過派；派完之後由領袖按「開始計時」，大螢幕會顯示發言倒數。</p>'
+      + '</div>';
   }
 
   if(mode === 'agent'){
