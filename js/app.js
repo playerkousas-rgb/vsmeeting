@@ -1268,15 +1268,15 @@ App.pages.book = function(sub){
 /* ✂️ 素材庫：即搵即印／即投屏 */
 App.printCat = '';
 App.printCats = [
-  {k:'ws',   ic:'🎮', n:'聚會 GAME 互動箱（可投影）'},
-  {k:'aid',  ic:'🩹', n:'急救卡（6 張）'},
-  {k:'text', ic:'⚜️', n:'誓詞規律銘言'},
-  {k:'rope', ic:'🧵', n:'收繩保養'},
-  {k:'flag', ic:'🇨🇳', n:'國歌升旗'}
+  {k:'spy',   ic:'🕵️', n:'誰是臥底（可投影）'},
+  {k:'agent', ic:'🕴️', n:'機密特務（可投影）'},
+  {k:'bj',    ic:'♠️', n:'21點撲克（可投影）'},
+  {k:'dice',  ic:'🎲', n:'骰子與大話骰（可投影）'},
+  {k:'wheel', ic:'🎡', n:'幸運轉盤（可投影）'}
 ];
 App.pages.print = function(){
   var wrap = App.h('div','page');
-  wrap.appendChild(App.h('h1',null,'✂️ 素材庫'));
+  wrap.appendChild(App.h('h1',null,'🎮 聚會 GAME 互動庫'));
   var cats = App.printCats;
   if (!App.printCat || !cats.some(function(c){return c.k===App.printCat;})) App.printCat = cats[0].k;
   var host = App.h('div','print-host');
@@ -1297,78 +1297,54 @@ App.pages.print = function(){
 /* 素材庫每一類嘅內容 */
 App.printPanel = function(cat){
   var box = App.h('div','');
-  if (cat === 'ws') {
-    var wsHtml = '<div class="callout ok-callout" style="margin-bottom:14px;background:#E8F5E9;border-left:5px solid #2E7D32;">'
-      + '<h3 style="margin:0 0 6px 0;color:#1B5E20;">🎮 聚會 MINI GAME 實戰互動庫（全離線・可大螢幕投影）</h3>'
-      + '<p style="margin:0 0 8px 0;font-size:14px;">深資童軍（15–20 歲）集會破冰、專案實作與夜話首選！此處已完整嵌入離線遊戲工具，<strong>支援領袖手機操作、大電視/投影機即時同步投屏</strong>：</p>'
-      + '</div>'
-      + (typeof MiniGame !== 'undefined' ? MiniGame.htmlBlock() : '')
-      + '<div style="margin-top:20px;padding-top:14px;border-top:1px dashed #ccc;"><h3 style="margin-bottom:8px;">📋 集會教案檢討與觀察表（備用）</h3></div>';
-    setTimeout(function(){ if(typeof MiniGame !== 'undefined' && MiniGame.mount) MiniGame.mount(); }, 60);
-    [{k:'會員章 c01–c06', from:0, to:6},{k:'肩章・認識 c07–c09', from:6, to:9},
-     {k:'肩章・技能 c10–c16', from:9, to:16}].forEach(function(g){
-      var list = DATA.meetings.slice(g.from,g.to).filter(function(m){return m.full&&m.data&&m.data.worksheet;});
-      if (!list.length) return;
-      wsHtml += '<h3 class="ws-group">'+g.k+'</h3>';
-      list.forEach(function(m){
-        var aud = m.data.worksheet.audience==='leader' ? '（領袖用）' : '（成員用 A4）';
-        wsHtml += '<div class="ws-item" data-title="'+m.tid+' 工作紙">'
-          + '<div class="ws-head"><b>'+m.tid+aud+'</b><span class="mut"> '+m.n+'</span> '
-          + '<a class="mut ws-goto" href="#plan/'+m.tid+'">睇完整教案 ↗</a>'
-          + '<button class="print-btn" onclick="App.printSec(this.closest(\'div.ws-item\'))">🖨️ 只印呢張</button>'
-          + '<button class="proj-btn" onclick="App.projSec(this.closest(\'div.ws-item\'))">🖥️ 投呢張</button></div>'
-          + App.worksheetHtml(m.data.worksheet, m.tid)
-          + '</div>';
-      });
-    });
-    box.appendChild(App.block('📝 工作紙（逐張印／逐張投）', wsHtml, {print:false,proj:false}));
+  
+  if (cat === 'spy') {
+    box.innerHTML = '<div class="card" style="margin-bottom:12px;background:#F9FBE7;border-left:5px solid #689F38;">'
+      + '<h3 style="margin:0 0 6px 0;color:#33691E;">🕵️ 誰是臥底（Secret Words 離線多人推理）</h3>'
+      + '<p style="margin:0;font-size:14px;color:#555;">單機傳遞查看秘密詞，支援<b>派對、食物、童軍戶外、校園職場</b>四大題庫，可點擊上方按鈕一鍵投影至大電視/投影機！</p>'
+      + '</div><div id="mg-spy-box"></div>';
+    setTimeout(function(){ if(typeof MiniGame !== 'undefined' && MiniGame.renderSpyUI) MiniGame.renderSpyUI(); }, 50);
     return box;
   }
 
-  if (cat === 'aid') {
-    var html = '<p class="mut">6 張卡：5 種常見受傷＋復原臥式。每張都有圖，可以印出嚟貼喺急救箱／壁報，或者投屏一齊睇。</p>';
-    C10.firstaid.forEach(function(f){
-      html += '<div class="aid-wrap" data-title="急救卡 '+f.n+'">'+App.aidCard(f.n, f.how, f.warn)
-        + '<p class="aid-ops"><button class="print-btn" onclick="App.printSec(this.closest(\'div.aid-wrap\'))">🖨️ 只印呢張</button>'
-        + '<button class="proj-btn" onclick="App.projSec(this.closest(\'div.aid-wrap\'))">🖥️ 投呢張</button></p></div>';
-    });
-    var faint = App.aidCard('復原臥式','唔醒但有呼吸：側臥，頭微向下、上膝屈前、上手放前面，防嘔吐物鯁親；轉身前後都要睇呼吸','呼吸唔正常即打 999；跟有急救證書嘅領袖做');
-    html += '<div class="aid-wrap" data-title="急救卡 復原臥式">'+faint
-      + '<p class="aid-ops"><button class="print-btn" onclick="App.printSec(this.closest(\'div.aid-wrap\'))">🖨️ 只印呢張</button>'
-      + '<button class="proj-btn" onclick="App.projSec(this.closest(\'div.aid-wrap\'))">🖥️ 投呢張</button></p></div>';
-    box.appendChild(App.block('🩹 急救卡（6 張，連圖）', html, {print:false,proj:false}));
+  if (cat === 'agent') {
+    box.innerHTML = '<div class="card" style="margin-bottom:12px;background:#EDE7F6;border-left:5px solid #5E35B1;">'
+      + '<h3 style="margin:0 0 6px 0;color:#311B92;">🕴️ 機密特務（5×5 Codenames 特務密碼）</h3>'
+      + '<p style="margin:0;font-size:14px;color:#555;">紅藍兩隊對抗，隊長透視底牌給提示、隊員翻牌猜詞，踩中炸彈立即落敗。支援大螢幕投影即時更新牌局！</p>'
+      + '</div><div id="mg-agent-box"></div>';
+    setTimeout(function(){ if(typeof MiniGame !== 'undefined' && MiniGame.renderAgentUI) MiniGame.renderAgentUI(); }, 50);
     return box;
   }
 
-  if (cat === 'text') {
-    box.appendChild(App.block('⚜️ 誓詞・規律・銘言卡',
-      '<div class="card"><h3>童軍誓詞</h3><ol class="promise">'+DATA.facts.promise.map(function(l){return '<li>'+l+'</li>';}).join('')+'</ol>'+
-      '<h3>童軍規律</h3><ul class="bullet">'+DATA.facts.law.map(function(l){return '<li>'+l+'</li>';}).join('')+'</ul>'+
-      '<h3>童軍銘言：準備</h3><ul class="motto"><li>'+DATA.facts.motto+'</li></ul></div>'+
-      '</div>'));
+  if (cat === 'bj') {
+    box.innerHTML = '<div class="card" style="margin-bottom:12px;background:#E8F5E9;border-left:5px solid #2E7D32;">'
+      + '<h3 style="margin:0 0 6px 0;color:#1B5E20;">♠️ 21 點黑傑克（Crypto RNG 離線人機對戰）</h3>'
+      + '<p style="margin:0;font-size:14px;color:#555;">單機離線對抗莊家，具備自動補牌、爆牌判定與籌碼結算系統，聚會策略休閒必備！</p>'
+      + '</div><div id="mg-bj-box"></div>';
+    setTimeout(function(){ if(typeof MiniGame !== 'undefined' && MiniGame.renderBjUI) MiniGame.renderBjUI(); }, 50);
     return box;
   }
 
-  if (cat === 'rope') {
-    box.appendChild(App.block('🧵 收繩保養卡',
-      '<div class="card"><p><b>收法：</b>'+C14.ropeCare.coil+'</p><ul class="bullet">'+C14.ropeCare.care.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'+
-      (DIAGRAMS.skillx&&DIAGRAMS.skillx.ropecare?'<figure class="dgm-fig"><div class="dgm-wrap">'+DIAGRAMS.skillx.ropecare+'</div><figcaption>收繩＋保養示意（步驟照 c14 文字）</figcaption></figure>':'')+'</div>'));
+  if (cat === 'dice') {
+    box.innerHTML = '<div class="card" style="margin-bottom:12px;background:#FBE9E7;border-left:5px solid #D84315;">'
+      + '<h3 style="margin:0 0 6px 0;color:#BF360C;">🎲 聚會骰子工具（支援大話骰/防偷看遮擋模式）</h3>'
+      + '<p style="margin:0;font-size:14px;color:#555;">1–6 顆骰子隨心選擇，支援遮擋模式防偷看，大螢幕同步展示搖骰點數！</p>'
+      + '</div><div id="mg-dice-box"></div>';
+    setTimeout(function(){ if(typeof MiniGame !== 'undefined' && MiniGame.renderDiceUI) MiniGame.renderDiceUI(); }, 50);
     return box;
   }
 
-  if (cat === 'flag') {
-    box.appendChild(App.block('🇨🇳 國歌《義勇軍進行曲》・升旗禮儀歌紙',
-      '<div class="card"><ul class="bullet"><li><b>場合</b>：升旗禮（c04/c05/c06）、大型典禮——全體肅立，面向國旗。</li>'+
-      '<li><b>禮儀</b>：制服要整齊；隊列中團員立正致敬，領隊或單獨一人舉手敬禮（制服唔整齊或穿便服 → 只肅立，唔舉手）。</li></ul>'+
-      '<p><b>歌詞</b>：起來！不願做奴隸的人們！把我們的血肉，築成我們新的長城！中華民族到了最危險的時候，每個人被迫着發出最後的吼聲。起來！起來！起來！我們萬眾一心，冒着敵人的炮火，前進！冒着敵人的炮火，前進！前進！前進！進！</p></div>'+
-      '<p class="tip">💡 升旗程序、位置圖解：<a href="#ceremony/flag">🎪 升旗禮儀式卡</a>；升旗程序細節見 <a href="#plan/c05">c05</a>。</p>'));
+  if (cat === 'wheel') {
+    box.innerHTML = '<div class="card" style="margin-bottom:12px;background:#FFFDE7;border-left:5px solid #F57F17;">'
+      + '<h3 style="margin:0 0 6px 0;color:#E65100;">🎡 命運幸運轉盤（自訂破冰任務與真心話懲罰）</h3>'
+      + '<p style="margin:0;font-size:14px;color:#555;">聚會破冰、遊戲懲罰隨機轉盤，支援大螢幕全場同步展示抽中項目！</p>'
+      + '</div><div id="mg-wheel-box"></div>';
+    setTimeout(function(){ if(typeof MiniGame !== 'undefined' && MiniGame.renderWheelUI) MiniGame.renderWheelUI(); }, 50);
     return box;
   }
 
   return box;
 };
-
-
 
 /* 🎮 活動（每個遊戲附場地圖） */
 App.pages.play = function(){
