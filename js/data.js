@@ -9,7 +9,8 @@ var EXTERNAL = {
   ecportal: 'https://ecportal.vercel.app/',
   officialPack: 'https://drive.google.com/file/d/1MEXphy7RQXXfFZX3uXsg0L4ZfOXbPEuo/view',
   aypGuide: 'https://ayp-eight.vercel.app/',
-  upgradeGuide: 'https://upgrade-ashen.vercel.app/'
+  upgradeGuide: 'https://upgrade-ashen.vercel.app/',
+  minigame: 'https://github.com/playerkousas-rgb/minigame.git'
 };
 DATA.source = {
   title: '深資童軍訓練綱要（深資童軍支部）',
@@ -311,6 +312,14 @@ DATA.specialEvents = [
 ];
 
 DATA.games = [
+  { n:'聚會互動 MINI GAME', cat:'破冰/認識・深資版', people:'全體（多人連線 / 單機）', minutes:20, mats:'手機（每人一機掃碼或共用）',
+    desc:'透過開源專案 https://github.com/playerkousas-rgb/minigame.git 進行集會破冰與團隊互動：包含骰子、卡牌遊戲（德州撲克、21點、百家樂）、對話推理遊戲（狼人殺、一夜狼人、誰是臥底、機密特務）及多人連線計分板，集會一起玩互動效果更好。',
+    steps:[ '開手機進入 MINI GAME 工具箱（或掃描房主 QR Code 加入房間）。',
+            '破冰階段可選「誰是臥底」或「機密特務（Codenames）」分隊對抗，訓練即時溝通、表達與默契。',
+            '團隊決策與策略討論時，可使用「德州撲克」或「一夜狼人」進行風險權衡與邏輯分析。',
+            '集會各項競賽活動使用內建「多人連線計分板」及「活動倒數」即時同步成績。' ],
+    tips:'無須下載安裝 App，純前端靜態離線可用；點對點連線不需帳號，適合深資童軍集會破冰及聯誼互動。',
+    safety:'適度使用手機互動，遊戲結束後專注回集會檢討與實務訓練；對話遊戲保持互相尊重。' },
   { n:'人脈網絡', cat:'破冰/認識・深資版', people:'全體（15–20人圍圈）', minutes:15, mats:'長繩球一個',
     desc:'用繩球拋接建立人脈網絡，講出自己專長／可貢獻資源，訓練主動自我介紹及資源共享意識。深資團長帶頭示範專業背景，大學／職場經驗係資源。',
     steps:[ '全團圍圈，領袖拎繩球：我係阿明，讀緊城大社工，專長活動帶領，我貢獻帶破冰。',

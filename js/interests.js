@@ -291,7 +291,7 @@ INTERESTS.howToApply = {
       { n:7, t:'🎓 存檔', d:'證書副本交VSL存檔，正本自保；係考金帶先決。' }
     ]
   },
-  otherGroupsNote: '官方規則：會員章 VSL+EC商議頒發；肩章 VSL簽發；段章 VSL安排主考+簽發，區總監協助；金帶 團長/區總監協助安排，區總監/地域總監/青少年活動總監或代表主考（通常ADC(VS)）。詳見訓練綱要及通告，進度vsbadge，執委會ecportal。'
+  otherGroupsNote: '官方規則：會員章 VSL+EC商議頒發；肩章 VSL簽發；段章 VSL安排主考+簽發，區總監協助；金帶 團長/區總監協助安排，區總監/地域總監/青少年活動總監或代表主考（通常ADC(VS)）。詳見訓練綱要及通告。'
 };
 
 if (typeof module !== 'undefined' && module.exports) module.exports = INTERESTS;

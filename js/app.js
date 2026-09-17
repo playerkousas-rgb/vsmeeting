@@ -651,16 +651,22 @@ App.renderMeeting = function(tid){
 
     // 實戰後備
     var pb = App.h('div','card');
-    if(Array.isArray(d.practical)){
-      pb.innerHTML = d.practical.map(function(x){return '<p><b>'+x.situation+'：</b>'+x.action+'</p>';}).join('');
+    if(d.practical){
+      if(Array.isArray(d.practical)){
+        pb.innerHTML = d.practical.map(function(x){return '<p><b>'+x.situation+'：</b>'+x.action+'</p>';}).join('');
+      } else {
+        var pkeys = {fewPeople:'少人（6-8 人）',lackMat:'缺物資',notEngaged:'不投入',thirtyMinEnd:'要提早 30 分鐘收尾',emotionalSupport:'如有團員情緒反應',weatherBad:'天氣不好/落雨',techFail:'音響/投影失靈',late:'嘉賓/家長遲到',absentee:'有團員缺席'};
+        var phtml = '';
+        Object.keys(pkeys).forEach(function(k){
+          if(d.practical[k]) phtml += '<p><b>'+pkeys[k]+'：</b>'+d.practical[k]+'</p>';
+        });
+        if(d.practical.qa && d.practical.qa.length){
+          phtml += '<p><b>成員可能問：</b></p><ul class="bullet">'+d.practical.qa.map(function(q){return '<li><b>Q：'+q.q+'</b><br>A：'+q.a+'</li>';}).join('')+'</ul>';
+        }
+        pb.innerHTML = phtml || '<p class="mut">按現場人數及進度彈性調整分組及討論時間。</p>';
+      }
     } else {
-      var pkeys = {fewPeople:'少人（6-8 人）',lackMat:'缺物資',notEngaged:'不投入',thirtyMinEnd:'要提早 30 分鐘收尾',emotionalSupport:'如有團員情緒反應',weatherBad:'天氣不好/落雨',techFail:'音響/投影失靈',late:'嘉賓/家長遲到',absentee:'有團員缺席'};
-      var phtml = '';
-      Object.keys(pkeys).forEach(function(k){
-        if(d.practical[k]) phtml += '<p><b>'+pkeys[k]+'：</b>'+d.practical[k]+'</p>';
-      });
-      phtml += '<p><b>成員可能問：</b></p><ul class="bullet">'+(d.practical.qa||[]).map(function(q){return '<li><b>Q：'+q.q+'</b><br>A：'+q.a+'</li>';}).join('')+'</ul>';
-      pb.innerHTML = phtml;
+      pb.innerHTML = '<p class="mut">按現場人數及進度彈性調整分組及討論時間；如少人可合併討論，缺席者由秘書群組跟進補交資料。</p>';
     }
     var sPb = App.sec('🆘 實戰後備',{id:tid+'-back'});
     sPb.add(pb);
@@ -1218,7 +1224,8 @@ App.pages.book = function(sub){
     '<li><a href="'+EXTERNAL.vsbadge+'" target="_blank" rel="noopener">🎖️ 徽章進度追蹤（段章金帶 vsbadge）</a></li>'+
     '<li><a href="'+EXTERNAL.ecportal+'" target="_blank" rel="noopener">🧑‍💼 執委會管理（ecportal・自務自治）</a></li>'+
     '<li><a href="'+EXTERNAL.aypGuide+'" target="_blank" rel="noopener">🌟 AYP 童軍接駁指南（領袖轉給團員）</a></li>'+
-    '<li><a href="'+EXTERNAL.upgradeGuide+'" target="_blank" rel="noopener">⬆️ 升團準備指南（制服＋升團過渡）</a></li>';
+    '<li><a href="'+EXTERNAL.upgradeGuide+'" target="_blank" rel="noopener">⬆️ 升團準備指南（制服＋升團過渡）</a></li>'+
+    '<li><a href="'+EXTERNAL.minigame+'" target="_blank" rel="noopener">🎮 聚會互動 MINI GAME（開源專案・集會一起玩）</a></li>';
   wrap.appendChild(App.sec('🔗 參考資料').add(ul3));
   return wrap;
 };
@@ -1256,7 +1263,15 @@ App.pages.print = function(){
 App.printPanel = function(cat){
   var box = App.h('div','');
   if (cat === 'ws') {
-    var wsHtml = '<p class="mut">同集會目錄每場教案用嘅係同一份工作紙。</p>';
+    var wsHtml = '<div class="callout ok-callout" style="margin-bottom:14px;">'
+      + '<b>📱 深資集會互動與 MINI GAME 配套：</b><br>'
+      + '深資童軍（15–20歲）不再適合小學式填字工作紙，集會推薦以互動實作、即場討論與聚會 MINI GAME 配合進行：'
+      + '<ul class="bullet" style="margin:6px 0 8px 18px;">'
+      + '<li><b>🕹️ 聚會互動 MINI GAME</b>：支援骰子工具、卡牌（德州撲克／21點／百家樂）、對話推理（狼人殺／一夜狼／誰是臥底／機密特務）、隨機分隊、多人連線計分板。集會破冰及反思一齊玩效果更好！</li>'
+      + '<li><b>🔗 開源專案庫</b>：<a href="' + (EXTERNAL.minigame || 'https://github.com/playerkousas-rgb/minigame.git') + '" target="_blank" rel="noopener" style="font-weight:bold;text-decoration:underline;">https://github.com/playerkousas-rgb/minigame.git</a></li>'
+      + '</ul>'
+      + '下方保留集會教案相關之檢討觀察表及打卡記錄表供手機／iPad 直接填寫或按需列印。</div>'
+      + '<p class="mut">同集會目錄每場教案用嘅係同一份工作紙。</p>';
     [{k:'會員章 c01–c06', from:0, to:6},{k:'肩章・認識 c07–c09', from:6, to:9},
      {k:'肩章・技能 c10–c16', from:9, to:16}].forEach(function(g){
       var list = DATA.meetings.slice(g.from,g.to).filter(function(m){return m.full&&m.data&&m.data.worksheet;});
@@ -1379,18 +1394,18 @@ App.pages.play = function(){
 /* 🪢 技能（深資版：唔係童軍版放大，係執委會／AYP／職涯／服務導向） */
 App.pages.skills = function(sub){
   var wrap = App.h('div','page');
-  wrap.appendChild(App.h('h1',null,'🪢 技能・深資版'));
+  wrap.appendChild(App.h('h1',null,'🪢 技能'));
   wrap.appendChild(App.h('p','lede','深資童軍（15–20歲，大學生為主）唔係學多幾個結就叫進階。呢度分兩層：<b>基礎戶外技能</b>（要識教細嘅）＋<b>深資核心技能</b>（執委會／策劃／服務／生涯）。除繩結只出口訣外，其他都附圖，可投屏教學。'));
   var subs = [
-    {k:'rope',ic:'🪢',n:'繩結口訣'},
-    {k:'care',ic:'🧵',n:'收繩保養'},
-    {k:'map',ic:'🗺️',n:'地圖導航'},
-    {k:'pack',ic:'🎒',n:'遠征策劃'},
-    {k:'camp',ic:'🏕️',n:'營地管理'},
-    {k:'pioneer',ic:'🪚',n:'先鋒烹調'},
-    {k:'track',ic:'👣',n:'追蹤求生'},
-    {k:'field',ic:'🌳',n:'無痕山林'},
-    {k:'aid',ic:'🩹',n:'急救應變'},
+    {k:'rope',ic:'🪢',n:'繩結先鋒（指導）'},
+    {k:'care',ic:'🧵',n:'繩索保養管理'},
+    {k:'map',ic:'🧭',n:'地圖導航與山野安全'},
+    {k:'pack',ic:'🎒',n:'遠征裝備策劃'},
+    {k:'camp',ic:'🏕️',n:'營地管理與安全'},
+    {k:'pioneer',ic:'📐',n:'先鋒工程實踐'},
+    {k:'track',ic:'🎯',n:'戶外定向與應變'},
+    {k:'field',ic:'🌿',n:'無痕山林與永續'},
+    {k:'aid',ic:'🚑',n:'緊急救護與心理支援'},
     {k:'lead',ic:'🧑‍🤝‍🧑',n:'領導執委會'},
     {k:'plan',ic:'📋',n:'策劃風險'},
     {k:'service',ic:'🤝',n:'服務社區'}
@@ -1409,9 +1424,10 @@ App.pages.skills = function(sub){
       return '<li><b>'+k.n+'</b>（'+k.en+'）：'+k.use+'<br><small>教學點：點樣示範？常見錯處？點樣檢查？</small></li>';
     }).join('')+'</ul>'+
     '<div class="callout warn">🚫 本app <b>唔設繩結逐步圖卡</b>——圖解好易畫錯。請跟 <a href="#plan/c13">c13</a>／<a href="#plan/c14">c14</a> 文字口訣（例：平結「左壓右、右壓左」、稱人結「兔仔出洞繞樹返洞」），由領袖現場示範＋檢查。深資考核要識教，唔係淨係識打。</div><p class="tip">💡 連結段章「自立」— 自我技能；連結金帶 — 探險組先鋒工程要用四方／十字／八字編結。</p></div>');
-  secs.care = App.block('🧵 收繩與繩索保養・深資管理',
-    '<div class="card"><p><b>圈繞收法：</b>'+C14.ropeCare.coil+'（深資要識教＋管理倉庫）</p>'+figFor('ropecare','收繩步驟＋保養五要點')+
-    '<ul class="bullet">'+C14.ropeCare.care.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul><p class="tip">💡 深資職責：康樂／總務要定期檢查繩索，有起毛／硬化即報廢，記錄入ecportal物資表。</p></div>');
+  secs.care = App.block('🧵 繩索裝備保養與物資管理',
+    '<div class="card"><div class="callout ok-callout" style="margin-bottom:10px;"><b>深資定位（裝備管理責任）：</b>深資童軍日常集會不浪費時間反覆單純收繩，重點在於<strong>物資庫存安全監控</strong>、指導初級童軍維護繩索、以及探險遠征／先鋒工程後之繩索檢驗。</div>'+
+    '<p><b>圈繞收法：</b>'+C14.ropeCare.coil+'（深資要識教細、檢查受力及管理倉庫物資）</p>'+figFor('ropecare','收繩步驟＋保養五要點')+
+    '<ul class="bullet">'+C14.ropeCare.care.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul><p class="tip">💡 深資職責：執委會總務／器材員需定期檢查全團繩索與先鋒裝備，有起毛、斷絲、內部硬化即予報廢，記錄入物資登記表。</p></div>');
   secs.map = App.block('🗺️ 地圖與指南針・由識睇到識教',
     '<div class="card"><ul class="bullet">'+
     '<li><b>比例尺 1:20,000</b>：地圖1cm=實際200米；圖上5cm=1公里（c11）。深資要識計時間：平路4km/h，上山每100m爬升加10分鐘。</li>'+
@@ -1447,18 +1463,19 @@ App.pages.skills = function(sub){
     '<li><b>由做到教</b>：深資要識寫先鋒工程計劃書及風險評估，教童軍點解咁紮，唔係齋叫佢跟。</li></ul>'+
     '<div class="svg-steps">'+figFor('pioneer','先鋒工程物料／安全距離示意')+'</div>'+
     '<div class="callout">⚠️ 紮作同繩結一樣「畫錯就教錯」，圖解以現場示範＋教案文字為準；深資要識教細嘅，連結段章「活動」。</div></div>');
-  secs.track = App.block('👣 追蹤符號＋求生信號（深資應用）',
-    '<div class="card"><ul class="bullet">'+
-    '<li><b>→ 箭嘴</b>：向前行；<b>○ 圓圈</b>：集合/終點；<b>✕ 交叉</b>：唔行呢邊/行錯路；<b>↑ 轉彎箭嘴</b>：轉方向；<b>～ 波浪</b>：有水/小心；<b>△ 三角</b>：留訊息喺附近。</li>'+
-    '<li><b>深資用法</b>：設計城市定向追蹤遊戲（<a href="#play">#play</a>）、遠征路標；做完要清走（Leave No Trace），唔好喺古蹟／私人地方畫。</li>'+
-    '<li><b>求生信號</b>：哨子6下／分鐘（國際山難求救）、鏡反光、頭燈SOS（三短三長三短）、衫擺大字。</li></ul>'+
+  secs.track = App.block('🎯 戶外定向路標設計與野外應變求救',
+    '<div class="card"><div class="callout ok-callout" style="margin-bottom:10px;"><b>深資定位（策劃設計者而非低年級追蹤）：</b>深資童軍日常已具備地圖座標與數碼導航能力，單純地面石塊追蹤符號為幼童軍基礎技能。深資之應用在於<strong>為幼童軍／童軍支部設計城市定向追蹤任務</strong>，或在遠征通訊中斷時作為緊急撤退路標與求救通信。</div>'+
+    '<ul class="bullet">'+
+    '<li><b>設計路標符號</b>：<b>→ 箭嘴</b>（向前行）、<b>○ 圓圈</b>（集合/終點）、<b>✕ 交叉</b>（禁行/警示）、<b>↑ 轉彎</b>（改向）、<b>～ 波浪</b>（水險/留意障礙）、<b>△ 三角</b>（附近留有任務信封或資訊卡）。</li>'+
+    '<li><b>深資策劃原則</b>：設計城市或野外定向路線，必須遵守無痕山林（Leave No Trace），禁止在歷史古蹟、公共設施或私人產權上亂塗，活動結束必須由後隊全數撤除。</li>'+
+    '<li><b>野外求生信號與通訊應變</b>：國際山難求救（每分鐘 6 次哨音或閃光，停頓 1 分鐘後重複）、摩斯密碼 SOS（三短三長三短）、高反差反光鏡／色彩標記、地對空地面標誌，並善用離線衛星定位求救。</li></ul>'+
     '<div class="svg-steps">'+
     '<figure>'+DIAGRAMS.track.arrow+'<figcaption>向前行</figcaption></figure>'+
     '<figure>'+DIAGRAMS.track.circle+'<figcaption>集合/終點</figcaption></figure>'+
     '<figure>'+DIAGRAMS.track.cross+'<figcaption>唔行呢邊</figcaption></figure>'+
     '<figure>'+DIAGRAMS.track.turn+'<figcaption>轉方向</figcaption></figure>'+
     '<figure>'+DIAGRAMS.track.water+'<figcaption>有水/小心</figcaption></figure>'+
-    '<figure>'+DIAGRAMS.track.msg+'<figcaption>附近有訊息</figcaption></figure></div><p class="tip">💡 連結探險段章：點樣用追蹤符號設計一個童軍支部定向活動？</p></div>');
+    '<figure>'+DIAGRAMS.track.msg+'<figcaption>附近有訊息</figcaption></figure></div><p class="tip">💡 連結探險段章：如何結合地圖、座標與追蹤設計一個完整的跨支部大型定向活動？</p></div>');
   secs.field = App.block('🌳 郊野守則・無痕山林・永續發展',
     '<div class="card"><ul class="bullet">'+
     '<li><b>Leave No Trace七原則＋香港版</b>：計劃準備→硬地行露營→垃圾帶走→唔郁自然嘢→減營火影響→尊重野生動物→顧及其他人（c16）。香港加：自己垃圾自己帶走、唔餵野生動物、唔行捷徑破壞植被。</li>'+
@@ -1865,6 +1882,15 @@ App.toolsSecs = function(){
     '<div id="pt-grp-out"></div>'+
     '</div>';
   frag.appendChild(sGrp);
+
+  var sMini = App.sec('🎮 聚會 MINI-GAME 互動箱（誰是臥底 / 機密特務 / 轉盤）', {print:false, proj:false});
+  sMini._body.innerHTML =
+    '<div class="card" style="margin-bottom:12px;">'+
+    '<p class="lead">無需外出連結，集會隨開即玩：深資團破冰、露營夜話、室內活動特訓互動組件。</p>'+
+    (typeof MiniGame !== 'undefined' ? MiniGame.htmlBlock() : '<div id="mg-spy-box"></div><div id="mg-agent-box"></div><div id="mg-wheel-box"></div>')+
+    '</div>';
+  frag.appendChild(sMini);
+  setTimeout(function(){ if(typeof MiniGame !== 'undefined' && MiniGame.mount) MiniGame.mount(); }, 50);
 
   return frag;
 };
