@@ -1308,18 +1308,16 @@ App.pages.book = function(sub){
 
 /* ✂️ 素材庫：即搵即印／即投屏 */
 App.printCat = '';
-/* v43：聚會 GAME 互動庫 ＝ ①互動工具（離線小遊戲）②集會遊戲卡（DATA.games 可以即場用）③即印即用素材
-   用戶指正：唔可以只剩標題——每個分頁都要有真內容，而且係「揀一項塞入集會」嘅單項項目。 */
+/* 聚會 GAME 互動庫 ＝ ①互動工具（離線小遊戲）②集會遊戲卡（DATA.games 可以即場用）③即印即用素材
+   工作紙屬教案內容，唔放呢度：每場教案自己頁面已經有工作紙（見 #plan/c08 等）。 */
 App.printCats = [
   {k:'tools', ic:'🎮', n:'互動遊戲工具'},
   {k:'games', ic:'🎲', n:'集會遊戲卡（'+DATA.games.length+' 個）'},
-  {k:'ws',    ic:'📝', n:'集會工作紙（現成 5 張）'},
   {k:'sheet', ic:'🖨️', n:'即印即用素材'}
 ];
 App.pages.print = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎮 聚會 GAME 互動庫'));
-  wrap.appendChild(App.h('p','lede','呢頁係<b>即場用得嘅遊戲同素材</b>：① 互動遊戲工具（離線・可投屏）② 官方套包嘅集會遊戲卡（有玩法、物資、安全）③ 16 場集會工作紙 ④ 即印素材（急救卡／誓詞卡／收繩／國歌歌紙）。揀一項就塞得入集會，唔需要由零設計。'));
   var cats = App.printCats;
   if (!App.printCat || !cats.some(function(c){return c.k===App.printCat;})) App.printCat = cats[0].k;
   var host = App.h('div','print-host');
@@ -1343,11 +1341,7 @@ App.printPanel = function(cat){
 
   /* ── ① 互動遊戲工具（全部離線、可投屏）── */
   if (cat === 'tools') {
-    box.innerHTML = '<div class="callout ok-callout" style="margin-bottom:14px;background:#E8F5E9;border-left:5px solid #2E7D32;">'
-      + '<h3 style="margin:0 0 6px 0;color:#1B5E20;">🎮 聚會互動遊戲工具（4 個・離線可用・可投大螢幕）</h3>'
-      + '<p style="margin:0;font-size:14px;">開會即用，唔需要上網。領袖用手機操作，撳每個工具下面嘅「🖥️ 投影大螢幕」就投到電視／投影機。</p>'
-      + '</div>'
-      + '<div class="card"><h3>🕵️ 誰是臥底（領袖主持・一次過派卡）</h3><div id="mg-spy-box"></div></div>'
+    box.innerHTML = '<div class="card"><h3>🕵️ 誰是臥底（領袖主持・一次過派卡）</h3><div id="mg-spy-box"></div></div>'
       + '<div class="card"><h3>🕴️ 機密特務（5×5 猜詞）</h3><div id="mg-agent-box"></div></div>'
       + '<div class="card"><h3>🎲 骰子（大話骰／遮擋模式）</h3><div id="mg-dice-box"></div></div>'
       + '<div class="card"><h3>🎡 幸運轉盤（自訂任務）</h3><div id="mg-wheel-box"></div></div>';
@@ -1392,31 +1386,7 @@ App.printPanel = function(cat){
     return box;
   }
 
-  /* ── ③ 集會工作紙（16 場・逐張印／逐張投）── */
-  if (cat === 'ws') {
-    var box2 = App.h('div','');
-    box2.innerHTML = '<div class="callout" style="margin-bottom:12px;">📝 <b>現成工作紙 5 張</b>（c08 列席觀察表／c10 急救 5 式／c12 定向打卡表／c15 露營計劃書＋菜單／c16 露營檢討表）。其他場次以討論、實作同策劃為主，冇預設工作紙——想加就由教練按教案自己出。每張都可以「只印呢張」或「投呢張」。</div>';
-    [{k:'會員章 c01–c06', from:0, to:6},{k:'肩章・認識 c07–c09', from:6, to:9},
-     {k:'肩章・技能 c10–c16', from:9, to:16}].forEach(function(g){
-      var list = DATA.meetings.slice(g.from,g.to).filter(function(m){return m.data && m.data.worksheet;});
-      if (!list.length) return;
-      var grp = App.h('div','ws-group-block');
-      grp.innerHTML = '<h3 class="ws-group">'+g.k+'</h3>'+list.map(function(m){
-        var aud = (m.data.worksheet.audience==='leader') ? '（領袖用）' : '（成員用 A4）';
-        return '<div class="ws-item" data-title="'+m.tid+' 工作紙">'
-          + '<div class="ws-head"><b>'+m.tid+aud+'</b><span class="mut"> '+m.n+'</span> '
-          + '<a class="mut ws-goto" href="#plan/'+m.tid+'">睇完整教案 ↗</a>'
-          + '<button class="print-btn" onclick="App.printSec(this.closest(\'div.ws-item\'))">🖨️ 只印呢張</button>'
-          + '<button class="proj-btn" onclick="App.projSec(this.closest(\'div.ws-item\'))">🖥️ 投呢張</button></div>'
-          + App.worksheetHtml(m.data.worksheet, m.tid)
-          + '</div>';
-      }).join('');
-      box2.appendChild(grp);
-    });
-    return box2;
-  }
-
-  /* ── ④ 即印即用素材 ── */
+  /* ── ③ 即印即用素材 ── */
   if (cat === 'sheet') {
     var html = '<div class="callout" style="margin-bottom:12px;">🖨️ 呢度嘅卡可以直接印（A4）或者投屏。印出嚟放急救箱、貼壁報、或者做集會嘅「手上卡」都得。</div>';
 
@@ -1488,7 +1458,7 @@ App.itemCard = function(x, kind){
   if(x.check) h += '<h4>✅ 完成標準／檢查</h4><ul class="bullet checklist">'+x.check.map(function(t){return '<li>☐ '+t+'</li>';}).join('')+'</ul>';
   if(x.wrong) h += '<div class="callout warn"><b>⚠️ 常見錯</b><ul class="bullet">'+x.wrong.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div>';
   if(x.safety) h += '<p class="safety"><b>⚠️ 安全：</b>'+x.safety+'</p>';
-  if(x.badge) h += '<p class="source-note">🎖️ 對應綱要：'+x.badge+'　<a href="#badges">獎章查閱 →</a></p>';
+  if(x.badge) h += '<p class="source-note">💡 岩啱有人考緊獎章先參考（唔係人人都要考）：'+x.badge+'　<a href="#badges">獎章查閱 →</a></p>';
   h += '<p class="card-actions"><button class="print-btn" onclick="App.printSec(this.closest(\'div.item-card\'))">🖨️ 只印呢張</button> '
     + '<button class="proj-btn" onclick="App.projSec(this.closest(\'div.item-card\'))">🖥️ 投呢張</button></p>';
   card.innerHTML = h;
@@ -1507,7 +1477,6 @@ App.filterItems = function(wrap, filt, all, show){
 App.pages.play = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎮 活動（即插即用單項）'));
-  wrap.appendChild(App.h('p','lede','呢頁係<b>單項活動庫</b>：領袖想搵啲題目填充入集會，就由呢度揀一項——每項有目的、流程、人手、物資、帶法、安全同對應獎章。揀好就按「🖨️ 只印呢張」帶入集會，或者按「🖥️ 投呢張」同團員講。<b>想搵遊戲</b>（破冰／隊際小品）去「🎮 聚會GAME」；<b>想搵技能</b>去「🪢 技能」。'));
   var cats = ITEMS.cats(ITEMS.activities);
   var filt = App.h('div','filters'); filt.setAttribute('role','tablist');
   [{k:'all',n:'全部'}].concat(cats.map(function(c){return {k:c,n:c};})).forEach(function(b,i){
@@ -1517,9 +1486,6 @@ App.pages.play = function(){
     filt.appendChild(btn);
   });
   wrap.appendChild(filt);
-  var note = App.h('div','callout');
-  note.innerHTML = '🧩 <b>點塞入集會？</b>套包恆常集會嘅「遊戲 20′」／「課程 15′＋15′」／「宣布 5′」三段，就係用嚟放呢啲項目：短活動（30–60 分鐘）放遊戲段或課程段；大項目（服務日、露營、比賽）就用成次集會或幾次集會去做，並且要先寫計劃書。';
-  wrap.appendChild(note);
   ITEMS.activities.forEach(function(x){ wrap.appendChild(App.itemCard(x,'activity')); });
   return wrap;
 };
@@ -1533,7 +1499,6 @@ App.pages.skills = function(sub){
     .concat([{k:'badge',ic:'🎖️',n:'肩章對照'}]);
   var cur = (sub && SKUBS.some(function(x){return x.k===sub;})) ? sub : 'all';
   wrap.appendChild(App.subnav('skills', SKUBS, cur));
-  wrap.appendChild(App.h('p','lede','每張卡＝<b>一個可以獨立教嘅技能項目</b>：要點、示範步驟、檢查標準、常見錯、安全都齊。領袖揀一張就可以塞入「課程段」，唔需要跟足某一場教案。<b>圖只作位置／動作示意</b>；繩結、承重、刀／爐／火呢類一定要由合資格人士現場示範。'));
 
   if(cur==='badge'){
     var SK = [
@@ -1552,13 +1517,12 @@ App.pages.skills = function(sub){
       return '<div class="card"><h3>'+b.zh+'</h3>'
         + '<h4>📋 官方要求（第十一版）</h4><ol class="req-list">'+b.req.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ol>'
         + '<h4>💡 團內考核建議</h4><ul class="sug-list">'+b.suggest.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'
-        + '<p class="source-note">查要求用<a href="#badges">🎖️ 獎章查閱</a>（只查不記）；出席／考核記錄用團內紀錄冊。</p></div>';
+        + '<p class="source-note">呢張淨係俾岩啱考緊嗰個肩章要求嘅團員查（唔係人人都要考）；查完整要求用<a href="#badges">🎖️ 獎章查閱</a>（只查不記）；出席／考核記錄用團內紀錄冊。</p></div>';
     }
     function lessonLinks(arr){ return arr.map(function(x){ return '<a class="tag meet" href="#plan/'+x+'">📅 '+x+'</a>'; }).join(' '); }
     SK.forEach(function(x){
       wrap.appendChild(App.block(x.ic+' '+x.n, '<div class="card"><p>'+x.intro+'</p><p>'+lessonLinks(x.lessons)+'</p></div>'+badgeCard(x.badge), {id:'sk-'+x.k}));
     });
-    wrap.appendChild(App.h('div','callout','📌 肩章（二）嘅四類要求要用上面啲技能卡操熟：每張卡嘅「完成標準」就係主考人會睇嘅嘢。'));
     return wrap;
   }
 
@@ -1591,7 +1555,6 @@ App.badgeFig = function(k){
 App.pages.badges = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎖️ 獎章查閱'));
-  wrap.appendChild(App.h('p','lede','深資童軍獎章制度：<b>會員章</b>（12 項，c01–c06）→ <b>肩章</b>（認識＋技能，c07–c16）→ <b>深資童軍獎章</b>（完成下列<b>四個段章</b>：活動策劃・社會服務・多元技能・戶外探險）→ <b>榮譽童軍獎章</b>（每個段章配一條金帶，共四條）。呢度只做查閱：每項有考核要求＋對應集會；考核由團安排。'));
   var filt = App.h('div','filters');
   var btns = [{k:'all',n:'全部'}].concat(INTERESTS.categories.map(function(c){return {k:c.k,n:c.ic+' '+c.n};}));
   btns.forEach(function(b,i){
@@ -1645,7 +1608,6 @@ App.pages.ayp = function(sub){
   var cur = App.aypTabs.some(function(x){return x.k===sub;}) ? sub : 'about';
   wrap.appendChild(App.h('h1',null,'🌟 AYP 青年獎勵計劃'));
   wrap.appendChild(App.subnav('ayp',App.aypTabs,cur));
-  wrap.appendChild(App.h('p','lede','香港青年獎勵計劃（AYP／HKAYP）：14–24 歲，銅銀金三級。深資團員 15–20 歲正係銀章 → 金章主力——呢頁只查唔記，詳情以官方為準。'));
   if(cur==='about'){
     var intro = AYP.about.map(function(t){return '<li>'+t+'</li>';}).join('');
     wrap.appendChild(App.block('🌟 AYP 係乜', '<ul class="tight">'+intro+'</ul>', {print:true}));

@@ -2057,7 +2057,7 @@ button.lnk:hover{color:var(--ord)}
 .pk-open b{color:#5C1421;display:block;font-size:8.4pt;margin-bottom:2px}
 .pk-q{color:#e65100}
 .pack-run td{font-size:8.6pt}
-/* 打印：即用紙一版一張（標題頁脚已經喺 SVG 入面） */
+/* 打印：即用紙一版一張（標題頁腳已經喺 SVG 入面） */
 @media print{
   .ready-sheet .rs-top{display:none!important}
   .ready-sheet{box-shadow:none!important;max-width:none!important;width:100%!important}
@@ -2104,7 +2104,7 @@ figure.fig{margin:10px 0;background:#fff;border:1.5px solid var(--line);border-r
 figure.fig img{display:block;width:100%;height:auto;max-height:340px;object-fit:contain;background:#fafafa}
 figure.fig figcaption{font-size:.76rem;color:var(--mute);padding:7px 10px;border-top:1px dashed var(--line);line-height:1.45}
 
-/* ═══════════ 2026-09 重組：集會目錄（TOC）・歌曲・版權頁脚 ═══════════ */
+/* ═══════════ 2026-09 重組：集會目錄（TOC）・歌曲・版權頁腳 ═══════════ */
 /* 📅 集會目錄（上方左1） */
 .toc-hero{margin-bottom:10px}
 .toc-hero h1{margin:.15em 0 .1em}
@@ -2133,7 +2133,7 @@ figure.fig figcaption{font-size:.76rem;color:var(--mute);padding:7px 10px;border
 .song-tt{flex:1;min-width:0}
 .song-tt b{font-size:.94rem}
 .song-tt small{display:block;font-size:.76rem}
-/* © 頁脚 */
+/* © 頁腳 */
 .app-foot{text-align:center;font-size:.72rem;font-weight:700;color:#c2ab97;
   letter-spacing:.4px;padding:18px 0 6px}
 
@@ -2344,7 +2344,7 @@ body.offline .extcard{opacity:.55}
 .toolpick{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;text-align:center;border:1.5px dashed var(--line);border-radius:12px;padding:10px;background:#fff;font-size:1.35rem;font-weight:800;color:var(--ord)}
 
 /* ==========================================================================
-   🖨️ 列印隔离（2026-09-14）：點哪項印哪項
+   🖨️ 列印隔離（2026-09-14）：點哪項印哪項
    - 開咗列印預覽（body.print-pack）：只印 #printarea 入面嘅版面，
      背後嘅畫面、導覽、彈窗標題同掣一律唔出紙。
    - 冇開預覽直接 Ctrl+P：只印當前畫面，唔印彈出式視窗。
@@ -2431,7 +2431,7 @@ body.offline .extcard{opacity:.55}
 .skill-figure .skill-art { border: 1px solid var(--line); border-radius: 12px; background: #fff; }
 
 /* ==========================================================================
-   🖨️ 列印隔离第二層（2026-09-14 補）：開咗卡／彈窗而未開列印預覽時，
+   🖨️ 列印隔離第二層（2026-09-14 補）：開咗卡／彈窗而未開列印預覽時，
    列印只印彈窗入面嗰項（例如活動A）；背後成頁清單（A–H）唔出紙。
    三層規則：print-pack→#printarea；modal-open→彈窗內容；否則當前畫面。
    ========================================================================== */

@@ -339,11 +339,12 @@ for (const mk of ['App.printCats','App.printPanel','App.filterbar','App.projSec'
 {
   const cats = (appSrc.match(/App\.printCats = \[([\s\S]*?)\];/)||[])[1] || '';
   const n = (cats.match(/\{k:'/g)||[]).length;
-  if (n < 4) { console.error('❌ 聚會GAME 分頁得 '+n+' 類（應 4：互動遊戲工具／集會遊戲卡／工作紙／即印即用素材）'); process.exit(1); }
+  if (n !== 3) { console.error('❌ 聚會GAME 分頁得 '+n+' 類（應 3：互動遊戲工具／集會遊戲卡／即印即用素材，工作紙屬教案內容唔放呢度）'); process.exit(1); }
+  if (cats.includes("k:'ws'")) { console.error('❌ 聚會GAME 仲有工作紙分頁（應搬走，工作紙留喺教案頁面）'); process.exit(1); }
 }
 /* 用戶要求：刪 🅰️／🅱️ 兩句 navcap 同相關字句 */
 if (appSrc.includes('🅰️') || appSrc.includes('🅱️')) { console.error('❌ app.js 仲有 🅰️／🅱️ 字句'); process.exit(1); }
-console.log('✅ v31＋v43 素材庫真分頁（4 類即時切換：互動工具／遊戲卡／工作紙／即印素材）・🅰️／🅱️ 字句已清');
+console.log('✅ 素材庫真分頁（3 類即時切換：互動工具／遊戲卡／即印素材）・🅰️／🅱️ 字句已清');
 if (appSrc.includes('前往區總部報章系統')) { console.error('❌ 獎章仲有「前往區總部報章系統」連結（用戶要求移除）'); process.exit(1); }
 if (!appSrc.includes('data-href')) { console.error('❌ 集會目錄冇整行可撳（data-href）'); process.exit(1); }
 console.log('✅ v19：無繩結卡・無區系統CTA・整行可撳');
@@ -727,7 +728,7 @@ const figSandbox = {}; createContext(figSandbox);
 runInContext(readFileSync(root+'js/figs.js','utf8'), figSandbox, {filename:'js/figs.js'});
 const FIGSJ = figSandbox.FIGS || {};
 const figKeys = Object.keys(FIGSJ);
-if (figKeys.length < 24 || figKeys.length > 30) { console.error('❌ FIGS 數量唔啱（v42 刪走 AI 儀式 6 張＋支部追蹤／先鋒／田野 3 張之後應得 27 附近），實際', figKeys.length); process.exit(1); }
+if (figKeys.length < 24 || figKeys.length > 45) { console.error('❌ FIGS 數量唔啱（v46 為活動／技能卡補齊插圖，門檻已放寬），實際', figKeys.length); process.exit(1); }
 for (const gone of ['skill-pioneer','skill-track','skill-field']) {
   if (figKeys.includes(gone)) { console.error('❌ FIGS 仲有 '+gone+'（童軍支部內容／AI 動作圖，已判死）'); process.exit(1); }
 }
