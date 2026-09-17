@@ -9,19 +9,11 @@
  */
 var IMG = {};
 IMG.map = {
-  'cer.attn': { f:'img/dia/cer-attn.avif', w:720, h:347, alt:'立正示意圖：腳尖與中線成 30 度、雙手握拳貼褲骨、後顎貼衣領、眼望無限遠' },
   'cer.close': { f:'img/dia/cer-close.avif', w:720, h:318, alt:'團集會結束流程圖：分組圈＋散會手續兩格示意' },
-  'cer.dress': { f:'img/dia/cer-dress.avif', w:720, h:623, alt:'睇齊示意圖：Right—Dress 手肘貼隔離、身軀挺直、腳尖對齊' },
-  'cer.drill': { f:'img/dia/cer-drill.avif', w:720, h:356, alt:'中式隊列基本動作三格圖：立正、稍息、行進姿勢' },
   'cer.flag': { f:'img/dia/cer-flag.avif', w:720, h:381, alt:'升旗禮位置示意圖：升旗手、護旗同全團隊列嘅相對位置' },
   'cer.formup': { f:'img/dia/cer-formup.avif', w:720, h:623, alt:'集隊隊形圖：三排站位、標號員同司令員嘅距離標示' },
-  'cer.howl': { f:'img/dia/cer-howl.avif', w:720, h:623, alt:'團呼馬蹄鐵隊形俯視圖：歡呼領袖站缺口，全團圍成馬蹄鐵' },
   'cer.oath': { f:'img/dia/cer-oath.avif', w:720, h:381, alt:'宣誓儀式位置示意圖：新成員面向團長及團旗、領袖位置同左手握手' },
   'cer.open': { f:'img/dia/cer-open.avif', w:720, h:402, alt:'團集會開始集隊俯視圖：四組排成橫隊、帶隊執委站右前方、全體面向負責領袖同團旗' },
-  'cer.rest': { f:'img/dia/cer-rest.avif', w:720, h:623, alt:'稍息示意圖：右掌疊左掌放身後、腳跟分開 305 毫米、回立正要打數' },
-  'cer.salute': { f:'img/dia/cer-salute.avif', w:720, h:322, alt:'童軍三指敬禮兩格圖：全禮（食指對上右眼）同半禮（手放肩高）' },
-  'cer.salute3': { f:'img/dia/cer-salute3.avif', w:720, h:623, alt:'原地向前敬禮四格圖：Up—Two—Three—Down，食指放右眼對上 25 毫米' },
-  'cer.threefinger': { f:'img/dia/cer-threefinger.avif', w:720, h:623, alt:'童軍三指手形四格圖：三指並攏伸直、拇指壓住小指、手心向前略向下' },
   'fire.circle': { f:'img/dia/fire-circle.avif', w:720, h:381, alt:'營火圈座位俯視圖：火圈、領袖位置、急救箱同水桶位置、圍火安全距離' },
   'fire.flow': { f:'img/dia/fire-flow.avif', w:720, h:318, alt:'營火會流程圖：熱身 → 高潮 → 寧靜結尾三段氣氛' },
   'fire.scarf': { f:'img/dia/fire-scarf.avif', w:720, h:298, alt:'營火袍示意圖：袍身形狀同穿着方法' },
@@ -47,21 +39,6 @@ IMG.map = {
   'skillx.tent': { f:'img/dia/skill-tent.avif', w:720, h:296, alt:'搭帳篷六步側視圖：清地、鋪地布、穿柱、起篷、45 度拉營繩、打營釘' },
   'top.compass': { f:'img/dia/dgm-compass.avif', w:720, h:720, alt:'指南針八方位圖：紅針永遠指北，標示東南西北及四個方位角' },
   'top.pack': { f:'img/dia/dgm-pack.avif', w:720, h:847, alt:'背囊分層圖：頂放雨衣小食、貼背放重物、中間放衫、底放睡袋、外掛營柱地墊' },
-  'track.arrow': { f:'img/dia/track-arrow.avif', w:240, h:160, alt:'追蹤符號：箭嘴＝向前行' },
-  'track.circle': { f:'img/dia/track-circle.avif', w:240, h:160, alt:'追蹤符號：圓圈＝集合或終點' },
-  'track.cross': { f:'img/dia/track-cross.avif', w:240, h:160, alt:'追蹤符號：交叉＝唔行呢邊' },
-  'track.msg': { f:'img/dia/track-msg.avif', w:240, h:160, alt:'追蹤符號：三角＝附近有訊息' },
-  'track.turn': { f:'img/dia/track-turn.avif', w:240, h:160, alt:'追蹤符號：轉彎箭嘴＝轉方向' },
-  'track.water': { f:'img/dia/track-water.avif', w:240, h:160, alt:'追蹤符號：波浪＝有水要小心' },
-  'uniform.branch': { f:'img/dia/uniform-branch.avif', w:1200, h:1381, alt:'陸童軍／海童軍／空童軍顏色配搭對照圖：陸＝深綠色軟帽、杏色恤衫、草青色短褲；海＝白頂帽、白色恤衫、深藍色短褲及長襪；空＝灰藍色軟帽、淺藍色恤衫、深藍色短褲及長襪；旁邊有逐項顏色方塊同文字' },
-  'uniform.body': { f:'img/dia/uniform-body.avif', w:1200, h:1829, alt:'童軍支部全身徽章位置圖（恤衫＋短褲＋長襪正面人形）：右胸①–③、左胸④–⑥、右袖⑦、左袖⑧、專科徽章肩帶⑨，左邊有 cm 比例尺，右邊有位置對照表' },
-  'uniform.cap': { f:'img/dia/uniform-cap.avif', w:1200, h:1343, alt:'制服帽佩戴圖：深綠色軟帽，帽章釘喺黑色膠邊左眼處上方 2cm，帽邊喺眼眉上方約 2cm；旁邊列出除帽後嘅處理同髮式規格' },
-  'uniform.chest': { f:'img/dia/uniform-chest.avif', w:1200, h:1681, alt:'恤衫正面袋蓋位置圖：紅色上層線＝袋蓋上方 3cm、藍色中層線＝袋蓋上方 2cm、綠色下層線＝袋蓋上方、紫色＝袋中央；左右胸袋分別標①–③同④–⑥，附 3cm／2cm 尺寸線' },
-  'uniform.kilwell': { f:'img/dia/uniform-kilwell.avif', w:1200, h:1321, alt:'木章皮繩佩戴位置圖三個小圖：領巾制服（皮繩連木珠掛喺領巾前面）、領帶制服（掛喺領帶前面）、禮服（皮繩藏喺翻領內只露木珠）' },
-  'uniform.scarf': { f:'img/dia/uniform-scarf.avif', w:1200, h:2078, alt:'旅巾佩戴圖：左邊係戴起嘅樣（巾圈套喺衣領尖）、右上係照比例畫嘅規格尺寸線（一捲直徑 3.5cm、底至尖 12–15cm、皮帶線）、下面係捲巾四步實物圖，最後列出領巾 4 種同巾圈 4 種' },
-  'uniform.sleeve': { f:'img/dia/uniform-sleeve.avif', w:1200, h:1160, alt:'右袖徽章位置圖：由上至下 1 旅章（肩膊位下方 2cm）、2 地域章／區章（再 2cm、兩章相距 1cm）、3 環境／社區參與／維護自然世界章、4 優異旅團章，另外 5 號章位喺袖口縫線上方 3cm（圖為童軍支部小隊章位置，深資支部不設小隊章），左邊有 2cm／3cm 尺寸線' },
-  'uniform.ties': { f:'img/dia/uniform-ties.avif', w:1200, h:1262, alt:'領帶四色圖：棗紅色（深資童軍）、深綠色（樂行＋成年）、黑色（海童軍）、深藍色（空童軍），右邊列出佩戴要點（領帶結對稱、寬帶尖觸及皮帶扣上端等）' },
-  'uniform.zoom': { f:'img/dia/uniform-zoom.avif', w:1200, h:1259, alt:'局部放大圖（左胸袋同右袖肩膊兩個放大圈）：袋蓋上方 3cm、2cm、袋蓋上方、袋中央四條線；右袖肩膊顯示旅章 2cm、地域章區章再 2cm、兩章相距 1cm' }
 };
 IMG.alt = function(key){ var m = IMG.map[key]; return m ? m.alt : (key || '示意圖'); };
 /* 出一張圖（img 標籤）：一律加 dia-img 類＋onerror 文字後備；冇登記就回傳空字串，由呼叫者決定要唔要出後備 */

@@ -16,7 +16,6 @@ UNIFORM.types = [
     k:'vs_b',
     name:'深資童軍男團員',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_B.jpg',
-    localImg:'img/uni/venture-land.avif',
     items:[
       ['帽', '棗紅色軟帽（連童軍帽章）'],
       ['恤衫', '杏色、短袖、兩胸袋、無褶、肩帶'],
@@ -32,7 +31,6 @@ UNIFORM.types = [
     k:'vs_g',
     name:'深資童軍女團員（半截裙）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_G_dress.jpg',
-    localImg:'img/uni/venture-land.avif',
     items:[
       ['帽', '棗紅色軟帽（連童軍帽章）'],
       ['恤衫', '杏色、短袖、兩胸袋、無褶、肩帶'],
@@ -48,7 +46,6 @@ UNIFORM.types = [
     k:'vs_g_pants',
     name:'深資童軍女團員（長褲）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_B.jpg',
-    localImg:'img/uni/venture-land.avif',
     items:[
       ['帽', '棗紅色軟帽（連童軍帽章）'],
       ['恤衫', '杏色、短袖、兩胸袋、無褶、肩帶'],
@@ -65,7 +62,6 @@ UNIFORM.types = [
     k:'vs_sea_b',
     name:'深資海童軍男團員',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_sea_B.jpg',
-    localImg:'img/uni/venture-sea.avif',
     items:[
       ['帽', '海童軍男領袖白頂帽（連深資海童軍帽章）'],
       ['恤衫', '白色、短袖、兩胸袋、無褶、肩帶'],
@@ -81,7 +77,6 @@ UNIFORM.types = [
     k:'vs_sea_g',
     name:'深資海童軍女團員（半截裙）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_sea_G_dress.jpg',
-    localImg:'img/uni/venture-sea.avif',
     items:[
       ['帽', '海童軍女領袖白頂帽（連深資海童軍帽章）'],
       ['恤衫', '白色、短袖、兩胸袋、無褶、肩帶'],
@@ -97,7 +92,6 @@ UNIFORM.types = [
     k:'vs_sea_g_pants',
     name:'深資海童軍女團員（長褲）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_sea_B.jpg',
-    localImg:'img/uni/venture-sea.avif',
     items:[
       ['帽', '海童軍女領袖白頂帽（連深資海童軍帽章）'],
       ['恤衫', '白色、短袖、兩胸袋、無褶、肩帶'],
@@ -113,7 +107,6 @@ UNIFORM.types = [
     k:'vs_air_b',
     name:'深資空童軍男團員',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_air_B.jpg',
-    localImg:'img/uni/venture-air.avif',
     items:[
       ['帽', '灰藍色軟帽（連童軍帽章）'],
       ['恤衫', '淺藍色、短袖、兩胸袋、無褶、肩帶'],
@@ -129,7 +122,6 @@ UNIFORM.types = [
     k:'vs_air_g',
     name:'深資空童軍女團員（半截裙）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_air_G_dress.jpg',
-    localImg:'img/uni/venture-air.avif',
     items:[
       ['帽', '灰藍色軟帽（連童軍帽章）'],
       ['恤衫', '淺藍色、短袖、兩胸袋、無褶、肩帶'],
@@ -145,7 +137,6 @@ UNIFORM.types = [
     k:'vs_air_g_pants',
     name:'深資空童軍女團員（長褲）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_air_B.jpg',
-    localImg:'img/uni/venture-air.avif',
     items:[
       ['帽', '灰藍色軟帽（連童軍帽章）'],
       ['恤衫', '淺藍色、短袖、兩胸袋、無褶、肩帶'],
@@ -397,3 +388,75 @@ UNIFORM.tieUniform = {
 };
 
 if (typeof module !== 'undefined' && module.exports) module.exports = UNIFORM;
+
+/* ══════════ v42 新增：官方檔連結＋照原文嘅佩戴位置表（唔用自己畫圖）══════════
+ * 用戶指正：app 內自製嘅「制服圖／章位疊加圖」唔係《儀容與制服手冊》的圖，而且有啲制服畫錯。
+ * 處理：1) 移除所有 AI 繪畫嘅制服圖（img/uni/*.avif、DIAGRAMS.uniform.* 不再喺 UI 使用）；
+ *       2) 位置一律照《儀容與制服手冊》原文＋頁碼；3) 官方檔（團友提供嘅 Drive PDF）連結俾人自己對圖。
+ */
+UNIFORM.official = {
+  note:'想睇「圖」請開以下官方檔：手冊本身有佩戴插圖（本 app 唔再自製插圖，避免畫錯教錯）。式樣如有更新，以總會網頁及最新通告為準。',
+  docs:[
+    { n:'《儀容與制服手冊》第二章（制服）／第三章（制服配件）', u:'https://drive.google.com/file/d/1JrvWJmS5Uj6IC2EPNRH5v1YN5GSEQYLz/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》第三章・3.6 皮帶皮鞋襪／第四章 4.1–4.3（標誌徽章）', u:'https://drive.google.com/file/d/1sgh0wjcr9fAaxbltfQE-uluOjNym4pIB/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》第四章 4.4–4.7（其他／袋蓋上方／佩戴位置總圖）', u:'https://drive.google.com/file/d/12m8doAX3uZEGZ81Mvf6Fp2Dj_X7X6wwA/view?usp=sharing' },
+    { n:'《儀容與制服手冊》其餘章節（一）', u:'https://drive.google.com/file/d/1OenclJV7cifLmknCHDjCIhEOSzu5k1w_/view?usp=drive_link' },
+    { n:'《儀容與制服手冊》其餘章節（二）', u:'https://drive.google.com/file/d/1BqIREqz8JarW1WbDScXLBnQzr9KvPOnQ/view?usp=drive_link' },
+    { n:'總會網頁：深資童軍制服（官方照片）', u:'https://www.scout.org.hk/tc/youth-members/venture-scouts/index.html?sid=2' },
+    { n:'2023 年第 13 號通告（支部成員徽章佩戴指引）', u:'https://www.scout.org.hk/uploads/tc/circulars/11057/p013-23.pdf' },
+    { n:'《隊列和升掛國旗及區旗指引》（制服與禮儀相關）', u:'https://www.scout.org.hk/uploads/tc/circulars/16450/guidelines-of-chinese-foot-drill-and-national-flag-and-regional-flag-raising.pdf' }
+  ]
+};
+
+UNIFORM.placementV2 = {
+  source:'《儀容與制服手冊》第三章（3.2 基本徽章、3.3 制服帽帽章、3.4 領巾領帶、3.6 皮帶皮鞋襪、3.7 毛衣、3.8 附加配件）＋第四章（4.2 制服標誌、4.3 制服徽章）原文；頁碼為該檔所示。',
+  groups:[
+    { g:'基本徽章（每個團員都要有）', rows:[
+      { item:'世界童軍會員章', where:'制服恤衫或禮服上衣左胸袋中央位置（或毛衣相同位置）', note:'宣誓後才可佩戴（3.2）' },
+      { item:'香港章', where:'幼童軍／童軍／深資童軍：左胸袋袋蓋上方 3 厘米中央', note:'如與飛行章／跳傘章一起佩戴：飛行／跳傘在袋蓋上方 2 厘米，香港章在其上方（3.2）' },
+      { item:'旅章', where:'右袖肩膊位下方 2 厘米中央', note:'新成立旅嘅旅章式樣須先獲區總監批准；尺寸不小於 8.5×2cm、不大於 10.5×2.5cm（3.2）' },
+      { item:'地域章及區章', where:'右袖香港肩章／旅章下方 2 厘米中央；地域章在前、區章在後，兩章相距 1 厘米', note:'深資／樂行如與急救章一起佩戴：急救章在旅章下方，地域章及區章在其下方（3.2）' },
+      { item:'深資童軍肩章', where:'制服恤衫或制服毛衣雙肩肩帶上', note:'4.3（p.145）；符合資格的深資童軍／樂行童軍適用' }
+    ]},
+    { g:'支部獎章・先修章・年星（右胸／左胸）', rows:[
+      { item:'支部進度性獎章／最高獎章（深資童軍獎章、榮譽童軍獎章）', where:'制服恤衫右胸袋中央位置', note:'4.3（p.147）：童軍及深資童軍佩戴所屬支部進度性獎章／最高獎章在右胸袋中央' },
+      { item:'支部最高獎章標誌（金紫荊／總領袖／榮譽童軍獎章標誌）', where:'右胸袋袋蓋上方中央位置，按次序由右至左佩戴', note:'4.2（p.134）：晉升至另一支部時可佩戴，直至完成該支部訓練為止；不可同時佩戴相同支部的最高獎章與獎章標誌' },
+      { item:'深資童軍先修章', where:'右胸袋袋蓋上方中央位置（由童軍晉深資者適用）', note:'4.2（p.143）：晉升深資後如與金紫荊／總領袖獎章標誌一起佩戴，先修章在其左方（內側）；可佩戴至覆誓成為深資童軍後一年' },
+      { item:'宗教章／公教章', where:'右胸袋袋蓋上方 3 厘米中央位置', note:'4.3（p.139）：如與先修章／最高獎章標誌一起佩戴，宗教章在其上方；與和平使者章／紀念章一起佩戴時並行排列，宗教章在其左方（內側）；宗教章與公教章不可同時佩戴' },
+      { item:'服務年星（深資＝紅色，1–6）', where:'左胸袋袋蓋上方中央位置', note:'4.2（p.129–130）：只佩戴該支部獲取最高年份的一枚；各支部年星按次序由左至右並行' },
+      { item:'飛行章／跳傘章', where:'左胸袋袋蓋上方 2 厘米中央，香港章在其上方', note:'如同時持有飛行章與跳傘章，只可選擇其一佩戴' },
+      { item:'布質名牌（綠底黃字）', where:'左胸袋袋蓋中央及鈕扣對上位置', note:'4.2（p.128）：可繡中英文姓名；亦可在毛衣相同位置' },
+      { item:'活動名牌', where:'左胸袋袋蓋中央位置（或毛衣相同位置）', note:'3.8：屬附加配件，可在毛衣佩戴' }
+    ]},
+    { g:'袖章（右袖／左袖）', rows:[
+      { item:'深資童軍急救章', where:'左右兩袖上方中央位置；右袖在旅章下方而在地域章及區章上方；左右對稱', note:'4.3（p.148）：佩戴至相關證書失效為止' },
+      { item:'深資童軍社區參與章／世界童軍環境章', where:'右袖地域章及區章下方中央位置', note:'第四章 4.4' },
+      { item:'優異旅團章', where:'右袖縫線上方中央位置', note:'獲頒年度佩戴，為期一年；三色（紅、紫、粉藍）按年份輪流' },
+      { item:'香港青年獎勵計劃獎章', where:'左袖上方中央位置；如與深資童軍急救章一起佩戴，獎章在其下方', note:'第四章 4.4：只佩戴已獲頒之最高一級一枚（青少年成員）' },
+      { item:'拯溺布章', where:'左袖上方中央位置；如與 AYP 獎章一起佩戴，拯溺布章在其下方', note:'總章級別須為銅章或以上；佩戴至相關證書失效為止' },
+      { item:'喪禮黑布', place:'', where:'左袖手肘上方中央位置', note:'4.4：青少年成員闊度約 5 厘米、成年成員約 10 厘米，沿袖縫線直貼；可與毛衣或禮服上衣佩戴' }
+    ]},
+    { g:'帽・領巾・領帶・鞋襪', rows:[
+      { item:'制服帽（深資陸：棗紅色軟帽；空：灰藍色軟帽；海：海童軍領袖白頂帽）', where:'室外必須佩戴；室內於宣誓、覆誓、升旗、展旗、降旗及授旗時佩戴；宗教儀式或葬禮進行期間除下', note:'3.3：帽邊在眼眉上方約 2 厘米；帽冠（有帽章）放左眼處上方；帽帶尾打結套入帽後端黑色膠邊內不可外露；除帽後可用左手持著或摺放在制服左肩帶下；天文台發出酷熱天氣警告期間可不用戴帽' },
+      { item:'童軍帽章', where:'軟帽黑色膠邊左眼處上方約 2 厘米位置', note:'3.3：童軍、空童軍、深資童軍、深資空童軍、樂行童軍及樂行空童軍適用；深資海／樂行海則佩戴在白頂與黑色帽邊中間前面中央' },
+      { item:'領巾（旅巾）＋童軍巾圈', where:'捲巾方式：捲好直徑約 3.5cm、底至尖約 12–15cm；巾圈套牢在衣領尖位置；巾尖放恤衫背後中央；巾尾在肚臍附近，不可超越皮帶扣', note:'3.4：兩邊線條圖案對稱及長度相等；佩戴會巾或基維爾領巾時採用捲巾方式；旅可自行訂摺巾方法但仍須遵照規格' },
+      { item:'領帶（深資陸＝棗紅色、深資海＝黑色、深資空＝深藍色）', where:'領帶結在衣領尖位置套牢；寬帶尖觸及皮帶扣上端，不可超越皮帶扣', note:'3.4：男性佩戴領帶時穿長褲、女性佩戴領帶時穿半截裙；穿毛衣時領帶放在毛衣與制服恤衫之間（領巾則放毛衣外面）' },
+      { item:'皮帶', where:'棕色皮帶（連童軍徽皮帶扣），皮帶扣緊扣在褲頭或裙頭中央', note:'3.6：戶外活動尼龍皮帶為童軍成員（小童軍除外）穿著戶外活動服装時使用' },
+      { item:'皮鞋', where:'黑色、無花紋、綁帶、無筒皮鞋；女性穿半截裙時用黑色無花紋非綁帶中跟皮鞋（鞋跟不超過 5 厘米）', note:'3.6：不可穿涼鞋、露跟或露腳趾鞋；皮鞋不可加鞋底金屬防磨片（鞋碼）' },
+      { item:'襪', where:'穿長褲：黑色短襪（純黑、無花紋、長度須覆蓋腳踝）；穿短褲／裙褲：深草青色長襪（純色、有直坑紋）；女性穿半截裙：肉色尼龍無花襪褲', note:'3.6：長襪剛在膝頭下方位置，襪頭摺下，襪紋要直順；可用襪帶防襪頭滑下' },
+      { item:'制服毛衣（陸／空青少年：深草青色；海：深藍色）', where:'毛衣適當位置可佩戴世界童軍會員章、香港章及香港肩章／旅章；深資童軍及樂行童軍可在雙肩帶佩戴肩章', note:'3.7：除上述各項及活動名牌、布質名牌、喪禮黑布外，其他標誌、徽章、勳章及獎勵不可在毛衣上佩戴' }
+    ]}
+  ]
+};
+
+UNIFORM.grooming = {
+  source:'《儀容與制服手冊》3.3（髮式）、3.8（附加配件）',
+  items:[
+    { t:'頭髮', d:'保持原來或自然的頭髮顏色；梳理整齊；男性長度不可觸及制服衣領或遮蓋耳朵，短髮者鬓角不可過半耳；女性長髮繞過耳背向後束起，髮長過肩以黑色髮型用品束成「低馬尾／低髮髻」放在帽後端下方，不可藏在帽內；戴帽期間額前頭髮不可外露。' },
+    { t:'飾物', d:'可佩戴簡單款式的手錶、結婚戒指及頸鏈（頸鏈不可外露）；不可佩戴其他飾物（例如耳環、手鐲、手鏈或腳鏈）。' },
+    { t:'眼鏡', d:'可佩戴簡單款式而顏色不誇張的鏡框；不可佩戴有色／變色鏡片或太陽眼鏡，除非：進行郊野或海上活動、駕駛車輛、因健康理由。' },
+    { t:'外衣', d:'「童軍物品供應社」供應深藍色童軍風褸；自行選購外衣宜選擇簡單款式、素面及深色（特別活動團體外衣除外）。' },
+    { t:'攜物袋', d:'可佩戴黑色小型腰包在制服褲／裙皮帶右側後位置（禮服褲／裙不適用）；使用背囊等攜物袋宜選簡單款式、素面、深色，顏色以黑色為佳。' },
+    { t:'指甲與體味（領隊檢查用）', d:'集會前互相檢查時一併留意：指甲清潔、無異味、衫裙無污漬摺痕；呢樣唔係「扮靚」，係手冊對「整齊及清洁」嘅要求，亦係童軍自我形象嘅一部分。' }
+  ]
+};

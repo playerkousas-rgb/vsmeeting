@@ -47,6 +47,37 @@
 
 **頂欄**（icon-only 按鈕）：🔍 全站搜尋 ＋ 📚 通告圖書館 ＋ 🌟 AYP 接駁指南 ＋ ⬆️ 升團準備指南（姊妹 app 直連，領袖可分享畀團員；深資唔用專章系統，無專章入口）。手冊 #book/refs 保留完整目錄（綱要＋套包＋圖書館＋AYP＋升團）。
 
+## 2.5 v42 大修（2026-09-17・用家七項投訴一次過還）
+
+用家原話：「不是寫了＝做了，要有教材內容的才叫完成」。v42 就係跟住呢句做。
+
+| # | 投訴 | v42 做法 | 檔案 |
+|---|------|----------|------|
+| 1 | 制服／儀容圖唔係手冊圖，有啲仲錯 | 刪晒 9 張自製章位圖＋9 張本地 AI 服式圖；改用《儀容與制服手冊》第三章／第四章**原文逐條**（27 條，附頁號）＋官網 JPG **link-only**（唔本地存、唔 AI 生成） | `js/uniform.js`（`placementV2`／`official`／`grooming`）、`js/app.js`（`pages.uniform`） |
+| 2 | 得「備課指引」冇教材 | 新寫 16 場真教材（每段：官方原文 `quote`＋`points`＋可照讀 `script`＋`demo`＋`ask`＋`safety`＋`check`），渲染喺每場教案內「📖 照住講」 | `js/teach.js`／`js/teach2.js`（`TEACH.c01–c16`＋`TEACH.sources`）、`css/app.css`（`.teach-*`） |
+| 3 | 獎章路資訊錯 | 重寫成《深資童軍訓練綱要》**第十一版**（2026-08-15 生效，過渡至 2029-08-14）：34 項／8 類＋**第十版對照**；考核要求逐項照原文 | `js/interests.js` |
+| 4 | 團集會儀式錯 | 儀式重寫照《隊列和升掛國旗及區旗指引》（2024-06）＋《集會套包》：8 套卡＋8 段恆常程序（75′＋10′ 緩衝）；**冇團呼、冇齊讀口號**；動作角度一律文字化，唔自畫手勢圖 | `js/ceremony.js`、`js/app.js`（`App.cerFig` 只用 dgm） |
+| 5 | 童軍支部技能係抄嚟 | `App.pages.skills` 重寫：只列肩章（二）四類（露營 7／繩結 9／遠足 2／急救 3），每項連返教材；刪走支部「地面追蹤符號」等抄件同 3 張 AI 動作圖 | `js/app.js`、`js/figs.js` |
+| 6 | 活動都係抄 | 遊戲庫加 3 個**官方套包遊戲**（你是誰／用背脊畫圖畫／香港童軍運動問答挑戰賽），逐步玩法＋物資＋安全；「聚會互動 MINI GAME」改成非賭博版；23 個遊戲全部要 over 時間／人數／物資／步驟／安全 先過 tests | `js/data.js` |
+| 7 | 圖要 AVIF | 新增 `icons/*.avif`（192／512／maskable／1024）＋manifest 用 AVIF（留 PNG 作 `<picture>`／manifest 後備）；tests 有「本地圖一律 AVIF」守門 | `icons/`、`manifest.webmanifest`、`index.html` |
+
+### v42 刪走咗啲乜（唔好回流）
+- `img/dia/uniform-*.avif`（9）、`img/fig/cer-*.avif`（6）、`img/fig/skill-{pioneer,track,field}.avif`（3）、`img/uni/*`（11）——合共 29 張 AI／抄嚟圖。
+- `DIAGRAMS.uniform.*`、`UNIFORMFIG`、`SKILL_FIG` 內 3 項、`IMG.map` 23 個 key。
+- `TEACH` 以外嘅「請自行講解⋯」式填空；`js/teach3.js` 曾寫過一次但同一份 `interests.js` 要求重複，已刪（考核重點由 `INTERESTS.byKey['s-skill-*'].req` 併入 TEACH 渲染）。
+
+### v42 tests 改動（`tests/smoke.mjs`／`tests/runtime.mjs`）
+- 計數更新：儀式卡 7→8、獎章 20→34、遊戲 13→23、FIGS 36+→27、IMG.map ≥28、制服款式 6→9、會員章 11→12 項。
+- 刪走所有「要有自製制服圖／儀式動作圖」嘅斷言，反轉成「呢啲 key 必須唔存在」（防回流）。
+- 新增 v42 守門 block：教材 16 場齊、無團呼、步操照 2024 指引原文（`約 60 度／三分之二／一腳之長／75 厘米／116–122／整理著裝／滿伍`）、禁止 `305/跨半步/Alert`、技能頁無支部抄件、本地圖一律 AVIF。
+- 官方套包 8 段程序加總必須 75′，並喺 `CEREMONY.program.note` 交代 85′。
+
+### 尚未做／下一手
+1. 綱要第十一版「多元技能／戶外探險／典禮儀式／徽章簽發」章節超出可解析範圍，app 內標「以原文為準」；有 PDF 之後可補逐字。
+2. `img/dia/dgm-*.avif` 仲有 32 張，其中儀式以外嘅 dgm 仍然在用；`IMG.map` 得 30 個 key（有 2 張 orphan 可清）。
+3. `js/app.js` 尚餘 `App.aidCard`／`App.badgeFig`／`UNIFORM.placement` 三個舊函數（已冇渲染呼叫），可擇機清走。
+4. 套包第 6–16 週嘅每週節目未逐週搬入嚟（現行用 c01–c16 自組流程＋套包遊戲）。
+
 ## 3. 重要用戶約定（唔可以改）
 
 0. **v39 深資版約定**：①tab 內容要分頁 ②會員章＋肩章由團內考核，獎章 tab 只查不記、唔放報章系統 ③唔出繩結逐步圖卡（文字口訣為準）④儀式/活動/技能要補圖（獎章唔使）⑤唔做營火會歌紙／歡呼庫（深資營火由團員自務）；AYP 只查不記、數字以官方為準 ⑥列印指邊印邊 ⑦工作紙：上面教案「跟住做」＋素材庫「直接印」兩邊都要 ⑧集會目錄整行可撳
@@ -175,7 +206,7 @@ renderMeeting 支援新舊兩種段落格式混合（`label/min`、`n/t`、`sub/
 ## 8. PWA 與 Cache
 
 - Service Worker 檔案：`sw.js`
-- Cache 命名：`scout-v{N}-c16-YYYYMMDD`（現行 `scout-v38-c16-20260917`）
+- Cache 命名：`scout-v{N}-c16-YYYYMMDD`（現行 `scout-v42-textbook-20260917`）
 - 每加/減一個 cXX-lesson.js，要做 3 件事：
   1. `index.html` 加 `<script src="js/cXX-lesson.js"></script>`
   2. `data.js` 將對應 placeholder 替換為 `full:true, special?/outdoor?/sensitive?, data:Cxx, bag?/notice?/personalKit?/doNotBring?`
@@ -695,7 +726,7 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 - **遊戲**：刪拖木頭挑戰（場地圖一併刪）；加破冰「你是誰」「用背脊畫圖畫」（唔使場地圖）；計分板／工具改「分組」。
 - **手冊**：小隊制度→執委會制度；「報考專科徽章」→「考章安排」；參考資料剩 3 條（深資綱要＋官方套包＋通告圖書館）。
 - **品牌**：title／brand／footer／manifest／README 全轉深資版＋VENTURE＋Scout System 出品；官方套包 Drive ID 轉深資版 `1MEXphy7RQXXfFZX3uXsg0L4ZfOXbPEuo`。
-- **sw.js**：`scout-v38-c16-20260917`；唔再預緩存 `img/badge/`＋`img/uni/`（童軍支部舊圖，檔仲喺 disk）。
+- **sw.js**：`scout-v42-textbook-20260917`；唔再預緩存 `img/badge/`＋`img/uni/`（童軍支部舊圖，檔仲喺 disk）。
 
 ### 保留未動（刻意）
 - `assets_src/diasvg/` 手繪底稿（含 howl）、`js/dia.js` 全表、`img/dia/*.avif` 全部：幾何斷言（30°／305／25mm／2250／BLANK／viewBox 唔出框）照舊全綠；app 層唔引用 howl／uniform.branch。

@@ -76,11 +76,15 @@ for (const p of pages) {
 }
 
 /* 分頁版 render（sub 路由） */
-for (const s of ['rope', 'care', 'map', 'pack', 'camp', 'pioneer', 'track', 'field', 'aid']) {
-  try { App.pages.skills(s); ok(true, 'skills/' + s + ' render'); } catch (e) { ok(false, 'skills/' + s + '：' + e.message); }
+for (const s of ['all', 'camp', 'knot', 'hike', 'aid']) {
+  try { const nd = App.pages.skills(s); ok(!!nd, 'skills/' + s + ' render'); } catch (e) { ok(false, 'skills/' + s + '：' + e.message); }
 }
 for (const s of ['land', 'sea', 'air', 'badge', 'acc', 'check']) {
-  try { App.pages.uniform(s); ok(true, 'uniform/' + s + ' render'); } catch (e) { ok(false, 'uniform/' + s + '：' + e.message); }
+  try { const nd = App.pages.uniform(s); ok(!!nd, 'uniform/' + s + ' render'); } catch (e) { ok(false, 'uniform/' + s + '：' + e.message); }
+}
+/* v42：教材頁每場都要 render 到（TEACH 接入點） */
+for (const k of ['c01','c02','c03','c04','c05','c06','c07','c08','c09','c10','c11','c12','c13','c14','c15','c16']) {
+  try { const nd = App.renderMeeting(k); ok(!!nd, 'renderMeeting/' + k); } catch (e) { ok(false, 'renderMeeting/' + k + '：' + e.message); }
 }
 for (const c of sb.CEREMONY.cards) {
   try { App.pages.ceremony(c.k); ok(true, 'ceremony/' + c.k + ' render'); } catch (e) { ok(false, 'ceremony/' + c.k + '：' + e.message); }
