@@ -220,9 +220,31 @@ var FIGS = {
 
 /* 全域 FIGS_NOTE（app.js 嘅 App.ph 會自動加喺每張圖說後面）*/
 
-/* 🎮 遊戲名 → 圖片 key。12 個遊戲全部有圖；大風吹用 Wikimedia Commons 授權相片，
-   其餘沿用本地 AVIF，並全部保留俯視圖作設場核對。 */
+/* 🎮 深資童軍遊戲 → 圖片 key（VENTURE版，減字加圖，AVIF）
+   DATA.games 已全面轉深資適配：人脈網絡、期望拍賣會、執委會急案、城市定向、無具野炊等
+   全部係15-20歲自務自治、策劃、服務、探險導向，唔係幼童軍遊戲。
+   圖片沿用現有 AVIF（中性練習衫，唔畫制服），設場為主，唔靠文字。 */
 var GAME_FIG = {
+  '人脈網絡':'game-ball',
+  '期望拍賣會':'game-lineup',
+  '執委會急案':'game-banner',
+  '城市定向追蹤':'game-orienteer',
+  '先鋒工程速搭':'skill-pioneer',
+  '無具野炊挑戰':'skill-stove',
+  '急救夜間情境':'game-aid',
+  '辯論擂台：童軍價值':'game-banner',
+  '預算大作戰':'game-pack',
+  '黑夜無聲':'game-tarp',
+  '60秒電梯演講':'game-ball',
+  '營火反思圈':'cer-close',
+  '社區需求地圖':'game-orienteer',
+  '服務提案路演':'game-ball',
+  '壓力與時間管理':'game-banner',
+  '衝突調解角色扮演':'game-shape',
+  '遠征策劃桌遊':'skill-legend',
+  '永續發展挑戰':'skill-field',
+  '職涯導航':'game-banner',
+  // 兼容舊名（以防舊連結）
   '直呼其名':'game-ball',
   '有口難言':'game-lineup',
   '繩索挑戰':'game-shape',
@@ -270,58 +292,44 @@ var AID_FIG = {
 };
 
 
-/* 🎖️ 興趣組專科徽章章樣（用戶要求：唔可以用 emoji 代替，要出真章）
-   圖檔：img/badge/*.avif（由童軍資訊站《童軍訓練綱要》專科徽章官方圖轉 AVIF，來源見 img/badge/SOURCES.md）
-   一個 key 對一個興趣章（見 interests.js）；alt／cap 由 gen-badge-fig.js 依興趣章清單產生。 */
+/* 🎖️ 深資童軍徽章章樣（VENTURE版，唔再係童軍興趣章）
+   舊童軍興趣章（綠底菱形）已移除，改為深資專用：
+   - 會員章（紫底白箭頭白繩平結）
+   - 肩章（棕底白V月桂環童軍徽）
+   - 深資童軍獎章（棕底V+月桂）
+   - 榮譽童軍獎章（綠底金火炬紅火焰月桂）
+   - 四段章：自立、責任、活動、探險（S/R/A/E）
+   圖檔：img/badge/venture-*.avif + dragon-award.avif，全部AVIF省位，來源見訓練綱要。
+   舊 Scout 興趣章 AVIF 保留喺目錄但唔再用於深資流程，僅作兼容。 */
 var BADGE_FIG = {
-  'angler': { src:'img/badge/angler.avif', alt:'「釣魚（Angler）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係魚同水波', cap:'釣魚章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'campcook': { src:'img/badge/campcook.avif', alt:'「營地烹飪（Camp Cook）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係三腳架同吊煲', cap:'營地烹飪章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'campfirehost': { src:'img/badge/campfirehost.avif', alt:'「營火（Campfire Host）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係營火、月亮星星同音符', cap:'營火章（2026 新增）：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'collector': { src:'img/badge/collector.avif', alt:'「搜集（Collector）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係兩隻手傳住收藏品', cap:'搜集章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'cyclist': { src:'img/badge/cyclist.avif', alt:'「單車（Cyclist）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係一部單車', cap:'單車章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'dragonboatman': { src:'img/badge/dragonboatman.avif', alt:'「龍舟（Dragon Boatman）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係龍頭同鼓', cap:'龍舟章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'geologist': { src:'img/badge/geologist.avif', alt:'「地質（Geologist）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係三塊岩石柱', cap:'地質章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'naturalist': { src:'img/badge/naturalist.avif', alt:'「自然（Naturalist）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係放大鏡、蝴蝶同花', cap:'自然章（2026 式樣重新設計）：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'birdwatcher': { src:'img/badge/birdwatcher.avif', alt:'「觀鳥（Birdwatcher）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係雙筒望遠鏡同雀鳥', cap:'觀鳥章（2026 新增）：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'smallholder': { src:'img/badge/smallholder.avif', alt:'「農務（Smallholder）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係灑水壺同幼苗', cap:'農務章（2026 式樣重新設計）：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'meteorologist': { src:'img/badge/meteorologist.avif', alt:'「氣象（Meteorologist）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係風向標公雞', cap:'氣象章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'parkorienteer': { src:'img/badge/parkorienteer.avif', alt:'「公園定向（Park Orienteer）」興趣組專科徽章官方圖樣：綠底菱形布章', cap:'公園定向章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'athlete': { src:'img/badge/athlete.avif', alt:'「運動（Athlete）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係跑步人形同跑道線', cap:'運動章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'archery': { src:'img/badge/archery.avif', alt:'「射箭（興趣組）（Archery (Interest)）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係弓同箭', cap:'射箭（興趣組）章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'boulderer': { src:'img/badge/boulderer.avif', alt:'「抱石（Boulderer）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係攀爬人形同石塊', cap:'抱石章（2026 新增）：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'horseman': { src:'img/badge/horseman.avif', alt:'「騎術（Horseman）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係馬頭', cap:'騎術章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'footdrill': { src:'img/badge/footdrill.avif', alt:'「步操（Footdrill）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係步操隊伍同旗', cap:'步操章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'swimmer': { src:'img/badge/swimmer.avif', alt:'「游泳（Swimmer）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係泳手同水波', cap:'游泳章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'canoeist': { src:'img/badge/canoeist.avif', alt:'「獨木舟（Canoeist）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係獨木舟同槳', cap:'獨木舟章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'rowingboatman': { src:'img/badge/rowingboatman.avif', alt:'「划艇（Rowing Boatman）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係划艇人形同槳', cap:'划艇章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'sailor': { src:'img/badge/sailor.avif', alt:'「風帆（Sailor）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係帆船', cap:'風帆章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'windsurfer': { src:'img/badge/windsurfer.avif', alt:'「滑浪風帆（Windsurfer）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係滑浪風帆', cap:'滑浪風帆章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'sup': { src:'img/badge/sup.avif', alt:'「立划板（Stand Up Paddleboarder）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係立划板人形同槳', cap:'立划板章（2026 新增）：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'suppolo': { src:'img/badge/suppolo.avif', alt:'「立划板水球（Stand Up Paddling Polo）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係立划板、球同球門', cap:'立划板水球章（2026 新增）：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'artist': { src:'img/badge/artist.avif', alt:'「藝術（Artist）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係調色板同畫筆', cap:'藝術章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'modelmaker': { src:'img/badge/modelmaker.avif', alt:'「模型製作（Model Maker）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係模型刀、木條同尺', cap:'模型製作章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'photographer': { src:'img/badge/photographer.avif', alt:'「攝影（Photographer）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係相機鏡頭', cap:'攝影章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'librarian': { src:'img/badge/librarian.avif', alt:'「圖書管理（Librarian）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係書本同書籤', cap:'圖書管理章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'computer': { src:'img/badge/computer.avif', alt:'「電腦（Computer）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係電腦屏幕', cap:'電腦章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'kiteflyer': { src:'img/badge/kiteflyer.avif', alt:'「風箏（Kite Flyer）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係風箏同線', cap:'風箏章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'tourism': { src:'img/badge/tourism.avif', alt:'「旅遊（Tourism）」興趣組專科徽章官方圖樣：綠底菱形布章', cap:'旅遊章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'musician': { src:'img/badge/musician.avif', alt:'「音樂（Musician）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係音符同五線譜', cap:'音樂章：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' },
-  'petkeeper': { src:'img/badge/petkeeper.avif', alt:'「動物飼養（Petkeeper）」興趣組專科徽章官方圖樣：綠底菱形布章，圖案係狗同貓', cap:'動物飼養章（2026 新增）：香港童軍總會官方章樣，考核要求睇下面「官方考核要求」' }
+  'member': { src:'img/badge/venture-member.avif', alt:'深資童軍會員章：紫色底，白色箭頭章，外圍白色繩圈底部平結', cap:'會員章：深資第一步，認識團隊＋目的＋禮節＋Safe from Harm，由 VSL 與執委會商議頒發' },
+  'shoulder': { src:'img/badge/venture-shoulder.avif', alt:'深資童軍肩章：棕色底白色V，月桂環頂童軍徽', cap:'肩章：認識1-9＋技能（露營/繩結/遠足/急救），由 VSL 簽發，完成 c07-c16 達標頒發' },
+  'venture': { src:'img/badge/venture-award.avif', alt:'深資童軍獎章：棕底白V月桂環童軍徽', cap:'深資童軍獎章：四組金帶（自立/責任/活動/探險）各完成一段章，由 VSL 安排主考＋簽發，區總監協助' },
+  'dragon': { src:'img/badge/dragon-award.avif', alt:'榮譽童軍獎章：綠底金火炬紅火焰月桂環童軍徽，青少年最高榮譽', cap:'榮譽童軍獎章：完成任一深資童軍獎章段章後可開始，金帶由 ADC(VS)/DC/RC/青少年活動總監或代表主考' },
+  'self': { src:'img/badge/venture-self.avif', alt:'自立段章：人際關係＋生活探討，S-A101至214', cap:'自立段章：人際（團外活動/執委會/社區參與）＋生活探討（職業/學院/宗教/社會議題），由 VSL 考核' },
+  'responsibility': { src:'img/badge/venture-responsibility.avif', alt:'責任段章：消防/急救/拯溺，R-A101至104', cap:'責任段章：消防訓練＋30小時急救證書＋拯溺銅章，由 VSL 考核' },
+  'activity': { src:'img/badge/venture-activity.avif', alt:'活動段章：童軍技能＋個人興趣＋體育技能，A-101至312及A-999', cap:'活動段章：原野生活/先鋒工程＋個人興趣（飛行/天象/電腦/攝影等）＋體育，由 VSL 考核' },
+  'adventure': { src:'img/badge/venture-adventure.avif', alt:'探險段章：地圖閱讀＋遠足訓練＋選修（40km徒步/160km單車/50km艇等）', cap:'探險段章：必修E-A001地圖＋E-A002遠足＋選修E-A003至009（40km露宿兩晚），由 VSL 考核' },
+  'self-gold': { src:'img/badge/venture-self.avif', alt:'自立金帶：活動策劃S-B101＋專題研究/舉辦活動S-B201/202', cap:'自立金帶：B組需先完成A組一項，大型聯合活動由青年主導，計劃書＋報告書，ADC(VS)主考' },
+  'responsibility-gold': { src:'img/badge/venture-responsibility.avif', alt:'責任金帶：志願服務R-B201＋專門技能服務R-B202＋童軍及社區服務R-B203，48小時', cap:'責任金帶：持續服務9次/48小時，持有效證書，ADC(VS)主考' },
+  'activity-gold': { src:'img/badge/venture-activity.avif', alt:'活動金帶：露營技藝A-103＋先鋒工程實踐A-104（橋/瞭望台/索橋）', cap:'活動金帶：2日1夜固定露營計劃書＋紀錄＋先鋒模型，ADC(VS)主考' },
+  'adventure-gold': { src:'img/badge/venture-adventure.avif', alt:'探險金帶：60km徒步三晚/240km單車/80km艇等E-B001至007', cap:'探險金帶：選修60km/80km三晚四日三夜，持中級證書，ADC(VS)主考' }
 };
 
 
-/* 👕 制服服式圖（用戶要求：唔要 SVG，要真圖）
-   圖檔：img/uni/{land,sea,air}.avif —— 香港童軍總會官網「青少年成員 → 童軍 → 制服」嘅官方服式圖
-   （童軍男團員 Scout_B.1、女團員 Scout_G.1、海童軍 Scout_Sea_B／G、空童軍 Scout_Air_B／G），
-   男／女並排、去底、轉 AVIF。來源見 img/uni/SOURCES.md。
-   注意：制服頁仍然以《儀容與制服手冊》＋童軍物品供應社為最後依據；呢啲圖只係睇式樣同顏色。 */
+/* 👕 制服服式圖 — 深資童軍專用（Venture only，AVIF省位）
+   圖檔：img/uni/venture-{land,sea,air}.avif —— 按總會官網制服表 +《儀容與制服手冊》產生，
+   忠於官方規格（棗紅軟帽杏恤草青褲/裙、白頂帽白恤深藍褲/裙、灰藍軟帽淺藍恤深藍褲/裙），
+   男/女並排白底目錄風，轉 AVIF 900x quality 45。來源見 img/uni/SOURCES.md。
+   官網原圖直連保留（有網開官網 JPEG，離線用本地 AVIF）。
+   舊 Scout 版 land/sea/air.avif 已移除。 */
 var UNIFORMFIG = {
-  land: { src:'img/uni/land.avif', w:900, h:930, branch:'陸童軍', alt:'陸童軍男團員（深綠軟帽、杏色短袖恤、草青色短褲、棕色皮帶、深草青色長襪）同女團員（同款恤衫配草青色裙褲）並排嘅官方服式圖' },
-  sea:  { src:'img/uni/sea.avif',  w:900, h:899, branch:'海童軍', alt:'海童軍男團員（白頂海童軍帽連帽帶、白色短袖恤、深藍色短褲、深藍長襪）同女團員（白色恤配深藍色裙褲）並排嘅官方服式圖' },
-  air:  { src:'img/uni/air.avif',  w:900, h:941, branch:'空童軍', alt:'空童軍男團員（灰藍色軟帽、淺藍色短袖恤、深藍色短褲、深藍長襪）同女團員（淺藍色恤配深藍色裙褲）並排嘅官方服式圖' },
-  vsland: { src:'img/uni/venture-land.png', w:900, h:930, branch:'陸深資', alt:'陸深資男團員（棗紅色軟帽、杏色短袖恤、草青色長褲、棕色皮帶）同女團員（杏色恤配草青色半截裙）並排嘅官方服式圖，本地版離線都睇到' },
-  vssea:  { src:'img/uni/venture-sea.png',  w:900, h:899, branch:'海深資', alt:'海深資男團員（白頂帽連深資海童軍帽章、白色短袖恤、深藍色長褲）同女團員（白色恤配深藍色半截裙）並排嘅官方服式圖，本地版' },
-  vsair:  { src:'img/uni/venture-air.png',  w:900, h:941, branch:'空深資', alt:'空深資男團員（灰藍色軟帽、淺藍色短袖恤、深藍色長褲）同女團員（淺藍色恤配深藍色半截裙）並排嘅官方服式圖，本地版' }
+  land:   { src:'img/uni/venture-land.avif', w:900, h:930, branch:'陸深資', alt:'陸深資男團員（棗紅色軟帽連童軍帽章、杏色短袖恤兩胸袋、草青色長褲棕皮帶黑短襪黑綁帶皮鞋）同女團員（同色杏恤草青及膝半截裙肉色襪褲黑中跟皮鞋）並排官方服式對照圖，白底正面全身，旅巾巾圈' },
+  sea:    { src:'img/uni/venture-sea.avif',  w:900, h:899, branch:'海深資', alt:'海深資男團員（白頂帽連深資海童軍帽章、白色短袖恤兩胸袋、深藍色長褲棕皮帶）同女團員（白恤深藍半截裙）並排官方服式對照圖' },
+  air:    { src:'img/uni/venture-air.avif',  w:900, h:941, branch:'空深資', alt:'空深資男團員（灰藍色軟帽、淺藍色短袖恤、深藍色長褲）同女團員（淺藍恤深藍半截裙）並排官方服式對照圖' },
+  vsland: { src:'img/uni/venture-land.avif', w:900, h:930, branch:'陸深資', alt:'陸深資男團員（棗紅色軟帽、杏色短袖恤、草青色長褲、棕色皮帶）同女團員（杏色恤配草青色半截裙）並排嘅官方服式圖，本地版離線都睇到' },
+  vssea:  { src:'img/uni/venture-sea.avif',  w:900, h:899, branch:'海深資', alt:'海深資男團員（白頂帽連深資海童軍帽章、白色短袖恤、深藍色長褲）同女團員（白色恤配深藍色半截裙）並排嘅官方服式圖，本地版' },
+  vsair:  { src:'img/uni/venture-air.avif',  w:900, h:941, branch:'空深資', alt:'空深資男團員（灰藍色軟帽、淺藍色短袖恤、深藍色長褲）同女團員（淺藍色恤配深藍色半截裙）並排嘅官方服式圖，本地版' }
 };
 
 if (typeof module !== 'undefined' && module.exports) { module.exports = FIGS; module.exports.GAME_FIG = GAME_FIG; module.exports.SKILL_FIG = SKILL_FIG; module.exports.AID_FIG = AID_FIG; module.exports.BADGE_FIG = BADGE_FIG; module.exports.UNIFORMFIG = UNIFORMFIG; }

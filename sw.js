@@ -1,7 +1,9 @@
-var CACHE = "venture-v45-vs-20260918";
+var CACHE = "venture-v46-vs-20260918";
 var ASSETS = [
-  "./img/uni/venture-land.png", "./img/uni/venture-sea.png", "./img/uni/venture-air.png",
-  "./img/uni/land.avif", "./img/uni/sea.avif", "./img/uni/air.avif",
+  "./img/uni/venture-land.avif", "./img/uni/venture-sea.avif", "./img/uni/venture-air.avif",
+  "./img/badge/venture-member.avif", "./img/badge/venture-shoulder.avif", "./img/badge/venture-award.avif",
+  "./img/badge/venture-self.avif", "./img/badge/venture-responsibility.avif", "./img/badge/venture-activity.avif",
+  "./img/badge/venture-adventure.avif", "./img/badge/dragon-award.avif",
   "./", "./index.html", "./manifest.webmanifest", "./css/app.css",
   "./js/data.js", "./js/interests.js", "./js/ceremony.js", "./js/uniform.js", "./js/dia.js", "./js/ayp.js",
   "./js/figs.js", "./js/projector.js",
@@ -72,7 +74,7 @@ var ASSETS = [
   "./img/dia/uniform-sleeve.avif",
   "./img/dia/uniform-ties.avif",
   "./img/dia/uniform-zoom.avif",
-  "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"
+  "./icons/icon-192.avif", "./icons/icon-192.png", "./icons/icon-512.avif", "./icons/icon-512.png", "./icons/icon-maskable-512.png"
 ];
 var EXTERNAL_PREFIX = "https://";
 

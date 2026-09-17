@@ -16,7 +16,7 @@ UNIFORM.types = [
     k:'vs_b',
     name:'深資童軍男團員',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_B.jpg',
-    localImg:'img/uni/venture-land.png',
+    localImg:'img/uni/venture-land.avif',
     items:[
       ['帽', '棗紅色軟帽（連童軍帽章）'],
       ['恤衫', '杏色、短袖、兩胸袋、無褶、肩帶'],
@@ -32,7 +32,7 @@ UNIFORM.types = [
     k:'vs_g',
     name:'深資童軍女團員（半截裙）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_G_dress.jpg',
-    localImg:'img/uni/venture-land.png',
+    localImg:'img/uni/venture-land.avif',
     items:[
       ['帽', '棗紅色軟帽（連童軍帽章）'],
       ['恤衫', '杏色、短袖、兩胸袋、無褶、肩帶'],
@@ -48,7 +48,7 @@ UNIFORM.types = [
     k:'vs_g_pants',
     name:'深資童軍女團員（長褲）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_B.jpg',
-    localImg:'img/uni/venture-land.png',
+    localImg:'img/uni/venture-land.avif',
     items:[
       ['帽', '棗紅色軟帽（連童軍帽章）'],
       ['恤衫', '杏色、短袖、兩胸袋、無褶、肩帶'],
@@ -65,7 +65,7 @@ UNIFORM.types = [
     k:'vs_sea_b',
     name:'深資海童軍男團員',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_sea_B.jpg',
-    localImg:'img/uni/venture-sea.png',
+    localImg:'img/uni/venture-sea.avif',
     items:[
       ['帽', '海童軍男領袖白頂帽（連深資海童軍帽章）'],
       ['恤衫', '白色、短袖、兩胸袋、無褶、肩帶'],
@@ -81,7 +81,7 @@ UNIFORM.types = [
     k:'vs_sea_g',
     name:'深資海童軍女團員（半截裙）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_sea_G_dress.jpg',
-    localImg:'img/uni/venture-sea.png',
+    localImg:'img/uni/venture-sea.avif',
     items:[
       ['帽', '海童軍女領袖白頂帽（連深資海童軍帽章）'],
       ['恤衫', '白色、短袖、兩胸袋、無褶、肩帶'],
@@ -97,7 +97,7 @@ UNIFORM.types = [
     k:'vs_sea_g_pants',
     name:'深資海童軍女團員（長褲）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_sea_B.jpg',
-    localImg:'img/uni/venture-sea.png',
+    localImg:'img/uni/venture-sea.avif',
     items:[
       ['帽', '海童軍女領袖白頂帽（連深資海童軍帽章）'],
       ['恤衫', '白色、短袖、兩胸袋、無褶、肩帶'],
@@ -113,7 +113,7 @@ UNIFORM.types = [
     k:'vs_air_b',
     name:'深資空童軍男團員',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_air_B.jpg',
-    localImg:'img/uni/venture-air.png',
+    localImg:'img/uni/venture-air.avif',
     items:[
       ['帽', '灰藍色軟帽（連童軍帽章）'],
       ['恤衫', '淺藍色、短袖、兩胸袋、無褶、肩帶'],
@@ -129,7 +129,7 @@ UNIFORM.types = [
     k:'vs_air_g',
     name:'深資空童軍女團員（半截裙）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_air_G_dress.jpg',
-    localImg:'img/uni/venture-air.png',
+    localImg:'img/uni/venture-air.avif',
     items:[
       ['帽', '灰藍色軟帽（連童軍帽章）'],
       ['恤衫', '淺藍色、短袖、兩胸袋、無褶、肩帶'],
@@ -145,7 +145,7 @@ UNIFORM.types = [
     k:'vs_air_g_pants',
     name:'深資空童軍女團員（長褲）',
     img:'https://www.scout.org.hk/uploads/member/venture_scouts_air_B.jpg',
-    localImg:'img/uni/venture-air.png',
+    localImg:'img/uni/venture-air.avif',
     items:[
       ['帽', '灰藍色軟帽（連童軍帽章）'],
       ['恤衫', '淺藍色、短袖、兩胸袋、無褶、肩帶'],
