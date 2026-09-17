@@ -1,9 +1,11 @@
 # 深資童軍團集會助手 — Handover Notes（交下一個 Agent 用）
 
 > 最後更新：2026-09-17
-> 目前 branch：`arena/01a0a9bb-vsmeeting`（v41：**深資童軍版** — 16 場＋7 套儀式卡＋獎章查閱＋AYP＋手冊AYP指南＋頂欄直連，前端零 SVG）
+> 目前 branch：`arena/01a0ae17-vsmeeting`（**v43**：深資童軍版 — 16 場＋8 套儀式卡＋單項項目庫 18／19＋獎章 34 項＋AYP＋教材列點，前端零 SVG）
 >
-> **v41 快照（睇呢段就夠；下面 v19–v40 係歷史記錄）**
+> **最新＝§2.6 v43 大修（用家 6 項投訴）**；§2.5 係 v42；以下係 v41 快照（架構仍適用）。
+>
+> **v41 快照（下面 v19–v40 係歷史記錄）**
 > - **深資童軍版全量重建**：16 場教案（會員章 c01–c06／肩章認識 c07–c09／肩章技能 c10–c16）、7 套儀式卡（無團呼）、深資制服 6 款（官網原圖 link-only）、獎章 20 項（會員章 11＋肩章 7＋獎章路 2，只查不記）、繩結 9 個、地圖 1:20,000、急救 5 種＋復原臥式；v39：底部第 5 格由營火會改做 AYP（概覽＋三級＋五科＋參加，只查不記）；v40：手冊加「AYP 領袖指南」分頁（什麼是AYP＋團員參加＋領袖參與＋成立執行處支部）；v41：頂欄改姊妹 app 直連（圖書館＋AYP＋升團）。
 > - **組織**：執委會制（主席／副主席／秘書／司庫／康樂總務）＋團員大會；集隊由執委會帶，領袖監禮；考章＝團內考核 7 步，報班＝通告圖書館 7 步。
 > - **已刪走嘅童軍支部內容**：c17–c24 教案、團呼卡、拖木頭挑戰場地圖、小隊制度／小隊長、興趣組 33 章、區報章系統、童軍版繩結 10／地圖 1:25,000／急救 7 種；sw 已唔再預緩存 `img/badge/`＋`img/uni/`（檔仲喺 disk，未刪）；v39 加：營火會頁（流程／歡呼／人手／帶唱／歌單 14／安全）＋素材庫歌紙分類＋fire-circle/fire-song 插畫。
@@ -39,10 +41,10 @@
 **下方 5 tab**：
 | Tab | 狀態 | 說明 |
 |---|---|---|
-| ✂️ 素材庫（print） | ✅ 5 類真分頁 | 16 場工作紙逐張印＋6 張急救卡＋誓詞卡＋收繩卡＋國歌升旗 |
-| 🎮 活動（play） | ✅ 13 個遊戲 | 玩法/人數/物資/安全/場地圖（11 有圖＋2 破冰無圖） |
-| 🪢 技能（skills） | ✅ 9 分頁 | 繩結 9 口訣＋收繩/地圖/指南針/露營/先鋒/追蹤/郊野/急救 |
-| 🎖️ 獎章（badges） | ✅ 20 項 | 會員章 11＋肩章 7＋獎章路 2，考核要求＋建議方式＋教案連結 |
+| 🎮 聚會GAME（print） | ✅ 4 分頁 | 互動遊戲工具 5 個＋集會遊戲卡 23＋工作紙 5 張＋即印素材（急救/誓詞/收繩/國歌） |
+| 🎮 活動（play） | ✅ 18 張單項活動卡 | 目的/流程/要點/示範/檢查/安全，可分類篩選（唔再係教案摘要） |
+| 🪢 技能（skills） | ✅ 19 張單項技能卡＋肩章對照 | 露營 5／繩結 2／地圖 3／急救 5／先鋒 1／策劃 3；繩結只出口訣 |
+| 🎖️ 獎章（badges） | ✅ 34 項 | 會員章 12＋肩章 9＋四段章／金帶＋獎章路＋第十版對照，考核要求＋建議方式＋教案連結 |
 | 🌟 AYP（ayp） | ✅ 4 分頁 | 概覽/三級要求/五科介紹/點參加（只查不記） |
 
 **頂欄**（icon-only 按鈕）：🔍 全站搜尋 ＋ 📚 通告圖書館 ＋ 🌟 AYP 接駁指南 ＋ ⬆️ 升團準備指南（姊妹 app 直連，領袖可分享畀團員；深資唔用專章系統，無專章入口）。手冊 #book/refs 保留完整目錄（綱要＋套包＋圖書館＋AYP＋升團）。
@@ -78,13 +80,29 @@
 3. `js/app.js` 尚餘 `App.aidCard`／`App.badgeFig`／`UNIFORM.placement` 三個舊函數（已冇渲染呼叫），可擇機清走。
 4. 套包第 6–16 週嘅每週節目未逐週搬入嚟（現行用 c01–c16 自組流程＋套包遊戲）。
 
+## 2.6 v43 大修（2026-09-17・用家 6 項投訴）
+
+| # | 投訴 | v43 做法 | 檔案 |
+|---|------|----------|------|
+| 1 | 全文有不應出現字眼（「四條金帶」） | 深資童軍獎章＝**四個段章**；金帶屬「榮譽童軍獎章」（完成任一段章先可考該段章金帶，共四條）。全文掃字眼＋簡體字／錯字；smoke 加守門 | `js/app.js`、`js/figs.js`、`js/uniform.js`、`js/interests.js`、`js/teach*.js`、`index.html` |
+| 2 | 「聚會 GAME 互動庫」只剩標題 | 修 `minigame.js` 引號 SyntaxError（成個檔死咗 → 5 個工具靜靜唔 render）；print 頁改 4 真分頁：互動工具（5 個 mount）／遊戲卡 23／工作紙 5／即印素材 | `js/minigame.js`、`js/app.js`（`printCats`／`printPanel`） |
+| 3 | 下方 5 格定位錯（要單項材料） | 新增 `js/items.js`：`ITEMS.activities`（18）＋`ITEMS.skills`（19）＋`cats()`；`pages.play`／`pages.skills` 改單項卡（目的/流程/要點/示範/檢查/安全/對應獎章/教案連結），分類篩選；skills 加「肩章對照」分頁 | `js/items.js`（新）、`js/app.js` |
+| 4 | 儀式有「小隊」「家長接送」 | 集隊＝全團一個隊形（《步操手冊》第六章 fall-in）；分工用執委會臨時工作小組；散會自行離開，冇等家長接；儀式卡＋c04–c06／c16 逐句清 | `js/ceremony.js`、`js/c0{4,5,6}-lesson.js`、`js/c16-lesson.js`、`js/data.js` |
+| 5 | 教材字太多 | TEACH 渲染改列點（`points`→`<ul>`）＋長原文/示範/講稿收 `<details>`；自動配圖 `App.teachFigFor`（keyword→fig，17 張）＋平面 dgm fallback | `js/app.js`（`teachD`／`teachFigFor`）、`css/app.css` |
+| 6 | 用 Drive 分割手冊 | 手冊套包（步操／制服）以 Drive split file ID 存 `CEREMONY.refs`／`INTERESTS.source`；制服改用《儀容與制服手冊》原文（v42 起） | `js/ceremony.js`、`js/interests.js`、`js/uniform.js` |
+
+### v43 技術要點（唔好踩返）
+- `js/minigame.js` 內 HTML 字串用 `\'` 跳脫 onclick 引號——**改任何 mini-game 字串後要 `node --check js/minigame.js`**（v42 曾因未跳脫令成個檔 parse 失敗，5 個工具只剩標題）。
+- `js/items.js` 要喺 `index.html`（data.js 之後）同 `sw.js` ASSETS 出現；`tests/runtime.mjs`／`tests/smoke.mjs` 都要載入/檢查佢。
+- 教材配圖優先序：`b.fig`（FIGS 有先出）→ `App.teachFigFor(b.h/b.d)` → `b.dgm`／`App.teachDgmFor` → 冇圖就唔出（唔會出錯 icon）。
+
 ## 3. 重要用戶約定（唔可以改）
 
 0. **v39 深資版約定**：①tab 內容要分頁 ②會員章＋肩章由團內考核，獎章 tab 只查不記、唔放報章系統 ③唔出繩結逐步圖卡（文字口訣為準）④儀式/活動/技能要補圖（獎章唔使）⑤唔做營火會歌紙／歡呼庫（深資營火由團員自務）；AYP 只查不記、數字以官方為準 ⑥列印指邊印邊 ⑦工作紙：上面教案「跟住做」＋素材庫「直接印」兩邊都要 ⑧集會目錄整行可撳
 1. **唔好抄 Cubs Hub 嘅 emoji icon**——用自製森林綠+金百合花飾（v19 已更新為 192/512/maskable 三 size，原圖來自 generate_image）
 2. **完全移除森林故事**（幼童軍先有，童軍支部冇）
 3. **第 4 tab = 🪢 技能；第 5 tab 已由 🔥 營火歌改為 🌟 AYP**（v39 用戶指示：深資營火由團員自務，唔做歌紙；取代 v19 約定）
-4. **「獎章」tab 做會員章 11＋肩章 7＋獎章路 2**，只查不記；考核由團安排，訓練班經通告圖書館
+4. **「獎章」tab 做會員章 12＋肩章 9＋四段章／金帶＋獎章路（＋第十版對照）**，只查不記；考核由團安排，訓練班經通告圖書館
 5. **唔做考核記錄／獎章判定／出席記錄**
 6. **深資制服服式圖連總會官網原圖**（`https://www.scout.org.hk/uploads/member/venture_scouts_*.jpg`，link-only，唔本地存，唔好自己整/改圖）；深資軟帽唔係貝雷帽
 7. **儀式內容唔自己作**，動作要領文字化；中式隊列參考總會《中式隊列指引》PDF
@@ -142,7 +160,7 @@ vsmeeting/
 │   ├── dia.js              # IMG.map（53 張 AVIF＋尺寸＋alt）＋自動砌 DIAGRAMS（前端唯一出圖路徑；cer.howl／uniform.branch 底稿保留，app 唔用）
 │   ├── app.js              # 核心：路由、App.renderMeeting()、所有 page render
 │   ├── data.js             # DATA 物件：meetings[] 16 場、facts、games（13 個）、EXTERNAL 外連
-│   ├── interests.js        # INTERESTS：獎章 20 項（會員章 11＋肩章 7＋獎章路 2）、howToApply（團內考核＋報班流程）
+│   ├── interests.js        # INTERESTS：獎章 34 項（會員章 12＋肩章 9＋段章／金帶＋獎章路）、howToApply（團內考核＋報班流程）
 │   ├── ceremony.js         # CEREMONY：7 套儀式卡（無團呼，含 refs 連結）
 │   ├── uniform.js          # UNIFORM：深資 6 款規格＋neckwear/kilwell/beltSocks＋placement＋checklist＋shop
 │   ├── c01-lesson.js ~ c16-lesson.js  # 16 個完整教案（含 C10.firstaid/C13.knots/C14.knots/C14.ropeCare 速查表）
@@ -206,7 +224,7 @@ renderMeeting 支援新舊兩種段落格式混合（`label/min`、`n/t`、`sub/
 ## 8. PWA 與 Cache
 
 - Service Worker 檔案：`sw.js`
-- Cache 命名：`scout-v{N}-c16-YYYYMMDD`（現行 `scout-v42-textbook-20260917`）
+- Cache 命名：`scout-v{N}-c16-YYYYMMDD`（現行 `scout-v43-items-20260917`）
 - 每加/減一個 cXX-lesson.js，要做 3 件事：
   1. `index.html` 加 `<script src="js/cXX-lesson.js"></script>`
   2. `data.js` 將對應 placeholder 替換為 `full:true, special?/outdoor?/sensitive?, data:Cxx, bag?/notice?/personalKit?/doNotBring?`

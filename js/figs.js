@@ -32,7 +32,7 @@ var FIGS = {
   /* 🎮 遊戲場地圖（批次 2・用 DATA.games 嘅遊戲名 lookup，見檔尾 GAME_FIG） */
   'game-ball': {
     src:'img/fig/game-ball.avif', w:1000, h:545,
-    alt:'場地示意：十幾個人圍成一個大圈、每人之間留一臂位，一人揸住軟球喊名抛畀對面嘅人，球喺半空走弧線，領袖企喺圈外一張凳上面觀察，圈內冇雜物',
+    alt:'場地示意：十幾個人圍成一個大圈、每人之間留一臂位，一人揸住軟球喊名拋畀對面嘅人，球喺半空走弧線，領袖企喺圈外一張凳上面觀察，圈內冇雜物',
     cap:'設場：大圈、每人隔一臂位，用軟球（帽／紙團都得），領袖企圈外。⚠️ 圈內唔准放背囊水樽——踢親會跣親人'
   },
   'game-shape': {
@@ -120,7 +120,7 @@ var FIGS = {
   },
   'skill-sos': {
     src:'img/fig/skill-sos.avif', w:1000, h:545,
-    alt:'黃昏草地場景：一名組員企喺開揚位，一手高舉電筒光柱向天、一手將哨子放喺口邊；佢右邊天上剛好三組聲波弧線——三條短、三條長、三條短，中間有明顯间隔，冇第四組；腳邊放一面反光鏡，遠處山坡有兩條回應嘅光柱',
+    alt:'黃昏草地場景：一名組員企喺開揚位，一手高舉電筒光柱向天、一手將哨子放喺口邊；佢右邊天上剛好三組聲波弧線——三條短、三條長、三條短，中間有明顯間隔，冇第四組；腳邊放一面反光鏡，遠處山坡有兩條回應嘅光柱',
     cap:'求救節奏：<b>三短 → 三長 → 三短</b>（圖中三組弧線，每組三條，冇多冇少）。口訣：哨／燈／聲都用同一節拍，重複至有人回應。⚠️ 企喺開揚可見位、唔好摸黑行；對應 <a href="#plan/c11">c11</a>／<a href="#plan/c12">c12 教案</a>'
   },
 
@@ -247,23 +247,24 @@ var AID_FIG = {
    - 會員章（紫底白箭頭白繩平結）
    - 肩章（棕底白V月桂環童軍徽）
    - 深資童軍獎章（棕底V+月桂）
-   - 榮譽童軍獎章（綠底金火炬紅火焰月桂）
-   - 第十版四段章：自立、責任、活動、探險（S/R/A/E）；第十一版已改為活動策劃、社會服務、多元技能、戶外探險（舊圖只供過渡期對照）
+   - 榮譽童軍獎章（綠底金火炬紅火焰月桂）＋四條金帶（活動策劃／社會服務／多元技能／戶外探險）
+   - 第十版四段章舊名：自立、責任、活動、探險（S/R/A/E）；第十一版段章名：活動策劃、社會服務、多元技能、戶外探險（舊圖只供過渡期對照）
+   - 紀律：<b>深資童軍獎章＝完成四個段章</b>；<b>金帶屬榮譽童軍獎章內項目</b>（完成任一段章後才可開始考該段章之金帶）。唔可以寫成「深資童軍獎章＝四條金帶」。
    圖檔：img/badge/venture-*.avif + dragon-award.avif，全部AVIF省位，來源見訓練綱要。
    舊 Scout 興趣章 AVIF 保留喺目錄但唔再用於深資流程，僅作兼容。 */
 var BADGE_FIG = {
   'member': { src:'img/badge/venture-member.avif', alt:'深資童軍會員章：紫色底，白色箭頭章，外圍白色繩圈底部平結', cap:'會員章：深資第一步，認識團隊＋目的＋禮節＋Safe from Harm，由 VSL 與執委會商議頒發' },
   'shoulder': { src:'img/badge/venture-shoulder.avif', alt:'深資童軍肩章：棕色底白色V，月桂環頂童軍徽', cap:'肩章：認識1-9＋技能（露營/繩結/遠足/急救），由 VSL 簽發，完成 c07-c16 達標頒發' },
-  'venture': { src:'img/badge/venture-award.avif', alt:'深資童軍獎章：棕底白V月桂環童軍徽', cap:'深資童軍獎章：四組金帶（自立/責任/活動/探險）各完成一段章，由 VSL 安排主考＋簽發，區總監協助' },
-  'dragon': { src:'img/badge/dragon-award.avif', alt:'榮譽童軍獎章：綠底金火炬紅火焰月桂環童軍徽，青少年最高榮譽', cap:'榮譽童軍獎章：完成任一深資童軍獎章段章後可開始，金帶由 ADC(VS)/DC/RC/青少年活動總監或代表主考' },
-  'self': { src:'img/badge/venture-self.avif', alt:'自立段章：人際關係＋生活探討，S-A101至214', cap:'自立段章：人際（團外活動/執委會/社區參與）＋生活探討（職業/學院/宗教/社會議題），由 VSL 考核' },
-  'responsibility': { src:'img/badge/venture-responsibility.avif', alt:'責任段章：消防/急救/拯溺，R-A101至104', cap:'責任段章：消防訓練＋30小時急救證書＋拯溺銅章，由 VSL 考核' },
-  'activity': { src:'img/badge/venture-activity.avif', alt:'活動段章：童軍技能＋個人興趣＋體育技能，A-101至312及A-999', cap:'活動段章：原野生活/先鋒工程＋個人興趣（飛行/天象/電腦/攝影等）＋體育，由 VSL 考核' },
-  'adventure': { src:'img/badge/venture-adventure.avif', alt:'探險段章：地圖閱讀＋遠足訓練＋選修（40km徒步/160km單車/50km艇等）', cap:'探險段章：必修E-A001地圖＋E-A002遠足＋選修E-A003至009（40km露宿兩晚），由 VSL 考核' },
-  'self-gold': { src:'img/badge/venture-self.avif', alt:'自立金帶：活動策劃S-B101＋專題研究/舉辦活動S-B201/202', cap:'自立金帶：B組需先完成A組一項，大型聯合活動由青年主導，計劃書＋報告書，ADC(VS)主考' },
-  'responsibility-gold': { src:'img/badge/venture-responsibility.avif', alt:'責任金帶：志願服務R-B201＋專門技能服務R-B202＋童軍及社區服務R-B203，48小時', cap:'責任金帶：持續服務9次/48小時，持有效證書，ADC(VS)主考' },
-  'activity-gold': { src:'img/badge/venture-activity.avif', alt:'活動金帶：露營技藝A-103＋先鋒工程實踐A-104（橋/瞭望台/索橋）', cap:'活動金帶：2日1夜固定露營計劃書＋紀錄＋先鋒模型，ADC(VS)主考' },
-  'adventure-gold': { src:'img/badge/venture-adventure.avif', alt:'探險金帶：60km徒步三晚/240km單車/80km艇等E-B001至007', cap:'探險金帶：選修60km/80km三晚四日三夜，持中級證書，ADC(VS)主考' }
+  'venture': { src:'img/badge/venture-award.avif', alt:'深資童軍獎章：棕底白V月桂環童軍徽', cap:'深資童軍獎章：完成四個段章（活動策劃／社會服務／多元技能／戶外探險）全部項目；由 VSL 提名→區總監或其代表推薦→地域總監或其代表批核→青少年活動總監或其代表確認後簽發' },
+  'dragon': { src:'img/badge/dragon-award.avif', alt:'榮譽童軍獎章：綠底金火炬紅火焰月桂環童軍徽，青少年最高榮譽', cap:'榮譽童軍獎章：完成任何一個段章後，便可與區會指定人士商討考取「該段章之金帶」；集齊四條金帶後申請榮譽童軍獎章（由總領袖及香港總監簽發）' },
+  'self': { src:'img/badge/venture-self.avif', alt:'段章（第十版舊稱自立）：活動策劃', cap:'段章・活動策劃（第十版舊稱「自立」）：區／地域／總會認許之「深資童軍執行委員會工作坊」等；由 VSL 安排主考人及簽發' },
+  'responsibility': { src:'img/badge/venture-responsibility.avif', alt:'段章（第十版舊稱責任）：社會服務', cap:'段章・社會服務（第十版舊稱「責任」）：選修（I）30 小時急救證書或拯溺銅章；選修（II）消防／救生／手語／精神健康急救等' },
+  'activity': { src:'img/badge/venture-activity.avif', alt:'段章（第十版舊稱活動）：多元技能', cap:'段章・多元技能（第十版舊稱「活動」）：範疇一童軍技能／範疇二康樂體育／範疇三新體驗' },
+  'adventure': { src:'img/badge/venture-adventure.avif', alt:'段章（第十版舊稱探險）：戶外探險', cap:'段章・戶外探險（第十版舊稱「探險」）：先完成「深資童軍地圖閱讀訓練班／考驗」及「深資童軍遠足訓練班」，再完成綱要項目' },
+  'self-gold': { src:'img/badge/venture-self.avif', alt:'金帶・活動策劃（榮譽童軍獎章內項目）', cap:'金帶・活動策劃：實踐一項活動策劃（或外宿最少五日四夜的活動，可與 AYP 團體生活科銜接）；由區／地域／青少年活動總監或其代表主考及簽發' },
+  'responsibility-gold': { src:'img/badge/venture-responsibility.avif', alt:'金帶・社會服務（榮譽童軍獎章內項目）', cap:'金帶・社會服務（三選一）：童軍及社區服務／連續 6 個月 52 小時志願服務／寰宇童軍計劃；由區／地域／青少年活動總監或其代表主考及簽發' },
+  'activity-gold': { src:'img/badge/venture-activity.avif', alt:'金帶・多元技能（榮譽童軍獎章內項目）', cap:'金帶・多元技能：按第十一版三範疇要求完成（童軍技能／康樂體育／新體驗）；由區／地域／青少年活動總監或其代表主考及簽發' },
+  'adventure-gold': { src:'img/badge/venture-adventure.avif', alt:'金帶・戶外探險（榮譽童軍獎章內項目）', cap:'金帶・戶外探險：完成綱要規定之戶外探險項目（距離／日數以第十一版原文為準）；由區／地域／青少年活動總監或其代表主考及簽發' }
 };
 
 

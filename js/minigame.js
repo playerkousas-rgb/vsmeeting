@@ -114,7 +114,7 @@ MiniGame.renderSpyUI = function(){
       + '<label>臥底數：<input type="number" min="1" max="3" value="' + st.spies + '" style="width:45px;" onchange="MiniGame.spyState.spies=parseInt(this.value,10)"></label>'
       + '<label>題庫：<select onchange="MiniGame.spyState.topicKey=this.value">' + optHtml + '</select></label>'
       + '</div>'
-      + '<button class="button" style="background:#33691E;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.startSpyGame()">🎲 開始發牌（輪流傳手機）</button> <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="Projector.live('mg:spy','🕵️ 誰是臥底')">🖥️ 投影大螢幕</button>'
+      + '<button class="button" style="background:#33691E;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.startSpyGame()">🎲 開始發牌（輪流傳手機）</button> <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="Projector.live(\'mg:spy\',\'🕵️ 誰是臥底\')">🖥️ 投影大螢幕</button>'
       + '</div>';
     return;
   }
@@ -248,7 +248,7 @@ MiniGame.renderAgentUI = function(){
     + '<button style="flex:1;padding:6px;border-radius:6px;font-weight:bold;cursor:pointer;background:' + (isCaptain ? '#5E35B1' : '#E0E0E0') + ';color:' + (isCaptain ? '#fff' : '#333') + ';border:none;" onclick="MiniGame.agentState.viewRole=\'captain\';MiniGame.renderAgentUI();">👑 隊長視角（全見底牌）</button>'
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(5, 1fr);gap:6px;margin-bottom:10px;">' + cardsHtml + '</div>'
-    + '<button class="button" style="background:#512DA8;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;" onclick="MiniGame.initAgentGame()">🔄 重新生成 5×5 題目盤</button> <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;" onclick="Projector.live('mg:agent','🕴️ 機密特務')">🖥️ 投影大螢幕</button>'
+    + '<button class="button" style="background:#512DA8;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;" onclick="MiniGame.initAgentGame()">🔄 重新生成 5×5 題目盤</button> <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;" onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影大螢幕</button>'
     + '</div>';
 };
 
@@ -483,7 +483,7 @@ MiniGame.renderWheelUI = function(){
     + '<h4 style="margin:0 0 6px 0;color:#F57F17;">🎡 聚會互動幸運轉盤</h4>'
     + '<p class="mut" style="font-size:12px;margin:0 0 8px 0;">破冰互動或集會遊戲懲罰隨機抽取小工具。</p>'
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">' + itemsHtml + '</div>'
-    + '<button style="background:#F57F17;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="MiniGame.spinWheel()">🎲 轉一下！</button> <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="Projector.live('mg:wheel','🎡 幸運轉盤')">🖥️ 投影大螢幕</button>'
+    + '<button style="background:#F57F17;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="MiniGame.spinWheel()">🎲 轉一下！</button> <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="Projector.live(\'mg:wheel\',\'🎡 幸運轉盤\')">🖥️ 投影大螢幕</button>'
     + '<div id="mg-wheel-result" style="margin-top:8px;"></div>'
     + '</div>';
 };
