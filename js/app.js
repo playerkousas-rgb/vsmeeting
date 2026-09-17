@@ -350,17 +350,21 @@ App.teachFigFor = function(b){
     (b.script||[]), ((b.demo||[])||[]), (b.steps||[])).join(' ');
   var figMap = [
     [/鼻血/, 'aid-nosebleed'],
-    [/出血|傷口|加壓|包紮|三角巾|懸臂|風帽|紗布|止血/, 'aid-cut'],
+    [/出血|傷口|加壓|三角巾|懸臂|風帽|紗布|止血/, 'aid-cut'],
     [/燒傷|燙傷|燒燙/, 'aid-burn'],
     [/抽筋/, 'aid-cramp'],
-    [/蜂|蟲咬|刺傷|水母/, 'aid-sting'],
-    [/執包|執袋|背囊|裝備表|行裝|個人裝備/, 'skill-pack'],
-    [/營幕|帳篷|紮營|營地|營區|天幕/, 'skill-tent'],
-    [/氣爐|爐具|燃料|氣罐|擋風板/, 'skill-stove'],
-    [/煮食|烹調|炊|食譜|膳食|米|飯/, 'skill-rice'],
-    [/摺刀|小刀|刀具|用刀/, 'skill-knife'],
+    [/蜂窩性組織炎|蜂針|蜂螫|蟲咬|昆蟲叮|水母/, 'aid-sting'],
+    /* 圖例／比例尺類要行喺 skill-pack／skill-tent／skill-rice 之前：
+       否則「營地」「米」「飯」等字會喺遠足地圖段落誤中露營／扭傷圖（曾發現 c11 錯配 skill-tent）。 */
+    [/圖例|比例尺|方格網|座標|等高線|地圖種類|地圖閱讀|地圖點睇/, 'skill-legend'],
     [/收繩|繩索保養|圈繞|晾繩|繩紋/, 'skill-ropecare'],
-    [/圖例|比例尺|方格網|座標|等高線|地圖種類|地圖閱讀/, 'skill-legend'],
+    [/執包|背囊|裝備表|行裝清單|個人裝備/, 'skill-pack'],
+    /* 搭帳篷／紮營專用動詞先中，唔用單一「帳篷」名詞：
+       否則會誤中其他場次順帶提到「帳篷」場景嘅段落（曾發現 c06 保護兒童段落被誤配搭帳圖）。 */
+    [/搭帳篷|搭營|紮營|營幕搭建|營釘|拉營繩/, 'skill-tent'],
+    [/氣爐|爐具|燃料|氣罐|擋風板/, 'skill-stove'],
+    [/煮食策劃|烹調|烹煮|炊事|食譜|膳食|生米|白飯|米飯份量/, 'skill-rice'],
+    [/摺刀|小刀|刀具|用刀/, 'skill-knife'],
     [/迷路|迷途|走失|唔見路/, 'skill-lost'],
     [/求救|SOS|哨音|訊號|哨子/, 'skill-sos'],
     [/隊形|站位|排位|陣式|集隊位置/, 'game-lineup']
@@ -371,7 +375,9 @@ App.teachFigFor = function(b){
 /* 平面圖解（DIAGRAMS/IMG）——圖表類（指南針、背囊）用呢個 */
 App.teachDgmFor = function(b){
   var txt = [b.h||'', b.aim||''].concat((b.points||[]).map(function(p){return (p.t||'')+' '+(p.d||'');})).join(' ');
-  if(/指南針|方位角|正置地圖|定向/.test(txt)) return 'compass';
+  /* 「定向」單獨出現時好多時淨係指「定向活動」（一種戶外活動嘅名，例如活動清單提到「獨木舟、風帆、定向」），
+     唔一定講緊指南針用法——所以「定向」要伴住指南針／方位角先算，避免誤中活動列表段落。 */
+  if(/指南針|方位角|正置地圖|定向術語|定向運動嘅方位角/.test(txt)) return 'compass';
   if(/背囊|執包|行裝/.test(txt)) return 'pack';
   return '';
 };
@@ -495,42 +501,26 @@ App.renderMeeting = function(tid){
       wrap.appendChild(outdoorWarn);
     }
 
-    // 快速跳去節位 chips
-    var anchors = [];
-    if(d.leaderPrep) anchors.push({id:tid+'-prep',ic:'📌',n:'領袖預備'});
-    if(d.script) anchors.push({id:tid+'-script',ic:'🎤',n:'開場白'});
-    anchors.push({id:tid+'-program',ic:'📋',n:'程序表'});
-    anchors.push({id:tid+'-bag',ic:'🎒',n:'執袋'});
-    if(m.personalKit) anchors.push({id:tid+'-kit',ic:'👕',n:'個人裝備'});
-    anchors.push({id:tid+'-notice',ic:'📝',n:'通知單'});
-    if(d.worksheet) anchors.push({id:tid+'-ws',ic:'✂️',n:'工作紙'});
-    if(d.pledgeCard) anchors.push({id:tid+'-pledge',ic:'💌',n:'承諾卡'});
-    if(d.roles) anchors.push({id:tid+'-roles',ic:'👥',n:'崗位'});
-    if(d.items) anchors.push({id:tid+'-items',ic:'🎖️',n:'物品'});
-    if(d.observation) anchors.push({id:tid+'-obs',ic:'👀',n:'觀察'});
-    if(d.postCeremony) anchors.push({id:tid+'-post',ic:'📬',n:'禮成跟進'});
-    anchors.push({id:tid+'-back',ic:'🆘',n:'後備'});
-    if(d.scenarios) anchors.push({id:tid+'-sc',ic:'🃏',n:'情境卡'});
-    if(d.trivia) anchors.push({id:tid+'-tr',ic:'💡',n:'小知識'});
-    anchors.push({id:tid+'-safety',ic:'⚠️',n:'安全'});
-    var tabHost = App.h('div','tabhost');   /* 分頁條：撳掣即換版 */
+    var tabHost = App.h('div','tabhost');   /* 分頁條：撳掣即換版（v47：由 16 個細分頁合併做 5-6 個大分類，減少要撳嘅掣） */
     wrap.appendChild(tabHost);
 
-    // 領袖預備
+    // ①【教材＋帶流程】：領袖預備 + 開場白 + 照住講教材 + 程序表（實際帶集會由頭跟到尾就係呢一版）
+    var sFlow = App.sec('📖 教材＋帶流程',{id:tid+'-flow', print:true});
+    var flowBody = '';
     if(d.leaderPrep){
-      var lp = App.h('ul','bullet');
-      lp.innerHTML = d.leaderPrep.map(function(x){
+      flowBody += '<h3>📌 領袖預備備忘</h3><ul class="bullet">'+d.leaderPrep.map(function(x){
         if(typeof x === 'string') return '<li>'+x+'</li>';
         return '<li><b>'+x.when+'：</b>'+x.what+'</li>';
-      }).join('');
-      var sPrep = App.sec('📌 領袖預備備忘',{id:tid+'-prep'});
-      sPrep.add(lp);
-      wrap.appendChild(sPrep);
+      }).join('')+'</ul>';
     }
-
-    /* 教材（照住講）：TEACH[tid] —— v43 版：列點、收折、加圖（用戶：字太多，盡量列點，能用圖表達就用圖） */
+    if(d.script){
+      var scHtml2 = '';
+      Object.keys(d.script).forEach(function(k){
+        scHtml2 += '<p><b>'+({open:'開場',intro:'介紹今日流程',beforeGame:'遊戲前',beforeDrill:'隊列前',close:'結束'}[k]||k)+'：</b>'+d.script[k]+'</p>';
+      });
+      flowBody += '<details class="teach-demo"><summary>🎤 領袖開場白（撳開照讀）</summary>'+scHtml2+'</details>';
+    }
     if(typeof TEACH!=='undefined' && TEACH[tid] && TEACH[tid].length){
-      var th = App.h('div','card teach-card');
       var H = '<h3>📖 照住講（教材 '+TEACH[tid].length+' 段）</h3>'
         + '<p class="mut">每段五格：🎯 目標 → 📌 要點（逐點列）→ 🗣 講稿（撳開照讀）→ 🛠 示範 → ❓ 抽問。字多嘅都收埋喺「撳開」入面，備課唔會一眼睇到頭暈；<b>「⚠️ 常見錯」同「📋 做完要見到」永遠企喺面</b>（最易出錯）。</p>';
       var usedFig = {};
@@ -548,13 +538,19 @@ App.renderMeeting = function(tid){
         if(b.points) H += '<h5>📌 要點</h5><ul class="bullet tight">'+b.points.map(function(pt){
           return '<li><b>'+pt.t+'</b>'+App.teachD(pt.d)+'</li>';
         }).join('')+'</ul>';
-        var figKey = b.fig || App.teachFigFor(b);
+        /* 圖解優先序：作者手動指定 b.fig → 作者手動指定 b.dgm → 自動關鍵字配 fig → 自動配 dgm。
+           手動指定一定要贏自動配對，否則關鍵字誤中會蓋過作者特登揀嘅儀式圖（曾發生：c05 升旗禮被
+           「隊形」關鍵字自動配去 game-lineup，蓋過手動指定嘅 cer.flag 升旗位置圖）。 */
+        var figKey = b.fig || '';
+        var dgmKey = !figKey ? (b.dgm || '') : '';
+        if(!figKey && !dgmKey){ figKey = App.teachFigFor(b); if(!figKey) dgmKey = App.teachDgmFor(b); }
         if(figKey && !usedFig[figKey] && typeof FIGS!=='undefined' && FIGS[figKey]){ usedFig[figKey] = 1;
           H += App.ph(figKey, FIGS[figKey].cap || '示意圖', '');
-        } else {
-          var dgmKey = b.dgm || App.teachDgmFor(b);
-          if(dgmKey && !usedFig['dgm:'+dgmKey] && typeof IMG!=='undefined' && IMG.map['top.'+dgmKey]){ usedFig['dgm:'+dgmKey] = 1;
-            H += App.dgmFigure('top.'+dgmKey, (typeof IMG!=='undefined'&&IMG.alt?IMG.alt('top.'+dgmKey):'平面圖解'));
+        } else if(dgmKey){
+          /* dgmKey 可以直接寫全 key（例如 'cer.formup'）；冇 '.' 就當舊有 top.* 簡寫 */
+          var dgmFullKey = dgmKey.indexOf('.') >= 0 ? dgmKey : 'top.'+dgmKey;
+          if(!usedFig['dgm:'+dgmFullKey] && typeof IMG!=='undefined' && IMG.map[dgmFullKey]){ usedFig['dgm:'+dgmFullKey] = 1;
+            H += App.dgmFigure(dgmFullKey, (typeof IMG!=='undefined'&&IMG.alt?IMG.alt(dgmFullKey):'平面圖解'));
           }
         }
         if(b.cards) H += '<table class="meeting-table"><tbody>'+b.cards.map(function(c){return '<tr><th>'+c.y+'</th><td><b>'+c.t+'</b>'+App.teachD(c.d)+'</td></tr>';}).join('')+'</tbody></table>';
@@ -573,24 +569,8 @@ App.renderMeeting = function(tid){
         H += '</div>';
       });
       if(TEACH.sources) H += '<p class="source-note">📚 教材出處（要核對原文按呢度）：'+TEACH.sources.map(function(x){return '<a href="'+x.u+'" target="_blank" rel="noopener">'+x.t+'</a>';}).join('｜')+'</p>';
-      th.innerHTML = H;
-      var sTeach = App.sec('📖 照住講（教材）',{id:tid+'-teach', print:true});
-      sTeach.add(th);
-      wrap.appendChild(sTeach);
+      flowBody += H;
     }
-    // 領袖開場白
-    if(d.script){
-      var sc = App.h('div','card script-card');
-      var scHtml = '';
-      Object.keys(d.script).forEach(function(k){
-        scHtml += '<p><b>'+({open:'開場',intro:'介紹今日流程',beforeGame:'遊戲前',beforeDrill:'隊列前',close:'結束'}[k]||k)+'：</b>'+d.script[k]+'</p>';
-      });
-      sc.innerHTML = scHtml;
-      var sSc = App.sec('🎤 領袖開場白',{id:tid+'-script'});
-      sSc.add(sc);
-      wrap.appendChild(sSc);
-    }
-
     // 程序表（段數按教案實際節數）
     var tbl = App.h('table','meeting-table program-table');
     tbl.innerHTML = '<thead><tr><th width="40">序</th><th width="50">分鐘</th><th width="80">項目</th><th>內容／帶領要點</th></tr></thead><tbody>';
@@ -635,174 +615,142 @@ App.renderMeeting = function(tid){
       tbl.innerHTML += '<tr><td data-label="序">'+(idx+1)+'</td><td data-label="分鐘">'+(mins||'')+'</td><td data-label="項目">'+type+(type?'<br>':'')+'<small>'+title+'</small></td><td data-label="帶領要點">'+detail+mats+'</td></tr>';
     });
     tbl.innerHTML += '</tbody>';
-    var sProg = App.sec('📋 '+(m.duration||90)+' 分鐘程序表（'+d.program.length+' 段）',{id:tid+'-program'});
-    sProg.add(tbl);
-    wrap.appendChild(sProg);
+    flowBody += '<h3>📋 '+(m.duration||90)+' 分鐘程序表（'+d.program.length+' 段）</h3>';
+    var flowDiv = App.h('div','card teach-card');
+    flowDiv.innerHTML = flowBody;
+    sFlow.add(flowDiv);
+    sFlow.add(tbl);
+    wrap.appendChild(sFlow);
 
-    // 物資清單（領袖執袋）
-    var bt = App.h('table','meeting-table');
-    bt.innerHTML = '<thead><tr><th>物品</th><th>數量</th><th>性質</th><th>備註</th></tr></thead><tbody>'+
+    // ②【執袋＋通知】：執袋清單 + 個人裝備（如有） + 家長通知單
+    var sPack = App.sec('🎒 執袋＋通知',{id:tid+'-pack'});
+    var packBody = '<h3>🎒 執袋清單（領袖/共用物資）</h3><table class="meeting-table"><thead><tr><th>物品</th><th>數量</th><th>性質</th><th>備註</th></tr></thead><tbody>'+
       d.bag.map(function(x){return '<tr><td>'+x.n+'</td><td>'+(typeof x.qty==='number'?x.qty:x.qty)+'</td><td>'+x.type+'</td><td>'+(x.note||'')+'</td></tr>';}).join('')+
-      '</tbody>';
-    var sBag = App.sec('🎒 執袋清單（領袖/共用物資）',{id:tid+'-bag'});
-    sBag.add(bt);
-    wrap.appendChild(sBag);
-
-    // 個人裝備（室外特別集會）
+      '</tbody></table>';
     if(m.personalKit){
-      var pk = App.h('div','card');
-      pk.innerHTML = '<h3>✅ 一定要帶</h3><ul class="bullet">'+m.personalKit.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+      packBody += '<h3>👕 個人裝備清單（通知團員）</h3><div class="card"><h4>✅ 一定要帶</h4><ul class="bullet">'+m.personalKit.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
       if(m.doNotBring){
-        pk.innerHTML += '<h3>🚫 唔好帶</h3><ul class="bullet">'+m.doNotBring.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+        packBody += '<h4>🚫 唔好帶</h4><ul class="bullet">'+m.doNotBring.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
       }
-      var sPk = App.sec('👕 個人裝備清單（通知團員）',{id:tid+'-kit'});
-      sPk.add(pk);
-      wrap.appendChild(sPk);
+      packBody += '</div>';
     }
-
-    // 家長通知
-    var nc = App.h('div','card notice-card');
+    var noticeHtml = '';
     if(typeof d.notice === 'string'){
-      nc.innerHTML = '<pre style="white-space:pre-wrap;font-family:inherit;margin:0;">'+d.notice+'</pre>';
+      noticeHtml = '<pre style="white-space:pre-wrap;font-family:inherit;margin:0;">'+d.notice+'</pre>';
     } else {
-      nc.innerHTML = '<h3>'+(d.notice.title||'通知單')+'</h3><ul class="bullet">'+(d.notice.items||[]).map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+      noticeHtml = '<h4>'+(d.notice.title||'通知單')+'</h4><ul class="bullet">'+(d.notice.items||[]).map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
     }
-    var sNotice = App.sec('📝 通知單／同意書（列印派發）',{id:tid+'-notice'});
-    sNotice.add(nc);
-    wrap.appendChild(sNotice);
+    packBody += '<h3>📝 通知單／同意書（列印派發）</h3><div class="card notice-card">'+noticeHtml+'</div>';
+    var packDiv = App.h('div','card');
+    packDiv.innerHTML = packBody;
+    sPack.add(packDiv);
+    wrap.appendChild(sPack);
 
-    // 工作紙（深資版：手機優先，傳 tid 以便儲存）
-    if(d.worksheet){
-      var wsAudience = (d.worksheet.audience==='leader')?'領袖檢查清單':'工作紙（成員用・手機／iPad 直接填）';
-      var sWs = App.sec('✂️ '+wsAudience,{id:tid+'-ws'});
-      sWs._body.innerHTML = App.worksheetHtml(d.worksheet, tid);
-      wrap.appendChild(sWs);
-    }
-
-    // 承諾卡
-    if(d.pledgeCard){
-      var pc = App.h('div','card pledge-card');
-      pc.innerHTML = '<h3>'+d.pledgeCard.title+'</h3>'+
-        '<div class="pledge-body"><ul class="bullet">'+d.pledgeCard.fields.map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul></div>';
-      var sPc = App.sec('💌 承諾卡（每位宣誓成員 1 張，自己保存）',{id:tid+'-pledge'});
-      sPc.add(pc);
-      wrap.appendChild(sPc);
-    }
-
-    // 崗位分工
-    if(d.roles){
-      var rl = App.h('table','meeting-table');
-      rl.innerHTML = '<thead><tr><th>崗位</th><th>人數</th><th>人選</th><th>職責</th></tr></thead><tbody>'+
-        d.roles.map(function(r){
-          var qty = (r.qty!==undefined)?r.qty:'';
-          var duty = r.duties || r.duty || '';
-          var person = r.person || '__________';
-          return '<tr><td>'+r.role+'</td><td>'+qty+'</td><td>'+person+'</td><td>'+duty+'</td></tr>';
-        }).join('')+
-        '</tbody>';
-      var sRoles = App.sec('👥 當日崗位分工',{id:tid+'-roles'});
-      sRoles.add(rl);
-      wrap.appendChild(sRoles);
-    }
-
-    // 頒發物品清單
-    if(d.items){
-      var it = App.h('ul','bullet');
-      it.innerHTML = d.items.map(function(x){
-        var who = x.to ? '（俾 '+x.to+'，'+x.qty+'）' : '';
-        var desc = x.d || '';
-        return '<li><b>'+x.n+'</b>'+who+(desc?' — '+desc:'')+'</li>';
-      }).join('');
-      var sIt = App.sec('🎖️ 當日頒發/派發物品',{id:tid+'-items'});
-      sIt.add(it);
-      wrap.appendChild(sIt);
+    // ③【紙本工具】：工作紙／承諾卡／崗位分工／頒發物品——淨係有嘢先出呢一版
+    var hasPaperTools = d.worksheet || d.pledgeCard || d.roles || d.items;
+    if(hasPaperTools){
+      var sPaper = App.sec('📝 紙本工具',{id:tid+'-paper'});
+      var paperBody = '';
+      if(d.worksheet){
+        var wsAudience = (d.worksheet.audience==='leader')?'領袖檢查清單':'工作紙（成員用・手機／iPad 直接填）';
+        paperBody += '<h3>✂️ '+wsAudience+'</h3>'+App.worksheetHtml(d.worksheet, tid);
+      }
+      if(d.pledgeCard){
+        paperBody += '<h3>💌 承諾卡（每位宣誓成員 1 張，自己保存）</h3><div class="card pledge-card"><h4>'+d.pledgeCard.title+'</h4>'+
+          '<div class="pledge-body"><ul class="bullet">'+d.pledgeCard.fields.map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul></div></div>';
+      }
+      if(d.roles){
+        paperBody += '<h3>👥 當日崗位分工</h3><table class="meeting-table"><thead><tr><th>崗位</th><th>人數</th><th>人選</th><th>職責</th></tr></thead><tbody>'+
+          d.roles.map(function(r){
+            var qty = (r.qty!==undefined)?r.qty:'';
+            var duty = r.duties || r.duty || '';
+            var person = r.person || '__________';
+            return '<tr><td>'+r.role+'</td><td>'+qty+'</td><td>'+person+'</td><td>'+duty+'</td></tr>';
+          }).join('')+
+          '</tbody></table>';
+      }
+      if(d.items){
+        paperBody += '<h3>🎖️ 當日頒發/派發物品</h3><ul class="bullet">'+d.items.map(function(x){
+          var who = x.to ? '（俾 '+x.to+'，'+x.qty+'）' : '';
+          var desc = x.d || '';
+          return '<li><b>'+x.n+'</b>'+who+(desc?' — '+desc:'')+'</li>';
+        }).join('')+'</ul>';
+      }
+      var paperDiv = App.h('div','card');
+      paperDiv.innerHTML = paperBody;
+      sPaper.add(paperDiv);
+      wrap.appendChild(sPaper);
     }
 
-    // 觀察記錄
-    if(d.observation){
-      var isObsObj = !Array.isArray(d.observation);
-      var obTitle = (isObsObj && d.observation.audience==='leader')?'✅ 領袖事後檢查清單':'👀 領袖觀察記錄（領袖用）';
-      var ob = App.h('div','card');
-      var obsItems = isObsObj ? d.observation.items : d.observation;
-      var obsTitle = isObsObj ? '<h3>'+d.observation.title+'</h3>' : '';
-      ob.innerHTML = obsTitle +
-        '<ul class="bullet">'+obsItems.map(function(x){return '<li><label><input type="checkbox"> '+x+'</label></li>';}).join('')+'</ul>';
-      var sOb = App.sec(obTitle,{id:tid+'-obs'});
-      sOb.add(ob);
-      wrap.appendChild(sOb);
+    // ④【觀察＋跟進】：領袖觀察記錄／禮成後跟進——淨係有嘢先出
+    var hasFollow = d.observation || d.postCeremony;
+    if(hasFollow){
+      var sFollow = App.sec('👀 觀察＋跟進',{id:tid+'-follow'});
+      var followBody = '';
+      if(d.observation){
+        var isObsObj = !Array.isArray(d.observation);
+        var obTitle = (isObsObj && d.observation.audience==='leader')?'✅ 領袖事後檢查清單':'👀 領袖觀察記錄（領袖用）';
+        var obsItems = isObsObj ? d.observation.items : d.observation;
+        var obsTitle = isObsObj ? '<h4>'+d.observation.title+'</h4>' : '';
+        followBody += '<h3>'+obTitle+'</h3>'+obsTitle+
+          '<ul class="bullet">'+obsItems.map(function(x){return '<li><label><input type="checkbox"> '+x+'</label></li>';}).join('')+'</ul>';
+      }
+      if(d.postCeremony){
+        followBody += '<h3>📬 禮成後跟進</h3><ul class="bullet">'+d.postCeremony.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+      }
+      var followDiv = App.h('div','card');
+      followDiv.innerHTML = followBody;
+      sFollow.add(followDiv);
+      wrap.appendChild(sFollow);
     }
 
-    // 禮成後跟進
-    if(d.postCeremony){
-      var pst = App.h('div','card');
-      pst.innerHTML = '<ul class="bullet">'+d.postCeremony.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
-      var sPost = App.sec('📬 禮成後跟進',{id:tid+'-post'});
-      sPost.add(pst);
-      wrap.appendChild(sPost);
-    }
-
-    // 實戰後備
-    var pb = App.h('div','card');
+    // ⑤【後備＋安全】：實戰後備 + 情境卡（如有）+ 小知識（如有）+ 安全注意——執委會／領袖臨場最需要嘅嘢
+    var sBack = App.sec('🆘 後備＋安全',{id:tid+'-back'});
+    var backBody = '';
+    var pb = '';
     if(d.practical){
       if(Array.isArray(d.practical)){
-        pb.innerHTML = d.practical.map(function(x){return '<p><b>'+x.situation+'：</b>'+x.action+'</p>';}).join('');
+        pb = d.practical.map(function(x){return '<p><b>'+x.situation+'：</b>'+x.action+'</p>';}).join('');
       } else {
         var pkeys = {fewPeople:'少人（6-8 人）',lackMat:'缺物資',notEngaged:'不投入',thirtyMinEnd:'要提早 30 分鐘收尾',emotionalSupport:'如有團員情緒反應',weatherBad:'天氣不好/落雨',techFail:'音響/投影失靈',late:'嘉賓/家長遲到',absentee:'有團員缺席'};
-        var phtml = '';
         Object.keys(pkeys).forEach(function(k){
-          if(d.practical[k]) phtml += '<p><b>'+pkeys[k]+'：</b>'+d.practical[k]+'</p>';
+          if(d.practical[k]) pb += '<p><b>'+pkeys[k]+'：</b>'+d.practical[k]+'</p>';
         });
         if(d.practical.qa && d.practical.qa.length){
-          phtml += '<p><b>成員可能問：</b></p><ul class="bullet">'+d.practical.qa.map(function(q){return '<li><b>Q：'+q.q+'</b><br>A：'+q.a+'</li>';}).join('')+'</ul>';
+          pb += '<p><b>成員可能問：</b></p><ul class="bullet">'+d.practical.qa.map(function(q){return '<li><b>Q：'+q.q+'</b><br>A：'+q.a+'</li>';}).join('')+'</ul>';
         }
-        pb.innerHTML = phtml || '<p class="mut">按現場人數及進度彈性調整分組及討論時間。</p>';
+        pb = pb || '<p class="mut">按現場人數及進度彈性調整分組及討論時間。</p>';
       }
     } else {
-      pb.innerHTML = '<p class="mut">按現場人數及進度彈性調整分組及討論時間；如少人可合併討論，缺席者由秘書群組跟進補交資料。</p>';
+      pb = '<p class="mut">按現場人數及進度彈性調整分組及討論時間；如少人可合併討論，缺席者由秘書群組跟進補交資料。</p>';
     }
-    var sPb = App.sec('🆘 實戰後備',{id:tid+'-back'});
-    sPb.add(pb);
-    wrap.appendChild(sPb);
-
-    // 情境卡
+    backBody += '<h3>🆘 實戰後備</h3>'+pb;
     if(d.scenarios){
-      var scd = App.h('div','card');
-      scd.innerHTML = '<ol class="steps">'+d.scenarios.map(function(s){return '<li><b>情境：</b>'+s.s+'<br><b>處理：</b>'+s.a+'</li>';}).join('')+'</ol>';
-      var sSc = App.sec('🃏 情境卡（領袖口頭講，每隊討論）',{id:tid+'-sc'});
-      sSc.add(scd);
-      wrap.appendChild(sSc);
+      backBody += '<h3>🃏 情境卡（領袖口頭講，每隊討論）</h3><ol class="steps">'+d.scenarios.map(function(s){return '<li><b>情境：</b>'+s.s+'<br><b>處理：</b>'+s.a+'</li>';}).join('')+'</ol>';
     }
-
-    // 小知識
     if(d.trivia){
-      var tv = App.h('div','card');
-      tv.innerHTML = d.trivia.map(function(t){
+      backBody += '<h3>💡 補充小知識</h3>'+d.trivia.map(function(t){
         var head = t.h || t.q || '';
         var body = t.d || t.a || '';
         return '<p><b>'+head+'：</b>'+body+'</p>';
       }).join('');
-      var sTv = App.sec('💡 補充小知識',{id:tid+'-tr'});
-      sTv.add(tv);
-      wrap.appendChild(sTv);
     }
+    backBody += '<h3>⚠️ 安全注意</h3><ul class="bullet">'+(d.safety||[]).map(function(s){ return '<li>'+s+'</li>'; }).join('')+'</ul>';
+    var backDiv = App.h('div','card');
+    backDiv.innerHTML = backBody;
+    sBack.add(backDiv);
+    wrap.appendChild(sBack);
 
-    // 安全
-    var sf = App.h('ul','bullet');
-    sf.innerHTML = (d.safety||[]).map(function(s){ return '<li>'+s+'</li>'; }).join('');
-    var sSf = App.sec('⚠️ 安全注意',{id:tid+'-safety'});
-    sSf.add(sf);
-    wrap.appendChild(sSf);
-
-    /* ── 分頁：每一節一個掣，撳掣即換版（唔再係跳位）── */
+    /* ── 分頁：每一節一個掣，撳掣即換版（v47：由 16 個細分頁合併做 5-6 個大分類）── */
     (function(){
       var secs = secList;
       if (secs.length < 2) { if (tabHost.parentNode) tabHost.parentNode.removeChild(tabHost); return; }
       var items = [];
       secs.forEach(function(sec, i){
         var k = sec.id || ('sec'+i);
-        var a = null;
-        anchors.forEach(function(x){ if (x.id === k) a = x; });
-        items.push({ k:k, ic:(a && a.ic) || '📄', n:(a && a.n) || sec.getAttribute('data-title') || ('第 '+(i+1)+' 節') });
+        var title = sec.getAttribute('data-title') || ('第 '+(i+1)+' 節');
+        var m2 = title.match(/^([\u{1F000}-\u{1FFFF}\u2600-\u27BF\uFE0F]+)\s*(.*)$/u);
+        items.push({ k:k, ic:(m2 && m2[1]) || '📄', n:(m2 && m2[2]) || title });
       });
       secs.forEach(function(sec, i){
         var pane = App.h('div','tabpane'+(i===0?'':' hidden'));
@@ -1308,18 +1256,16 @@ App.pages.book = function(sub){
 
 /* ✂️ 素材庫：即搵即印／即投屏 */
 App.printCat = '';
-/* v43：聚會 GAME 互動庫 ＝ ①互動工具（離線小遊戲）②集會遊戲卡（DATA.games 可以即場用）③即印即用素材
-   用戶指正：唔可以只剩標題——每個分頁都要有真內容，而且係「揀一項塞入集會」嘅單項項目。 */
+/* 聚會 GAME 互動庫 ＝ ①互動工具（離線小遊戲）②集會遊戲卡（DATA.games 可以即場用）③即印即用素材
+   工作紙屬教案內容，唔放呢度：每場教案自己頁面已經有工作紙（見 #plan/c08 等）。 */
 App.printCats = [
   {k:'tools', ic:'🎮', n:'互動遊戲工具'},
   {k:'games', ic:'🎲', n:'集會遊戲卡（'+DATA.games.length+' 個）'},
-  {k:'ws',    ic:'📝', n:'集會工作紙（現成 5 張）'},
   {k:'sheet', ic:'🖨️', n:'即印即用素材'}
 ];
 App.pages.print = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎮 聚會 GAME 互動庫'));
-  wrap.appendChild(App.h('p','lede','呢頁係<b>即場用得嘅遊戲同素材</b>：① 互動遊戲工具（離線・可投屏）② 官方套包嘅集會遊戲卡（有玩法、物資、安全）③ 16 場集會工作紙 ④ 即印素材（急救卡／誓詞卡／收繩／國歌歌紙）。揀一項就塞得入集會，唔需要由零設計。'));
   var cats = App.printCats;
   if (!App.printCat || !cats.some(function(c){return c.k===App.printCat;})) App.printCat = cats[0].k;
   var host = App.h('div','print-host');
@@ -1343,11 +1289,7 @@ App.printPanel = function(cat){
 
   /* ── ① 互動遊戲工具（全部離線、可投屏）── */
   if (cat === 'tools') {
-    box.innerHTML = '<div class="callout ok-callout" style="margin-bottom:14px;background:#E8F5E9;border-left:5px solid #2E7D32;">'
-      + '<h3 style="margin:0 0 6px 0;color:#1B5E20;">🎮 聚會互動遊戲工具（4 個・離線可用・可投大螢幕）</h3>'
-      + '<p style="margin:0;font-size:14px;">開會即用，唔需要上網。領袖用手機操作，撳每個工具下面嘅「🖥️ 投影大螢幕」就投到電視／投影機。</p>'
-      + '</div>'
-      + '<div class="card"><h3>🕵️ 誰是臥底（領袖主持・一次過派卡）</h3><div id="mg-spy-box"></div></div>'
+    box.innerHTML = '<div class="card"><h3>🕵️ 誰是臥底（領袖主持・一次過派卡）</h3><div id="mg-spy-box"></div></div>'
       + '<div class="card"><h3>🕴️ 機密特務（5×5 猜詞）</h3><div id="mg-agent-box"></div></div>'
       + '<div class="card"><h3>🎲 骰子（大話骰／遮擋模式）</h3><div id="mg-dice-box"></div></div>'
       + '<div class="card"><h3>🎡 幸運轉盤（自訂任務）</h3><div id="mg-wheel-box"></div></div>';
@@ -1392,31 +1334,7 @@ App.printPanel = function(cat){
     return box;
   }
 
-  /* ── ③ 集會工作紙（16 場・逐張印／逐張投）── */
-  if (cat === 'ws') {
-    var box2 = App.h('div','');
-    box2.innerHTML = '<div class="callout" style="margin-bottom:12px;">📝 <b>現成工作紙 5 張</b>（c08 列席觀察表／c10 急救 5 式／c12 定向打卡表／c15 露營計劃書＋菜單／c16 露營檢討表）。其他場次以討論、實作同策劃為主，冇預設工作紙——想加就由教練按教案自己出。每張都可以「只印呢張」或「投呢張」。</div>';
-    [{k:'會員章 c01–c06', from:0, to:6},{k:'肩章・認識 c07–c09', from:6, to:9},
-     {k:'肩章・技能 c10–c16', from:9, to:16}].forEach(function(g){
-      var list = DATA.meetings.slice(g.from,g.to).filter(function(m){return m.data && m.data.worksheet;});
-      if (!list.length) return;
-      var grp = App.h('div','ws-group-block');
-      grp.innerHTML = '<h3 class="ws-group">'+g.k+'</h3>'+list.map(function(m){
-        var aud = (m.data.worksheet.audience==='leader') ? '（領袖用）' : '（成員用 A4）';
-        return '<div class="ws-item" data-title="'+m.tid+' 工作紙">'
-          + '<div class="ws-head"><b>'+m.tid+aud+'</b><span class="mut"> '+m.n+'</span> '
-          + '<a class="mut ws-goto" href="#plan/'+m.tid+'">睇完整教案 ↗</a>'
-          + '<button class="print-btn" onclick="App.printSec(this.closest(\'div.ws-item\'))">🖨️ 只印呢張</button>'
-          + '<button class="proj-btn" onclick="App.projSec(this.closest(\'div.ws-item\'))">🖥️ 投呢張</button></div>'
-          + App.worksheetHtml(m.data.worksheet, m.tid)
-          + '</div>';
-      }).join('');
-      box2.appendChild(grp);
-    });
-    return box2;
-  }
-
-  /* ── ④ 即印即用素材 ── */
+  /* ── ③ 即印即用素材 ── */
   if (cat === 'sheet') {
     var html = '<div class="callout" style="margin-bottom:12px;">🖨️ 呢度嘅卡可以直接印（A4）或者投屏。印出嚟放急救箱、貼壁報、或者做集會嘅「手上卡」都得。</div>';
 
@@ -1488,7 +1406,7 @@ App.itemCard = function(x, kind){
   if(x.check) h += '<h4>✅ 完成標準／檢查</h4><ul class="bullet checklist">'+x.check.map(function(t){return '<li>☐ '+t+'</li>';}).join('')+'</ul>';
   if(x.wrong) h += '<div class="callout warn"><b>⚠️ 常見錯</b><ul class="bullet">'+x.wrong.map(function(t){return '<li>'+t+'</li>';}).join('')+'</ul></div>';
   if(x.safety) h += '<p class="safety"><b>⚠️ 安全：</b>'+x.safety+'</p>';
-  if(x.badge) h += '<p class="source-note">🎖️ 對應綱要：'+x.badge+'　<a href="#badges">獎章查閱 →</a></p>';
+  if(x.badge) h += '<p class="source-note">💡 岩啱有人考緊獎章先參考（唔係人人都要考）：'+x.badge+'　<a href="#badges">獎章查閱 →</a></p>';
   h += '<p class="card-actions"><button class="print-btn" onclick="App.printSec(this.closest(\'div.item-card\'))">🖨️ 只印呢張</button> '
     + '<button class="proj-btn" onclick="App.projSec(this.closest(\'div.item-card\'))">🖥️ 投呢張</button></p>';
   card.innerHTML = h;
@@ -1507,7 +1425,6 @@ App.filterItems = function(wrap, filt, all, show){
 App.pages.play = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎮 活動（即插即用單項）'));
-  wrap.appendChild(App.h('p','lede','呢頁係<b>單項活動庫</b>：領袖想搵啲題目填充入集會，就由呢度揀一項——每項有目的、流程、人手、物資、帶法、安全同對應獎章。揀好就按「🖨️ 只印呢張」帶入集會，或者按「🖥️ 投呢張」同團員講。<b>想搵遊戲</b>（破冰／隊際小品）去「🎮 聚會GAME」；<b>想搵技能</b>去「🪢 技能」。'));
   var cats = ITEMS.cats(ITEMS.activities);
   var filt = App.h('div','filters'); filt.setAttribute('role','tablist');
   [{k:'all',n:'全部'}].concat(cats.map(function(c){return {k:c,n:c};})).forEach(function(b,i){
@@ -1517,9 +1434,6 @@ App.pages.play = function(){
     filt.appendChild(btn);
   });
   wrap.appendChild(filt);
-  var note = App.h('div','callout');
-  note.innerHTML = '🧩 <b>點塞入集會？</b>套包恆常集會嘅「遊戲 20′」／「課程 15′＋15′」／「宣布 5′」三段，就係用嚟放呢啲項目：短活動（30–60 分鐘）放遊戲段或課程段；大項目（服務日、露營、比賽）就用成次集會或幾次集會去做，並且要先寫計劃書。';
-  wrap.appendChild(note);
   ITEMS.activities.forEach(function(x){ wrap.appendChild(App.itemCard(x,'activity')); });
   return wrap;
 };
@@ -1533,7 +1447,6 @@ App.pages.skills = function(sub){
     .concat([{k:'badge',ic:'🎖️',n:'肩章對照'}]);
   var cur = (sub && SKUBS.some(function(x){return x.k===sub;})) ? sub : 'all';
   wrap.appendChild(App.subnav('skills', SKUBS, cur));
-  wrap.appendChild(App.h('p','lede','每張卡＝<b>一個可以獨立教嘅技能項目</b>：要點、示範步驟、檢查標準、常見錯、安全都齊。領袖揀一張就可以塞入「課程段」，唔需要跟足某一場教案。<b>圖只作位置／動作示意</b>；繩結、承重、刀／爐／火呢類一定要由合資格人士現場示範。'));
 
   if(cur==='badge'){
     var SK = [
@@ -1552,13 +1465,12 @@ App.pages.skills = function(sub){
       return '<div class="card"><h3>'+b.zh+'</h3>'
         + '<h4>📋 官方要求（第十一版）</h4><ol class="req-list">'+b.req.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ol>'
         + '<h4>💡 團內考核建議</h4><ul class="sug-list">'+b.suggest.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'
-        + '<p class="source-note">查要求用<a href="#badges">🎖️ 獎章查閱</a>（只查不記）；出席／考核記錄用團內紀錄冊。</p></div>';
+        + '<p class="source-note">呢張淨係俾岩啱考緊嗰個肩章要求嘅團員查（唔係人人都要考）；查完整要求用<a href="#badges">🎖️ 獎章查閱</a>（只查不記）；出席／考核記錄用團內紀錄冊。</p></div>';
     }
     function lessonLinks(arr){ return arr.map(function(x){ return '<a class="tag meet" href="#plan/'+x+'">📅 '+x+'</a>'; }).join(' '); }
     SK.forEach(function(x){
       wrap.appendChild(App.block(x.ic+' '+x.n, '<div class="card"><p>'+x.intro+'</p><p>'+lessonLinks(x.lessons)+'</p></div>'+badgeCard(x.badge), {id:'sk-'+x.k}));
     });
-    wrap.appendChild(App.h('div','callout','📌 肩章（二）嘅四類要求要用上面啲技能卡操熟：每張卡嘅「完成標準」就係主考人會睇嘅嘢。'));
     return wrap;
   }
 
@@ -1591,7 +1503,6 @@ App.badgeFig = function(k){
 App.pages.badges = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎖️ 獎章查閱'));
-  wrap.appendChild(App.h('p','lede','深資童軍獎章制度：<b>會員章</b>（12 項，c01–c06）→ <b>肩章</b>（認識＋技能，c07–c16）→ <b>深資童軍獎章</b>（完成下列<b>四個段章</b>：活動策劃・社會服務・多元技能・戶外探險）→ <b>榮譽童軍獎章</b>（每個段章配一條金帶，共四條）。呢度只做查閱：每項有考核要求＋對應集會；考核由團安排。'));
   var filt = App.h('div','filters');
   var btns = [{k:'all',n:'全部'}].concat(INTERESTS.categories.map(function(c){return {k:c.k,n:c.ic+' '+c.n};}));
   btns.forEach(function(b,i){
@@ -1645,7 +1556,6 @@ App.pages.ayp = function(sub){
   var cur = App.aypTabs.some(function(x){return x.k===sub;}) ? sub : 'about';
   wrap.appendChild(App.h('h1',null,'🌟 AYP 青年獎勵計劃'));
   wrap.appendChild(App.subnav('ayp',App.aypTabs,cur));
-  wrap.appendChild(App.h('p','lede','香港青年獎勵計劃（AYP／HKAYP）：14–24 歲，銅銀金三級。深資團員 15–20 歲正係銀章 → 金章主力——呢頁只查唔記，詳情以官方為準。'));
   if(cur==='about'){
     var intro = AYP.about.map(function(t){return '<li>'+t+'</li>';}).join('');
     wrap.appendChild(App.block('🌟 AYP 係乜', '<ul class="tight">'+intro+'</ul>', {print:true}));
