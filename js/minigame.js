@@ -114,7 +114,7 @@ MiniGame.renderSpyUI = function(){
       + '<label>臥底數：<input type="number" min="1" max="3" value="' + st.spies + '" style="width:45px;" onchange="MiniGame.spyState.spies=parseInt(this.value,10)"></label>'
       + '<label>題庫：<select onchange="MiniGame.spyState.topicKey=this.value">' + optHtml + '</select></label>'
       + '</div>'
-      + '<button class="button" style="background:#33691E;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.startSpyGame()">🎲 開始發牌（輪流傳手機）</button>'
+      + '<button class="button" style="background:#33691E;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="MiniGame.startSpyGame()">🎲 開始發牌（輪流傳手機）</button> <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold;" onclick="Projector.live('mg:spy','🕵️ 誰是臥底')">🖥️ 投影大螢幕</button>'
       + '</div>';
     return;
   }
@@ -248,7 +248,7 @@ MiniGame.renderAgentUI = function(){
     + '<button style="flex:1;padding:6px;border-radius:6px;font-weight:bold;cursor:pointer;background:' + (isCaptain ? '#5E35B1' : '#E0E0E0') + ';color:' + (isCaptain ? '#fff' : '#333') + ';border:none;" onclick="MiniGame.agentState.viewRole=\'captain\';MiniGame.renderAgentUI();">👑 隊長視角（全見底牌）</button>'
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(5, 1fr);gap:6px;margin-bottom:10px;">' + cardsHtml + '</div>'
-    + '<button class="button" style="background:#512DA8;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;" onclick="MiniGame.initAgentGame()">🔄 重新生成 5×5 題目盤</button>'
+    + '<button class="button" style="background:#512DA8;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;" onclick="MiniGame.initAgentGame()">🔄 重新生成 5×5 題目盤</button> <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:bold;" onclick="Projector.live('mg:agent','🕴️ 機密特務')">🖥️ 投影大螢幕</button>'
     + '</div>';
 };
 
@@ -456,7 +456,7 @@ MiniGame.renderDiceUI = function(){
     + '<button style="background:#D84315;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="MiniGame.rollDice()">🎲 搖一搖 / 擲骰</button>'
     + '<button style="background:#546E7A;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="MiniGame.diceState.hidden=!MiniGame.diceState.hidden;MiniGame.renderDiceUI()">'
     + (st.hidden ? '👁️ 揭曉骰面' : '🔒 遮擋（大話骰偷看模式）')
-    + '</button>'
+    + '</button>' + '<button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="Projector.live(\'mg:dice\',\'🎲 聚會骰子\')">🖥️ 投影大螢幕</button>'
     + '</div>'
     + '</div>';
 };
@@ -483,7 +483,7 @@ MiniGame.renderWheelUI = function(){
     + '<h4 style="margin:0 0 6px 0;color:#F57F17;">🎡 聚會互動幸運轉盤</h4>'
     + '<p class="mut" style="font-size:12px;margin:0 0 8px 0;">破冰互動或集會遊戲懲罰隨機抽取小工具。</p>'
     + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">' + itemsHtml + '</div>'
-    + '<button style="background:#F57F17;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="MiniGame.spinWheel()">🎲 轉一下！</button>'
+    + '<button style="background:#F57F17;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="MiniGame.spinWheel()">🎲 轉一下！</button> <button class="button proj-big" style="background:#1565C0;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;" onclick="Projector.live('mg:wheel','🎡 幸運轉盤')">🖥️ 投影大螢幕</button>'
     + '<div id="mg-wheel-result" style="margin-top:8px;"></div>'
     + '</div>';
 };
@@ -508,3 +508,91 @@ MiniGame.mount = function(){
 };
 
 if (typeof module !== 'undefined' && module.exports) module.exports = MiniGame;
+
+/* ═══════════ 投影支援（大螢幕/電視即時同步） ═══════════ */
+MiniGame.projMode = 'hub'; // 'hub', 'spy', 'agent', 'dice', 'wheel'
+
+MiniGame.projHtml = function(){
+  var mode = MiniGame.projMode;
+  if(mode === 'spy'){
+    var st = MiniGame.spyState;
+    if(st.phase === 'playing'){
+      return '<div class="pj-minigame" style="text-align:center;padding:20px;">'
+        + '<h2 style="font-size:2.2em;color:#1B5E20;margin-bottom:10px;">🕵️ 誰是臥底・全員發言與公投</h2>'
+        + '<p style="font-size:1.4em;color:#333;margin-bottom:20px;">請每位隊員輪流用一句話描述你的詞，保持神秘！</p>'
+        + '<div style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;max-width:900px;margin:0 auto;">'
+        + st.roles.map(function(r){
+            return '<div style="background:#fff;padding:15px 25px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);font-size:1.3em;font-weight:bold;color:#2E7D32;">' + r.name + '</div>';
+          }).join('')
+        + '</div>'
+        + '<p style="margin-top:25px;font-size:1.1em;color:#666;">（底牌隱藏於手機端操作面板，大螢幕公平無透底）</p>'
+        + '</div>';
+    } else {
+      return '<div class="pj-minigame" style="text-align:center;padding:30px;">'
+        + '<h2 style="font-size:2.4em;color:#1B5E20;margin-bottom:15px;">🕵️ 誰是臥底・秘密發牌中</h2>'
+        + '<div style="font-size:5em;margin:20px 0;">📱 ➔ 🤫</div>'
+        + '<p style="font-size:1.6em;color:#444;">手機正在離線傳遞中，請各位隊員做好準備！</p>'
+        + '</div>';
+    }
+  }
+
+  if(mode === 'agent'){
+    var st = MiniGame.agentState;
+    var cards = st.grid.map(function(card){
+      var bg = '#ECEFF1', color = '#263238', border = '2px solid #CFD8DC';
+      if(card.revealed){
+        if(card.type === 'red'){ bg = '#FFCDD2'; color = '#B71C1C'; border = '3px solid #E53935'; }
+        else if(card.type === 'blue'){ bg = '#BBDEFB'; color = '#0D47A1'; border = '3px solid #1E88E5'; }
+        else if(card.type === 'assassin'){ bg = '#212121'; color = '#fff'; border = '3px solid #000'; }
+        else { bg = '#CFD8DC'; color = '#546E7A'; }
+      }
+      return '<div style="height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:'+bg+';color:'+color+';border:'+border+';border-radius:8px;font-size:1.25em;font-weight:bold;box-shadow:0 2px 6px rgba(0,0,0,0.08);">'
+        + card.word
+        + (card.revealed ? '<span style="font-size:0.65em;margin-top:2px;">'+(card.type==='red'?'🔴紅隊':card.type==='blue'?'🔵藍隊':card.type==='assassin'?'☠️炸彈':'⚪中立')+'</span>' : '')
+        + '</div>';
+    }).join('');
+
+    return '<div class="pj-minigame" style="padding:15px;max-width:1000px;margin:0 auto;">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
+      + '<h2 style="margin:0;font-size:2em;color:#4A148C;">🕴️ 機密特務（5×5 Codenames）</h2>'
+      + '<div style="font-size:1.3em;">🔴 紅隊剩 <b>'+st.score.redLeft+'</b> ｜ 🔵 藍隊剩 <b>'+st.score.blueLeft+'</b></div>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:repeat(5, 1fr);gap:10px;">' + cards + '</div>'
+      + '</div>';
+  }
+
+  if(mode === 'dice'){
+    var st = MiniGame.diceState;
+    var diceEmojis = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+    var diceHtml = st.results.map(function(num){
+      if(st.hidden){
+        return '<span style="display:inline-block;width:90px;height:90px;line-height:90px;background:#263238;color:#90A4AE;border-radius:16px;font-size:45px;text-align:center;box-shadow:0 4px 10px rgba(0,0,0,0.3);">🔒</span>';
+      }
+      return '<span style="display:inline-block;width:90px;height:90px;line-height:90px;background:#fff;color:#D84315;border:4px solid #FF7043;border-radius:16px;font-size:60px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.2);font-weight:bold;">' + diceEmojis[num-1] + '</span>';
+    }).join(' ');
+
+    return '<div class="pj-minigame" style="text-align:center;padding:30px;">'
+      + '<h2 style="font-size:2.4em;color:#D84315;margin-bottom:20px;">🎲 聚會骰子大螢幕</h2>'
+      + '<div style="display:flex;gap:15px;justify-content:center;padding:30px 0;background:rgba(255,255,255,0.7);border-radius:16px;max-width:800px;margin:0 auto 20px auto;">'
+      + diceHtml
+      + '</div>'
+      + '<p style="font-size:1.3em;color:#666;">（手機操作搖骰、投屏同步觀看）</p>'
+      + '</div>';
+  }
+
+  if(mode === 'wheel'){
+    var res = document.getElementById('mg-wheel-result');
+    var text = res ? res.textContent : '請由領袖點擊手機「轉一下！」';
+    return '<div class="pj-minigame" style="text-align:center;padding:30px;">'
+      + '<h2 style="font-size:2.4em;color:#E65100;margin-bottom:20px;">🎡 聚會命運幸運轉盤</h2>'
+      + '<div style="font-size:6em;margin:20px 0;">🎯</div>'
+      + '<div style="font-size:2.2em;font-weight:bold;color:#D84315;background:#FFF3E0;padding:20px;border-radius:12px;border:3px solid #FFE0B2;max-width:800px;margin:0 auto;">' + text + '</div>'
+      + '</div>';
+  }
+
+  // default hub
+  return '<div class="pj-minigame" style="text-align:center;padding:30px;">'
+    + '<h2 style="font-size:2.4em;color:#2E7D32;margin-bottom:15px;">🎮 深資童軍聚會 MINI GAME 互動大螢幕</h2>'
+    + '<p style="font-size:1.3em;color:#555;">領袖可在手機上選擇投屏遊戲：誰是臥底、機密特務、骰子工具或幸運轉盤。</p>'
+    + '</div>';
+};

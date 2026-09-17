@@ -1,4 +1,4 @@
-var CACHE = "venture-v47-vs-20260918-native";
+var CACHE = "venture-v48-vs-20260918-full";
 var ASSETS = [
   "./img/uni/venture-land.avif", "./img/uni/venture-sea.avif", "./img/uni/venture-air.avif",
   "./img/badge/venture-member.avif", "./img/badge/venture-shoulder.avif", "./img/badge/venture-award.avif",

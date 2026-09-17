@@ -486,6 +486,23 @@ App.renderMeeting = function(tid){
       wrap.appendChild(sPrep);
     }
 
+    // 新領袖專用教材與教學指引（提供詳盡帶領步驟、講授要點與話術範本）
+    if(d.teachingGuide){
+      var tg = App.h('div','card teaching-guide-card');
+      var tgHtml = '<h3 style="color:#1B5E20;margin-top:0;">🧑‍🏫 '+d.teachingGuide.title+'</h3>'+
+        '<p class="lead" style="font-size:14px;color:#333;margin-bottom:12px;">'+d.teachingGuide.summary+'</p>';
+      d.teachingGuide.sections.forEach(function(sec){
+        tgHtml += '<div style="margin-bottom:12px;padding:10px;background:#F1F8E9;border-radius:6px;border-left:4px solid #558B2F;">'+
+          '<h4 style="margin:0 0 6px 0;color:#2E7D32;">'+sec.h+'</h4>'+
+          '<ul class="bullet" style="margin:0 0 0 16px;">'+sec.bullets.map(function(b){return '<li>'+b+'</li>';}).join('')+'</ul>'+
+          '</div>';
+      });
+      tg.innerHTML = tgHtml;
+      var sTg = App.sec('📚 新領袖備課教材與教學指引',{id:tid+'-guide'});
+      sTg.add(tg);
+      wrap.appendChild(sTg);
+    }
+
     // 領袖開場白
     if(d.script){
       var sc = App.h('div','card script-card');
@@ -1132,7 +1149,7 @@ App.pages.book = function(sub){
   var subs = [
     {k:'promise',ic:'⚜️',n:'誓詞規律銘言'},
     {k:'exec',ic:'🧑‍🤝‍🧑',n:'執委會制度'},
-    {k:'tools',ic:'🧰',n:'集會工具'},
+    {k:'tools',ic:'⚠️',n:'重要須知'},
     {k:'apply',ic:'🎖️',n:'考章安排'},
     {k:'course',ic:'📚',n:'報考訓練班'},
     {k:'ayp',ic:'🌟',n:'AYP領袖指南'},
@@ -1181,7 +1198,25 @@ App.pages.book = function(sub){
   }
 
   if(cur==='tools'){
-    wrap.appendChild(App.toolsSecs());
+    var sImp = App.sec('⚠️ 深資童軍重要須知與資格界線', {print:true, proj:false});
+    sImp._body.innerHTML =
+      '<div class="card" style="border-left:5px solid #C62828;background:#FFEBEE;">'+
+      '<h3 style="color:#B71C1C;margin-top:0;">🛑 深資童軍職級限制（官方 P.O.R. 與訓練綱要核心規則）</h3>'+
+      '<div class="callout warn" style="background:#fff;border-color:#D32F2F;font-size:15px;line-height:1.6;">'+
+      '<p><b>⚠️ 深資童軍（15–20 歲）絕對不能擔任童軍領袖（Scout Leader / VSL / SL 等）！</b></p>'+
+      '<ul class="bullet">'+
+      '<li><b>身分界線</b>：深資童軍為<strong>青少年成員（Youth Member）</strong>，而非成年領袖（Adult Leader）。按香港童軍總會政策及規條（P.O.R.），領袖委任年齡起點為 20 歲（或特定職級 21 歲）；深資童軍身分持續至滿 21 歲生日止。</li>'+
+      '<li><b>最高指導身分 —— 教練員（Instructor）</b>：深資童軍若具備特定專長（如露營、先鋒工程、地圖導航、急救等），經團長推薦及區總監核准，<strong>最多只可以獲委任為「教練員」（Instructor）</strong>，在領袖督導下協助指導幼童軍或童軍支部之技能訓練，不得行使童軍領袖之法定管轄職權。</li>'+
+      '<li><b>自務自治不等於領袖職權</b>：深資團內推行「執委會制度（EC）」，由團員互選主席、秘書、司庫等管理團務，此乃支部青年自治實踐，絕非總會體制之領袖階層。深資團集會必須有合資格成年領袖（VSL / AVSL）在場督導與負責法定安全監護責任。</li>'+
+      '</ul></div>'+
+      '<div style="margin-top:14px;background:#fff;padding:12px;border-radius:6px;border:1px solid #FFCDD2;">'+
+      '<b>📚 官方資料索引：</b>'+
+      '<ul class="bullet" style="margin:4px 0 0 18px;">'+
+      '<li>香港童軍總會《政策、組織及規條》（P.O.R.）第 2 章、第 4 章成員及領袖資格。</li>'+
+      '<li>《深資童軍訓練綱要》：深資童軍之訓練定位與服務指導原則。</li>'+
+      '</ul></div>'+
+      '</div>';
+    wrap.appendChild(sImp);
     return wrap;
   }
 
@@ -1233,7 +1268,7 @@ App.pages.book = function(sub){
 /* ✂️ 素材庫：即搵即印／即投屏 */
 App.printCat = '';
 App.printCats = [
-  {k:'ws',   ic:'📝', n:'工作紙（16 場）'},
+  {k:'ws',   ic:'🎮', n:'聚會 GAME 互動箱（可投影）'},
   {k:'aid',  ic:'🩹', n:'急救卡（6 張）'},
   {k:'text', ic:'⚜️', n:'誓詞規律銘言'},
   {k:'rope', ic:'🧵', n:'收繩保養'},
@@ -1263,12 +1298,13 @@ App.pages.print = function(){
 App.printPanel = function(cat){
   var box = App.h('div','');
   if (cat === 'ws') {
-    var wsHtml = '<div class="callout ok-callout" style="margin-bottom:14px;">'
-      + '<b>📱 深資集會互動與內建 MINI GAME 配套：</b><br>'
-      + '深資童軍（15–20歲）不再適合小學式填字工作紙，集會已<strong>直接內建互動工具箱</strong>（誰是臥底、機密特務 5×5、21 點黑傑克、聚會擲骰/大話骰、幸運轉盤），完全離線本地運行，免外出鏈結、隨開即玩！'
-      + '<p style="margin:8px 0 4px 0;"><a class="button" href="#book/tools" style="background:#2E7D32;color:#fff;padding:6px 14px;border-radius:6px;text-decoration:none;font-weight:bold;display:inline-block;">🎮 立即開啟集會內建 MINI GAME 工具箱</a></p>'
-      + '下方保留集會教案相關之檢討觀察表及打卡記錄表供手機／iPad 直接填寫或按需列印。</div>'
-      + '<p class="mut">同集會目錄每場教案用嘅係同一份工作紙。</p>';
+    var wsHtml = '<div class="callout ok-callout" style="margin-bottom:14px;background:#E8F5E9;border-left:5px solid #2E7D32;">'
+      + '<h3 style="margin:0 0 6px 0;color:#1B5E20;">🎮 聚會 MINI GAME 實戰互動庫（全離線・可大螢幕投影）</h3>'
+      + '<p style="margin:0 0 8px 0;font-size:14px;">深資童軍（15–20 歲）集會破冰、專案實作與夜話首選！此處已完整嵌入離線遊戲工具，<strong>支援領袖手機操作、大電視/投影機即時同步投屏</strong>：</p>'
+      + '</div>'
+      + (typeof MiniGame !== 'undefined' ? MiniGame.htmlBlock() : '')
+      + '<div style="margin-top:20px;padding-top:14px;border-top:1px dashed #ccc;"><h3 style="margin-bottom:8px;">📋 集會教案檢討與觀察表（備用）</h3></div>';
+    setTimeout(function(){ if(typeof MiniGame !== 'undefined' && MiniGame.mount) MiniGame.mount(); }, 60);
     [{k:'會員章 c01–c06', from:0, to:6},{k:'肩章・認識 c07–c09', from:6, to:9},
      {k:'肩章・技能 c10–c16', from:9, to:16}].forEach(function(g){
       var list = DATA.meetings.slice(g.from,g.to).filter(function(m){return m.full&&m.data&&m.data.worksheet;});
@@ -1811,6 +1847,12 @@ App.countdownStop = function(){ App.timerStop(); };
 
 /* 投屏用嘅即時畫面 */
 App.projHtml = function(kind){
+  if (kind && kind.indexOf('mg:') === 0) {
+    if (typeof MiniGame !== 'undefined') {
+      MiniGame.projMode = kind.replace('mg:', '');
+      return MiniGame.projHtml();
+    }
+  }
   if (kind==='score') return '<h3>🏆 分組計分板</h3>'+App.boardHtml(true);
   if (kind==='timer') return '<h3>⏱️ 倒數</h3>'+App.clockHtml(true);
   if (kind==='lots') {
