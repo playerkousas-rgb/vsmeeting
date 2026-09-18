@@ -398,7 +398,7 @@ if (!ctx.IMG || typeof ctx.IMG.has!=='function' || !ctx.IMG.has('cer.open') || !
 {
   const flat = {};
   (function walk(o, p){ for (const k in o) { const v=o[k], key=p?p+'.'+k:k;
-    if (typeof v==='string') flat[key]=v; else if (v && typeof v==='object') walk(v,key); } })({compass:ctx.DIAGRAMS.compass,pack:ctx.DIAGRAMS.pack,cer:ctx.DIAGRAMS.cer,game:ctx.DIAGRAMS.game,skillx:ctx.DIAGRAMS.skillx,fire:ctx.DIAGRAMS.fire}, '');
+    if (typeof v==='string') flat[key]=v; else if (v && typeof v==='object') walk(v,key); } })({compass:ctx.DIAGRAMS.compass,pack:ctx.DIAGRAMS.pack,cer:ctx.DIAGRAMS.cer,game:ctx.DIAGRAMS.game,skillx:ctx.DIAGRAMS.skillx,fire:ctx.DIAGRAMS.fire,map:ctx.DIAGRAMS.map}, '');
   const bad = [];
   for (const key of Object.keys(ctx.IMG.map)) {
     const k = key.indexOf('top.')===0 ? key.slice(4) : key;

@@ -3341,3 +3341,57 @@ ul.bullet.sub li{font-size:13px;color:#4a4136;margin:2px 0}
 .teach-ask small{color:#5a4b73}
 .teach-script li{font-style:italic;color:#3f3a33}
 @media print{.teach-card details{display:block!important}.teach-card details>summary{list-style:none}}
+
+/* ---- 🎮 聚會 MINI-GAME（v49：領袖手機主導＋投影中性版）---- */
+.mg-tools .card{margin-bottom:12px}
+.mg-lbl{display:block;font-weight:700;margin:8px 0}
+.mg-lbl input[type=number]{width:64px;border:1.5px solid var(--line);border-radius:9px;padding:5px 7px;font-family:inherit}
+.mg-toggle{display:flex;align-items:center;gap:8px;font-weight:700;background:#FFF8E1;border:1px solid #FFE082;border-radius:10px;padding:8px 10px}
+.mg-btns{margin:10px 0;display:flex;flex-wrap:wrap;gap:6px}
+.mg-btns button{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:8px 12px;font-weight:700;font-family:inherit;font-size:.88rem}
+.mg-btns button:hover{background:#F6FBF4}
+.mg-btns .mg-primary{background:var(--grd);border-color:var(--grd);color:#fff}
+.mg-btns .mg-primary:hover{background:#1B5E20}
+.mg-btns .mg-proj{background:#0D47A1;border-color:#0D47A1;color:#fff}
+.mg-btns .mg-proj:hover{background:#1565C0}
+.mg-players ul{margin:6px 0 6px 18px}
+.mg-players li{margin:3px 0;font-weight:700}
+.mg-players .out{opacity:.45;text-decoration:line-through}
+details.mg-host{margin-top:10px;border:2px solid #C62828;border-radius:12px;background:#FFEBEE;padding:0 12px}
+details.mg-host>summary{font-weight:800;color:#B71C1C;cursor:pointer;padding:10px 0}
+details.mg-host.open>summary{color:#B71C1C}
+.mg-host-body{padding-bottom:12px}
+.mg-elim{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.mg-elim button{border:1.5px solid #C62828;background:#fff;color:#B71C1C;border-radius:9px;padding:6px 10px;font-weight:700;font-family:inherit;font-size:.82rem}
+.mg-elim button:hover{background:#FFCDD2}
+.spy-turn{background:#E8F5E9;border-left:4px solid var(--grd);border-radius:10px;padding:10px 12px;font-size:1.02rem;margin:8px 0}
+.spy-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.spy-card{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.spy-card h4{margin:0 0 6px;font-size:.85rem;color:var(--mute)}
+.spy-word{font-size:2rem;font-weight:800;color:var(--ink)}
+.agent-secret{border:2px solid #C62828;background:#FFF5F5;border-radius:14px;padding:10px;margin-bottom:12px}
+.agent-secret-head{font-weight:800;color:#B71C1C;margin-bottom:8px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.agent-turn-tag{border-radius:99px;padding:4px 12px;font-size:.85rem;color:#fff}
+.agent-turn-tag.t-red{background:#B71C1C}
+.agent-turn-tag.t-blue{background:#0D47A1}
+.agent-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}
+.ag-cell{border:1.5px solid var(--line);background:#ECEFF1;color:#90A4AE;border-radius:10px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:.95rem;font-family:inherit;padding:6px 2px;cursor:pointer}
+.ag-cell small{font-size:.6rem;font-weight:600;color:#B0BEC5;margin-top:2px}
+.ag-cell.hide{background:#ECEFF1}
+.ag-cell.rev{color:#fff;border-width:2px}
+.ag-cell.c-red{background:#B71C1C;border-color:#7F0000}
+.ag-cell.c-blue{background:#0D47A1;border-color:#002171}
+.ag-cell.c-bomb{background:#212121;border-color:#000;color:#FF5252}
+.ag-cell.c-civ{background:#2E7D32;border-color:#1B5E20}
+.ag-cell.p-red{background:#B71C1C;border-color:#7F0000}
+.ag-cell.p-blue{background:#0D47A1;border-color:#002171}
+.ag-cell.p-bomb{background:#212121;border-color:#000;color:#FF5252}
+.ag-cell.p-civ{background:#2E7D32;border-color:#1B5E20}
+.agent-score{font-weight:700;margin:8px 0}
+.agent-over{font-weight:800;color:#B71C1C;font-size:1.05rem}
+.mg-dice{width:96px;height:96px;border:2.5px solid var(--ink);border-radius:16px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:3.4rem;font-weight:800;margin:10px auto;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.mg-wheel .mg-spin{font-size:1.15rem;padding:14px 26px}
+.mg-wheel-list{margin:6px 0 6px 18px}
+.mg-wheel-list li{margin:3px 0}
+.mg-del{border:none;background:#FFEBEE;color:#C62828;border-radius:7px;padding:2px 8px;font-weight:800;font-family:inherit}
+.mg-p{font-weight:700}

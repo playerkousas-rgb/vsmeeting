@@ -1,4 +1,4 @@
-var CACHE = "scout-v48-tabsimg-20260918";
+var CACHE = "scout-v49-games-20260918";
 var ASSETS = [
   "./", "./index.html", "./manifest.webmanifest", "./css/app.css",
   "./js/data.js", "./js/teach.js", "./js/teach2.js", "./js/interests.js", "./js/ceremony.js", "./js/uniform.js", "./js/dia.js", "./js/ayp.js",
@@ -25,6 +25,10 @@ var ASSETS = [
   "./img/dia/cer-open.avif",
   "./img/dia/dgm-compass.avif",
   "./img/dia/dgm-pack.avif",
+  "./img/dia/map-legend.avif",
+  "./img/dia/map-sample.avif",
+  "./img/dia/map-contour.avif",
+  "./img/dia/map-orient.avif",
   "./img/dia/fire-circle.avif",
   "./img/dia/fire-flow.avif",
   "./img/dia/fire-scarf.avif",

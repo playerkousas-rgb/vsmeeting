@@ -521,8 +521,8 @@ App.renderMeeting = function(tid){
       flowBody += '<details class="teach-demo"><summary>🎤 領袖開場白（撳開照讀）</summary>'+scHtml2+'</details>';
     }
     if(typeof TEACH!=='undefined' && TEACH[tid] && TEACH[tid].length){
-      var H = '<h3>📖 照住講（教材 '+TEACH[tid].length+' 段）</h3>'
-        + '<p class="mut">每段五格：🎯 目標 → 📌 要點（逐點列）→ 🗣 講稿（撳開照讀）→ 🛠 示範 → ❓ 抽問。字多嘅都收埋喺「撳開」入面，備課唔會一眼睇到頭暈；<b>「⚠️ 常見錯」同「📋 做完要見到」永遠企喺面</b>（最易出錯）。</p>';
+      var H = '<h3>📖 照住講（教材 '+TEACH[tid].length+' 段・跟住就能教）</h3>'
+        + '<p class="mut">每段照順序跟：<b>🖼 先睇圖 → 📌 要點 → 🗣 講稿（照讀）→ 🛠 示範（照步做）→ ❓ 抽問 → 📋 做完要見到</b>。你自己對內容唔熟，就照圖睇完要點、讀一次講稿，之後照示範帶就行；字多嘅收喺「撳開」入面，<b>「⚠️ 常見錯」同「📋 做完要見到」永遠企喺面</b>（最易出錯）。</p>';
       var usedFig = {};
       TEACH[tid].forEach(function(b, bi){
         H += '<div class="teach-block"><h4>'+(bi+1)+'. '+b.h+(b.mins?'<span class="tag">'+b.mins+'分鐘</span>':'')+'</h4>';
@@ -535,29 +535,30 @@ App.renderMeeting = function(tid){
             H += '<blockquote class="teach-quote"><b>官方原文</b><br>'+qt+'<cite>—— '+(b.quote.src||'')+'</cite></blockquote>';
           }
         }
-        if(b.points) H += '<h5>📌 要點</h5><ul class="bullet tight">'+b.points.map(function(pt){
-          return '<li><b>'+pt.t+'</b>'+App.teachD(pt.d)+'</li>';
-        }).join('')+'</ul>';
         /* 圖解優先序：作者手動指定 b.fig → 作者手動指定 b.dgm → 自動關鍵字配 fig → 自動配 dgm。
            手動指定一定要贏自動配對，否則關鍵字誤中會蓋過作者特登揀嘅儀式圖（曾發生：c05 升旗禮被
-           「隊形」關鍵字自動配去 game-lineup，蓋過手動指定嘅 cer.flag 升旗位置圖）。 */
+           「隊形」關鍵字自動配去 game-lineup，蓋過手動指定嘅 cer.flag 升旗位置圖）。
+           位置喺要點之前：教材順序＝先睇圖（🖼 畀人睇）→ 要點 → 講稿 → 示範 → 抽問（跟住就能教）。 */
         var figKey = b.fig || '';
         var dgmKey = !figKey ? (b.dgm || '') : '';
         if(!figKey && !dgmKey){ figKey = App.teachFigFor(b); if(!figKey) dgmKey = App.teachDgmFor(b); }
         if(figKey && !usedFig[figKey] && typeof FIGS!=='undefined' && FIGS[figKey]){ usedFig[figKey] = 1;
           H += App.ph(figKey, FIGS[figKey].cap || '示意圖', '');
         } else if(dgmKey){
-          /* dgmKey 可以直接寫全 key（例如 'cer.formup'）；冇 '.' 就當舊有 top.* 簡寫 */
+          /* dgmKey 可以直接寫全 key（例如 'cer.formup'／'map.sample'）；冇 '.' 就當舊有 top.* 簡寫 */
           var dgmFullKey = dgmKey.indexOf('.') >= 0 ? dgmKey : 'top.'+dgmKey;
           if(!usedFig['dgm:'+dgmFullKey] && typeof IMG!=='undefined' && IMG.map[dgmFullKey]){ usedFig['dgm:'+dgmFullKey] = 1;
             H += App.dgmFigure(dgmFullKey, (typeof IMG!=='undefined'&&IMG.alt?IMG.alt(dgmFullKey):'平面圖解'));
           }
         }
+        if(b.points) H += '<h5>📌 要點</h5><ul class="bullet tight">'+b.points.map(function(pt){
+          return '<li><b>'+pt.t+'</b>'+App.teachD(pt.d)+'</li>';
+        }).join('')+'</ul>';
         if(b.cards) H += '<table class="meeting-table"><tbody>'+b.cards.map(function(c){return '<tr><th>'+c.y+'</th><td><b>'+c.t+'</b>'+App.teachD(c.d)+'</td></tr>';}).join('')+'</tbody></table>';
         if(b.timetable) H += b.timetable.map(function(tp){return '<h5>⏱ '+tp.t+'</h5><ol class="steps tight">'+tp.rows.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ol>';}).join('');
         if(b.steps) H += '<details class="teach-demo" open><summary>🪢 打法要領（照呢個順序教）</summary><ol class="steps tight">'+b.steps.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ol></details>';
         if(b.use) H += '<p class="teach-line"><b>✔ 用途：</b>'+b.use.join('／')+'</p>';
-        if(b.demo) H += '<details class="teach-demo"><summary>🛠 示範／實習：點樣帶（撳開照做）</summary><ol class="steps tight">'+b.demo.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ol></details>';
+        if(b.demo) H += '<details class="teach-demo" open><summary>🛠 示範／實習：你點帶（照呢步做）</summary><ol class="steps tight">'+b.demo.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ol></details>';
         if(b.list) H += '<details class="teach-demo"><summary>☑ 檢查清單（'+b.list.length+' 項）</summary><ul class="bullet checklist tight">'+b.list.map(function(x){return '<li>☐ '+x+'</li>';}).join('')+'</ul></details>';
         if(b.script) H += '<details class="teach-script"><summary>🗣 講稿（'+b.script.length+' 句，可以照讀）</summary><ul class="bullet tight">'+b.script.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></details>';
         var qa = b.ask || b.quiz;
@@ -1210,13 +1211,38 @@ App.pages.book = function(sub){
   }
 
   if(cur==='apply'){
-    wrap.appendChild(App.h('div','callout ok-callout','🏕️ '+INTERESTS.howToApply.troopNote));
+    var P = INTERESTS.assessPlan;
+    wrap.appendChild(App.h('p','lede',P.intro));
+    /* 四步具體計劃 */
+    var sPlan = App.sec('🎖️ 如何考核成員（照四步做）',{print:false});
+    P.stages.forEach(function(st){
+      sPlan.add(App.h('h4',null,st.t));
+      var ol = App.h('ol','steps tight');
+      ol.innerHTML = st.steps.map(function(x){ return '<li>'+x+'</li>'; }).join('');
+      sPlan.add(ol);
+    });
+    wrap.appendChild(sPlan);
+    /* 考核表（可列印） */
+    var sSheet = App.sec('🖨️ 考核表＋考核要點（可列印）',{print:true});
+    P.sheets.forEach(function(sh){
+      sSheet.add(App.h('h4',null,sh.t));
+      var tbl = App.h('table','meeting-table');
+      tbl.innerHTML = '<tbody>'+sh.rows.map(function(r){
+        return '<tr><th width="150">'+r[0]+'</th><td>'+r[1]+'</td>'+(r.length>2?'<th width="130">'+r[2]+'</th><td>'+r[3]+'</td>':'')+'</tr>';
+      }).join('')+'</tbody>';
+      sSheet.add(tbl);
+    });
+    wrap.appendChild(sSheet);
+    /* 行政同簽發鏈（表格・版本・補考） */
+    var sAdmin = App.sec('📝 行政同簽發鏈（版本・表格・佩戴・補考）',{print:true});
     var ol3 = App.h('ol','steps');
     ol3.innerHTML = INTERESTS.howToApply.steps.map(function(s){
       return '<li><b>'+s.t+'</b>：'+s.d+'</li>';
     }).join('');
-    wrap.appendChild(App.sec('🎖️ 如何考取會員章／肩章（團內考核）').add(ol3));
-    wrap.appendChild(App.h('p','source-note',INTERESTS.howToApply.otherGroupsNote));
+    sAdmin.add(ol3);
+    sAdmin.add(App.h('div','callout ok-callout','🏕️ '+INTERESTS.howToApply.troopNote));
+    sAdmin.add(App.h('p','source-note',INTERESTS.howToApply.otherGroupsNote));
+    wrap.appendChild(sAdmin);
     return wrap;
   }
 
@@ -1289,9 +1315,10 @@ App.printPanel = function(cat){
 
   /* ── ① 互動遊戲工具（全部離線、可投屏）── */
   if (cat === 'tools') {
-    box.innerHTML = '<div class="card"><h3>🕵️ 誰是臥底（領袖主持・一次過派卡）</h3><div id="mg-spy-box"></div></div>'
-      + '<div class="card"><h3>🕴️ 機密特務（5×5 猜詞）</h3><div id="mg-agent-box"></div></div>'
-      + '<div class="card"><h3>🎲 骰子（大話骰／遮擋模式）</h3><div id="mg-dice-box"></div></div>'
+    box.innerHTML = '<div class="callout" style="margin-bottom:12px;">🖥️📱 <b>兩屏玩法（重要）：</b>投影屏／大電視<b>冇觸控</b>——所有掣只喺<b>領袖手機</b>。每個工具撳「🖥️ 投影」開第二屏（或同機全螢幕）做顯示，領袖用手機推進流程。<b>答案類內容（身份詞／色卡／秘密骰面）永遠只喺領袖手機</b>，投影係中性版，要揭先至由領袖撳掣出嚟。每個工具都列咗「 主持流程」，照做就行。</div>'
+      + '<div class="card"><h3>🕵️ 誰是臥底（領袖主持・一次過派卡）</h3><div id="mg-spy-box"></div></div>'
+      + '<div class="card"><h3>🕴️ 機密特務（5×5 猜詞・色卡只喺領袖手機）</h3><div id="mg-agent-box"></div></div>'
+      + '<div class="card"><h3>🎲 骰子（大話骰／秘密擲＋遮擋）</h3><div id="mg-dice-box"></div></div>'
       + '<div class="card"><h3>🎡 幸運轉盤（自訂任務）</h3><div id="mg-wheel-box"></div></div>';
     setTimeout(function(){ if(typeof MiniGame!=='undefined' && MiniGame.mount) MiniGame.mount(); }, 60);
     return box;
@@ -1325,10 +1352,12 @@ App.printPanel = function(cat){
         + '<p class="mut"><b>人數：</b>'+g.people+' &nbsp; <b>物資：</b>'+g.mats+'</p>'
         + '<p>'+g.desc+'</p>' + App.ph(gk, gcap, '')
         + '<h4>▶ 玩法（照住做）</h4><ol class="steps">'+g.steps.map(function(st){return '<li>'+st+'</li>';}).join('')+'</ol>'
+        + (g.host && g.host.length ? '<h4>🎬 主持流程（兩屏版）</h4><ul class="bullet tight host-list">'+g.host.map(function(hx){return '<li>'+hx+'</li>';}).join('')+'</ul>' : '')
+        + (g.answers && g.answers.length ? '<details class="host-answers"><summary>🔒 答案卡（領袖手機／列印用・投影時唔好包含呢段——用「🖥️ 投講解」淨投規則玩法）</summary><ul class="bullet tight">'+g.answers.map(function(a){return '<li><b>'+a+'</b></li>';}).join('')+'</ul></details>' : '')
         + (g.tips?'<p class="tip">💡 '+g.tips+'</p>':'')
         + (g.safety?'<p class="safety"><b>⚠️ 安全：</b>'+g.safety+'</p>':'')
         + '<p class="card-actions"><button class="print-btn" onclick="App.printSec(this.closest(\'div.game-card\'))">🖨️ 只印呢個</button> '
-        + '<button class="proj-btn" onclick="App.projSec(this.closest(\'div.game-card\'))">🖥️ 投講解</button></p>';
+        + '<button class="proj-btn" onclick="App.projGameIdx('+DATA.games.indexOf(g)+')">🖥️ 投講解（唔含答案）</button></p>';
       box.appendChild(card);
     });
     return box;
@@ -1383,6 +1412,17 @@ App.printPanel = function(cat){
   }
 
   return box;
+};
+
+/* 遊戲卡「🖥️ 投講解」：淨投規則＋玩法（host 流程／答案卡唔投影，避免全場睇到答案） */
+App.projGameIdx = function(i){
+  var g = DATA.games[i];
+  if(!g || typeof Projector === 'undefined') return;
+  var body = '<p><b>人數：</b>'+g.people+'　<b>物資：</b>'+g.mats+'</p>'
+    + '<p>'+g.desc+'</p>'
+    + '<h4>▶ 玩法（照住做）</h4><ol class="steps">'+g.steps.map(function(st){return '<li>'+st+'</li>';}).join('')+'</ol>'
+    + (g.safety?'<p><b>⚠️ 安全：</b>'+g.safety+'</p>':'');
+  Projector.html('🎲 '+g.n, body);
 };
 
 App.catsOfGames = function(){
@@ -1464,7 +1504,7 @@ App.pages.skills = function(sub){
       if(!b) return '';
       return '<div class="card"><h3>'+b.zh+'</h3>'
         + '<h4>📋 官方要求（第十一版）</h4><ol class="req-list">'+b.req.map(function(r){return '<li>'+r+'</li>';}).join('')+'</ol>'
-        + '<h4>💡 團內考核建議</h4><ul class="sug-list">'+b.suggest.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'
+        + '<h4>💡 團內考核要點</h4><ul class="sug-list">'+b.suggest.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'
         + '<p class="source-note">呢張淨係俾岩啱考緊嗰個肩章要求嘅團員查（唔係人人都要考）；查完整要求用<a href="#badges">🎖️ 獎章查閱</a>（只查不記）；出席／考核記錄用團內紀錄冊。</p></div>';
     }
     function lessonLinks(arr){ return arr.map(function(x){ return '<a class="tag meet" href="#plan/'+x+'">📅 '+x+'</a>'; }).join(' '); }
@@ -1499,10 +1539,11 @@ App.badgeFig = function(k){
     + '<figcaption>'+b.cap+'</figcaption></figure>';
 };
 
-/* 🎖️ 獎章查閱（會員章／肩章／獎章路：只查不記） */
+/* 🎖️ 獎章（面向旅團領袖：團內可考＝會員章＋肩章；只查不記） */
 App.pages.badges = function(){
   var wrap = App.h('div','page');
-  wrap.appendChild(App.h('h1',null,'🎖️ 獎章查閱'));
+  wrap.appendChild(App.h('h1',null,'🎖️ 獎章'));
+  wrap.appendChild(App.h('p','lede','呢頁畀<b>旅團領袖</b>用：你哋團內可以安排考核嘅＝<b>會員章（12 項）＋肩章（認識 1–9＋技能四類）</b>。成員達標就照 <a href="#book/apply">📖 手冊 → 考章安排</a>（四步具體計劃＋可列印考核表）考核。<br><b>深資童軍獎章＝四個段章</b>（活動策劃／社會服務／多元技能／戶外探險）：完成後經 VSL 提名，區會安排主考及簽發；金帶、榮譽童軍獎章一樣屬區會程序。以下卡片係查要求用，唔係考核安排。'));
   var filt = App.h('div','filters');
   var btns = [{k:'all',n:'全部'}].concat(INTERESTS.categories.map(function(c){return {k:c.k,n:c.ic+' '+c.n};}));
   btns.forEach(function(b,i){
@@ -1519,9 +1560,15 @@ App.pages.badges = function(){
     filt.appendChild(btn);
   });
   wrap.appendChild(filt);
-  wrap.appendChild(App.h('p','source-note','📚 來源：'+INTERESTS.source.title+'（'+INTERESTS.source.version+'）｜<a href="#book/apply">點考（團內考核 7 步）</a>｜💡 會員章＋肩章由團考核｜獎章路詳情：<a href="'+INTERESTS.source.url+'" target="_blank" rel="noopener">《深資童軍訓練綱要》網上版</a>'));
+  wrap.appendChild(App.h('p','source-note','📚 來源：'+INTERESTS.source.title+'（'+INTERESTS.source.version+'）｜<a href="#book/apply">考核成員（具體計劃＋考核表）</a>｜💡 會員章＋肩章＝團內考核｜細項清單：<a href="'+INTERESTS.source.url+'" target="_blank" rel="noopener">官方頁</a>'));
   var grid = App.h('div','badge-grid');
+  var GOLD_MERGED = { 'g-plan-gold':1, 'g-service-gold':1, 'g-outdoor-gold':1 };
+  var sugTitle = function(cat){
+    if(cat==='member' || cat==='shoulder') return '💡 考核要點（點問／點示範）';
+    return '📋 考核、簽發與注意';
+  };
   INTERESTS.badges.forEach(function(b){
+    if(GOLD_MERGED[b.k]) return;  /* 三張金帶卡合併做一張參考卡（見下） */
     var catName = (INTERESTS.categories.find(function(c){return c.k===b.cat;})||{n:''}).n;
     var meetLink = b.meet ? '<a class="tag meet" href="#plan/'+b.meet+'">📅 '+b.meet+' 教案</a>' : '';
     var reqList = b.req.map(function(r){return '<li>'+r+'</li>';}).join('');
@@ -1532,14 +1579,28 @@ App.pages.badges = function(){
       '<div class="badge-head">'+
       '<h3>'+b.zh+' <small>('+b.en+')</small></h3>'+
       '<div class="badge-tags"><span class="tag cat">'+catName+'</span>'+meetLink+'</div></div>'+
-      '<details><summary>📋 考核要求</summary><ol class="req-list">'+reqList+'</ol></details>'+
-      '<details><summary>💡 建議考核方式（僅供參考）</summary><ul class="sug-list">'+sugList+'</ul></details>'
+      '<details><summary>📋 考核要求（第十一版）</summary><ol class="req-list">'+reqList+'</ol></details>'+
+      '<details><summary>'+sugTitle(b.cat)+'</summary><ul class="sug-list">'+sugList+'</ul></details>'
       + '<p class="no-print"><button class="proj-btn" onclick="App.projSec(this.closest(\'div.badge-card\'))">🖥️ 投屏（同團員講要求）</button></p>';
     grid.appendChild(card);
   });
+  /* 金帶＋榮譽童軍獎章：一張合併參考卡（區會程序，團內唔安排考核） */
+  var gold = App.h('div','badge-card');
+  gold.setAttribute('data-cat','path');
+  gold.innerHTML =
+    '<div class="badge-head"><h3>金帶同榮譽童軍獎章 <small>(經區會考核)</small></h3>'
+    + '<div class="badge-tags"><span class="tag cat">獎章路</span></div></div>'
+    + '<details open><summary>📋 點解呢度冇細項</summary><ul class="sug-list">'
+    + '<li><b>金帶屬「榮譽童軍獎章」項目</b>：完成任何一個段章後，才可與區會指定人士（通常助理區總監（深資童軍））商討該段章金帶；完成一項即佩戴該項金帶。</li>'
+    + '<li><b>四條金帶</b>：活動策劃（一項活動策劃實踐，或外宿最少五日四夜活動）／社會服務（三選一：童軍及社區服務、連續 6 個月 52 小時志願服務、寰宇童軍計劃）／多元技能／戶外探險（後兩者項數同認可項目以官方頁最新清單為準）。</li>'
+    + '<li><b>程序</b>：活動前最少 2 個月諮詢團長並向主考人申請許可 → 活動前 1 個月交計劃書 → 完結後 1 個月內交報告書。</li>'
+    + '<li><b>榮譽童軍獎章</b>：集齊四條金帶後，由總會按地域及區推薦批核，總領袖及香港總監簽發，於童軍大會操頒授。</li>'
+    + '<li>完整要求：<a href="'+INTERESTS.source.url+'" target="_blank" rel="noopener">官方頁「獎章考核要求」</a>。</li>'
+    + '</ul></details>';
+  grid.appendChild(gold);
   wrap.appendChild(grid);
   var note = App.h('div','callout');
-  note.innerHTML = 'ℹ️ '+INTERESTS.howToApply.otherGroupsNote;
+  note.innerHTML = 'ℹ️ 深資童軍獎章＝四個段章：完成四個段章全部項目先至申請深資童軍獎章（經 VSL 提名→區總監推薦→地域總監批核→青少年活動總監確認後簽發）';
   wrap.appendChild(note);
   return wrap;
 };
