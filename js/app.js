@@ -38,6 +38,10 @@ App.route = function(){
     location.replace('#ayp');
     return;
   }
+  if(raw==='ceremony/open' || raw==='ceremony/close' || raw==='ceremony/salute' || raw==='ceremony/purpose'){
+    location.replace('#ceremony/fallin');
+    return;
+  }
   var parts = raw.split('/');
   var tab = parts[0];
   var sub = null;
@@ -483,6 +487,16 @@ App.renderMeeting = function(tid){
     (m.full ? '<span class="tag ok">✓ 完整教案</span>' : '<span class="tag wip">內容陸續補上</span>');
   wrap.appendChild(meta);
   wrap.appendChild(App.h('p','lede','📍 場地：'+m.venue+'<br>🎯 目標：'+m.goal+(m.evidence?'<br>👀 觀察：'+m.evidence:'')+(m.gap?'<br>⚠️ 注意：'+m.gap:'')));
+  if(!m.special){
+    var lead = App.h('div','card teach-card');
+    lead.innerHTML = '<h3>今日你點帶（照住做）</h3><ol class="steps">'+
+      '<li><b>8′ FALL IN</b>：口令「Squad, fall — in！」→ 報數 → 睇齊。主席嗌口令，你監禮。</li>'+
+      '<li><b>35′ 講解</b>：只教本場獎章項（'+m.badge+'）。用下面「教材＋帶流程」照讀。</li>'+
+      '<li><b>30′ 實習</b>：團員做到先算。巡場執錯；夠鐘先停。</li>'+
+      '<li><b>7′ 宣布</b>：下次日期、服裝、要帶嘅嘢。</li>'+
+      '<li><b>10′ 解散</b>：再集隊 → 解散 → 執拾。</li></ol>';
+    wrap.appendChild(lead);
+  }
 
   if(m.data){
     var d = m.data;
@@ -604,7 +618,7 @@ App.renderMeeting = function(tid){
         detail += '<div class="callout" style="background:#FFF8E1;border-left:4px solid #F9A825;margin:6px 0;"><b>🎤 講稿：</b>'+p.leaderScript+'</div>';
       }
       if(p.activities){
-        detail += '<p><b>活動：</b>'+p.activities.map(function(a){return DATA.games.find(function(g){return g.n===a.name;})?('<a href="#play">'+a.name+'</a>（'+a.min+'分鐘）'):a.name+'（'+a.min+'分鐘）';}).join(' → ')+'</p>';
+        detail += '<p><b>活動：</b>'+p.activities.map(function(a){return DATA.games.find(function(g){return g.n===a.name;})?('<a href="#print">'+a.name+'</a>（'+a.min+'分鐘）'):a.name+'（'+a.min+'分鐘）';}).join(' → ')+'</p>';
       }
       if(p.talking) detail += '<p><b>分組傾乜：</b></p><ul class="bullet">'+p.talking.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ul>';
       if(p.blocks) detail += p.blocks.map(function(b){return '<p><b>'+b.h+'</b>：'+b.d+(b.cite?' <small style="color:#888">'+b.cite+'</small>':'')+'</p>';}).join('');
@@ -613,8 +627,8 @@ App.renderMeeting = function(tid){
       if(p.safety) detail += '<p class="safety"><b>⚠️ 安全：</b>'+p.safety+'</p>';
       // 儀式段落加圖解連結（解決「淨睇文字唔明」）
       if(/儀式|升旗|隊列|宣誓|步操|敬禮/.test(title||'')){
-        var ck = /升旗/.test(title)?'flag':(/宣誓/.test(title)?'oath':(/隊列|步操|立正|稍息/.test(title)?'footdrill':(/結束/.test(title)?'close':'open')));
-        detail += '<p class="figlink">🎪 呢段有儀式：睇 <a href="#ceremony/'+ck+'">儀式卡圖解版</a>（隊列/升旗/宣誓都有位置圖）</p>';
+        var ck = /升旗/.test(title)?'flag':(/宣誓/.test(title)?'oath':(/隊列|步操|立正|稍息/.test(title)?'footdrill':'fallin'));
+        detail += '<p class="figlink">🎪 呢段有儀式：睇 <a href="#ceremony/'+ck+'">FALL IN／宣誓／簡單隊列</a>（隊列/升旗/宣誓都有位置圖）</p>';
       }
       var mats = '';
       if(p.mats && p.mats.length) mats = '<br><small>🎒 '+p.mats.join('、')+'</small>';
@@ -773,7 +787,7 @@ App.renderMeeting = function(tid){
   }
 
   wrap.appendChild(App.h('h2',null,'🚧 本場完整教案籌備中'));
-  wrap.appendChild(App.h('p',null,'本場（'+m.n+'）完整三步帶法、工作紙、出隊包將會喺後續版本補上。現階段可參考頂欄 📦 官方套包 PDF 相關程序。'));
+  wrap.appendChild(App.h('p',null,'本場（'+m.n+'）完整三步帶法、工作紙、出隊包將會喺後續版本補上。現階段可對照《深資童軍訓練綱要》該項要求自行調時間。'));
   return wrap;
 };
 
@@ -901,7 +915,25 @@ App.pages.plan = function(){
   guide.innerHTML = '<div><span class="role-ic">🧭</span><p><b>第一次帶集會</b><br>先揀一場跟程序表做；儀式／制服／手冊係必修知識。</p></div>'+
     '<div><span class="role-ic">⚡</span><p><b>熟手領袖搵料</b><br>心中有想法，直接去下方「素材庫／活動／技能／獎章／AYP」攞料。</p></div>';
   wrap.appendChild(guide);
-  wrap.appendChild(App.h('p','lede','16 場完整集會：會員章 c01–c06、肩章・認識 c07–c09、肩章・技能 c10–c16。撳任何一張就開教案。'));
+  wrap.appendChild(App.h('p','lede','新領袖：由 c01 開始，一場跟一場。每場入去有「今日你點帶」＋時間表＋物資＋教材。內容跟《深資童軍訓練綱要》會員章→肩章，唔係抄套包功課。'));
+  var how = App.h('div','card teach-card');
+  how.innerHTML = '<h3>第一次帶集會：跟呢 5 步</h3><ol class="steps">'+
+    '<li><b>開會前</b>：開嗰場「執袋＋通知」，袋齊物資；自己讀一次「照住講」。</li>'+
+    '<li><b>開場 8 分鐘</b>：FALL IN（口令 Squad, fall — in！→ 報數 → 睇齊）。執委會主席嗌，你企側邊監禮。</li>'+
+    '<li><b>講解約 35 分鐘</b>：只教當日綱要嗰一項。照「教材」讀講稿＋示範，唔使自己創作。</li>'+
+    '<li><b>實習約 30 分鐘</b>：團員自己做。你巡場執錯處。時間多就加一個遊戲。</li>'+
+    '<li><b>宣布＋解散 15 分鐘</b>：下次日期／帶咩；再 FALL IN 解散、執拾。</li>'+
+    '</ol><p class="mut">特別場（大會操／宣誓／露營）跟嗰場自己嘅時間表，唔好硬套 90 分鐘。</p>';
+  wrap.appendChild(how);
+  var prog = App.h('div','card');
+  prog.innerHTML = '<h3>會員章 11 項 → 跟邊場</h3><ol class=\"steps tight\">'+
+    DATA.membershipItems.map(function(x){
+      return '<li>'+x.t+'　<a href=\"#plan/'+x.meet+'\">'+x.meet+'</a></li>';
+    }).join('')+'</ol><h3>肩章 → 跟邊場</h3><ol class=\"steps tight\">'+
+    DATA.shoulderItems.map(function(x){
+      return '<li>'+x.t+'　<a href=\"#plan/'+x.meet+'\">'+x.meet+'</a></li>';
+    }).join('')+'</ol><p class=\"mut\">c04 大會操、c09 創辦人日係特別場，唔計入肩章細項；c09 用來練服務策劃。</p>';
+  wrap.appendChild(prog);
 
   var filterItems = [
     {k:'all',n:'全部 16 場'}, {k:'member',n:'會員章 c01–06'},
@@ -985,7 +1017,7 @@ App.pages.ceremony = function(sub){
     }
   }
 
-  wrap.appendChild(App.h('p','lede','呢度係<strong>深資童軍團</strong>用得到嘅儀式：開禮・禮成・集隊／睇齊／解散・敬禮・升旗・宣誓・支部目的卡。<b>⚠️ 深資團唔設小隊</b>（1970 年起用執行委員會制，自務自治），集隊以全團為單位；<b>亦唔設團呼／齊讀口號</b>，散會後團員自行離開（唔設「等家長接」）。集隊由執委會主席發口令、領袖監禮。<b>進階步操唔喺呢度教</b> —— 原地四轉、行進間轉向／換步、旗操、會操檢閱程序屬訓練班範圍：請上職前／進階訓練班，並對照《步操手冊》第六章（排列隊形）同 2024《隊列和升掛國旗及區旗指引》。實際動作必須由熟悉程序之領袖現場示範。'));
+  wrap.appendChild(App.h('p','lede','新領袖只需要三樣：<b>FALL IN 集隊</b>、<b>宣誓</b>、<b>立正／稍息／三指敬禮</b>。深資唔設小隊、唔設團呼。齊步、旗操、分列式去訓練班，唔抄成本《步操手冊》。'));
   var ref = App.h('div','callout');
   ref.innerHTML = '📚 <b>本頁內容全部照呢啲官方檔抄錄／整理（唔自創）：</b><ul class="bullet" style="margin:6px 0 0 18px;">' +
     CEREMONY.source.refs.map(function(r){return '<li>'+r+'</li>';}).join('') +
@@ -993,8 +1025,8 @@ App.pages.ceremony = function(sub){
     '<li><a href="https://drive.google.com/file/d/1F8aZSr_WzRbJCLy7l41iDO2tEUxpKCvE/view?usp=drive_link" target="_blank" rel="noopener">《深資童軍訓練綱要》第十一版 PDF（2026-08-15 生效）</a></li>' +
     '</ul><p class="mut">'+CEREMONY.source.note+'</p>';
   wrap.appendChild(ref);
-  var pg = App.sec('⏱ 恆常集會程序（官方套包 8 段・每場照呢個排）', {id:'cer-program'});
-  pg._body.innerHTML = '<div class="card"><table class="meeting-table"><thead><tr><th width="8%">#</th><th width="16%">環節</th><th width="12%">時間</th><th>內容（照套包程序表）</th></tr></thead><tbody>'+
+  var pg = App.sec('⏱ 建議 90 分鐘節奏（跟綱要教到為準，時間可調）', {id:'cer-program'});
+  pg._body.innerHTML = '<div class="card"><table class="meeting-table"><thead><tr><th width="8%">#</th><th width="16%">環節</th><th width="12%">時間</th><th>內容</th></tr></thead><tbody>'+
     CEREMONY.program.rows.map(function(r){return '<tr><td>'+r[0]+'</td><td><b>'+r[1]+'</b></td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';}).join('')+
     '</tbody></table><p class="mut">'+CEREMONY.program.note+'</p></div>';
   wrap.appendChild(pg);
@@ -1052,14 +1084,22 @@ App.pages.uniform = function(sub){
   var cur = 'land';
   subs.forEach(function(x){ if(x.k===sub) cur = sub; });
   wrap.appendChild(App.subnav('uniform',subs,cur));
-  wrap.appendChild(App.h('p','lede','深資童軍支部（陸／海／空）男／女團員制服標準。服式圖：<b>香港童軍總會</b>官方圖（撳「開總會官網原圖」對最新式樣；內容以《儀容與制服手冊》為準）。'));
+  wrap.appendChild(App.h('p','lede','深資童軍支部（陸／海／空）男／女團員制服。下面係《儀容與制服手冊》31–60 頁原檔（深資制服圖喺呢份）。'));
+  wrap.appendChild(App.h('div','card',
+    '<p><b>手冊原圖（31–60 頁）</b>　<a href="https://drive.google.com/file/d/1BqIREqz8JarW1WbDScXLBnQzr9KvPOnQ/view" target="_blank" rel="noopener">開 Drive</a></p>'+
+    '<iframe title="儀容與制服手冊 31-60" src="https://drive.google.com/file/d/1BqIREqz8JarW1WbDScXLBnQzr9KvPOnQ/preview" style="width:100%;min-height:70vh;border:0;border-radius:8px" allow="autoplay"></iframe>'));
 
   var byKey = {};
   UNIFORM.types.forEach(function(t){ byKey[t.k]=t; });
   var BRANCH = {vs_b:'vsland',vs_g:'vsland',vs_g_pants:'vsland',vs_sea_b:'vssea',vs_sea_g:'vssea',vs_sea_g_pants:'vssea',vs_air_b:'vsair',vs_air_g:'vsair',vs_air_g_pants:'vsair'};
   function typeCard(t){
     var rows = t.items.map(function(i){return '<tr><th>'+i[0]+'</th><td>'+i[1]+'</td></tr>';}).join('');
-    return '<div class="card uniform-card"><h3>'+t.name+'</h3>'+      '<div class="uniform-visual no-print" style="margin:0 0 8px 0;">'+      '<a href="'+t.img+'" target="_blank" rel="noopener">🖼️ 開總會官網原圖（官方相，對最新式樣）</a>'+      '<small class="mut"> 式樣同章位請照官方相＋《儀容與制服手冊》原文。</small></div>'+      '<table class="uniform-table"><tbody>'+rows+'</tbody></table></div>';  }
+    var pic = t.local ? '<img class="uni-photo" src="'+t.local+'" alt="'+t.name+' 服式參考" loading="lazy">' : '';
+    return '<div class="card uniform-card"><h3>'+t.name+'</h3>'+
+      '<div class="uniform-visual">'+pic+
+      '<p><a href="'+t.img+'" target="_blank" rel="noopener">🖼️ 總會官網原圖（對最新式樣）</a></p>'+
+      '<small class="mut">圖係對照用；帽色／恤色／褲裙以手冊同官網相為準。</small></div>'+
+      '<table class="uniform-table"><tbody>'+rows+'</tbody></table></div>';  }
 
   if(cur==='badge'){
     var P2 = UNIFORM.placementV2;
@@ -1161,7 +1201,8 @@ App.pages.book = function(sub){
     {k:'apply',ic:'🎖️',n:'考章安排'},
     {k:'course',ic:'📚',n:'報考訓練班'},
     {k:'ayp',ic:'🌟',n:'AYP領袖指南'},
-    {k:'refs',ic:'🔗',n:'參考資料'}
+    {k:'refs',ic:'🔗',n:'參考資料'},
+    {k:'consti',ic:'📄',n:'團章範本'}
   ];
   var cur = subs.some(function(s){return s.k===sub;}) ? sub : 'promise';
   wrap.appendChild(App.subnav('book',subs,cur));
@@ -1290,6 +1331,14 @@ App.pages.book = function(sub){
     return wrap;
   }
 
+  if(cur==='consti'){
+    wrap.appendChild(App.h('p','lede','來源：《深資童軍訓練綱要》團章範例＋P.O.R. 2.3.6。Word 檔填空，團員大會通過。'));
+    wrap.appendChild(App.block('📄 下載團章範本（Word）',
+      '<p><a class="tag meet" href="templates/深資童軍團團章範本.docx" download>⬇️ 下載 Word 團章範本（.docx）</a></p>'+
+      '<p class="mut">用 Word／WPS 打開即可改旅名、團費、任期。官方全文見綱要「深資童軍團團章範例」。</p>'));
+    return wrap;
+  }
+
   var ul3 = App.h('ul','bullet');
   ul3.innerHTML = '<li><a href="'+DATA.source.url+'" target="_blank" rel="noopener">《深資童軍訓練綱要》網上版（深資支部）</a></li>'+
     '<li><a href="'+EXTERNAL.officialPack+'" target="_blank" rel="noopener">官方集會套包 2026-09-01 版 PDF</a></li>'+
@@ -1315,6 +1364,7 @@ App.printCats = [
 App.pages.print = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎮 聚會 GAME 互動庫'));
+  wrap.appendChild(App.h('p','lede','今晚諗唔到做咩？開呢頁：互動工具即場主持，或者揀一張集會遊戲卡塞入 20 分鐘遊戲段。'));
   var cats = App.printCats;
   if (!App.printCat || !cats.some(function(c){return c.k===App.printCat;})) App.printCat = cats[0].k;
   var host = App.h('div','print-host');
@@ -1488,6 +1538,7 @@ App.filterItems = function(wrap, filt, all, show){
 App.pages.play = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎮 活動（即插即用單項）'));
+  wrap.appendChild(App.h('p','lede','熟手領袖：今日想塞一項服務／探險／執委會練習，喺呢度揀一張跟流程做。'));
   var cats = ITEMS.cats(ITEMS.activities);
   var filt = App.h('div','filters'); filt.setAttribute('role','tablist');
   [{k:'all',n:'全部'}].concat(cats.map(function(c){return {k:c,n:c};})).forEach(function(b,i){
@@ -1505,6 +1556,7 @@ App.pages.play = function(){
 App.pages.skills = function(sub){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🪢 技能（單項技能卡）'));
+  wrap.appendChild(App.h('p','lede','圍住<strong>肩章要考</strong>嚟教：繩結、地圖、急救、露營。太深（CPR 證書、高處先鋒、遠征領隊）叫佢哋去訓練班／返工，唔喺集會教完。'));
   var cats = ITEMS.cats(ITEMS.skills);
   var SKUBS = [{k:'all',ic:'📚',n:'全部技能'}].concat(cats.map(function(c){return {k:c,ic:'🔧',n:c};}))
     .concat([{k:'badge',ic:'🎖️',n:'肩章對照'}]);
