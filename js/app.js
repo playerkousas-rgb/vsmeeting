@@ -299,13 +299,15 @@ App.cerFig = function(c){
     + '<figcaption>📐 '+(c.figcap||'隊形／位置示意圖')+'・呢張圖只作隊形／位置示意，動作角度與手勢請照文字要領同《步操手冊》由領袖示範</figcaption></figure>';
 };
 
-/* 逐步圖解（照《步操手冊》分部動作；圖已轉 AVIF）；冇呢個 key 就乜都唔出 */
+/* 逐步圖解：key 可以係全 key（'drill.turns'／'cer.formup'）或舊有 cer.* 簡寫；冇就乜都唔出 */
 App.cerDgm = function(k, cap){
-  var dk = (k && typeof DIAGRAMS!=='undefined' && DIAGRAMS.cer) ? DIAGRAMS.cer[k] : '';
-  if(!dk) return '';
-  return '<details class="dgm-fold"><summary>📐 分部動作圖解（'+(cap||k)+'）</summary>'
-    + '<figure class="dgm-fig"><div class="dgm-wrap">'+dk+'</div><figcaption>📐 '+(cap||'分部動作圖解')
-    + '・呢啲圖只作隊形／位置示意；動作角度同手勢請照文字要領＋《步操手冊》由領袖示範</figcaption></figure></details>';
+  var html = '';
+  if(k && typeof IMG!=='undefined' && IMG.map[k]) html = IMG.html(k);
+  else if(k && typeof DIAGRAMS!=='undefined' && DIAGRAMS.cer && DIAGRAMS.cer[k]) html = DIAGRAMS.cer[k];
+  if(!html) return '';
+  return '<details class="dgm-fold" open><summary>📐 圖解（'+(cap||k)+'）</summary>'
+    + '<figure class="dgm-fig"><div class="dgm-wrap">'+html+'</div><figcaption>📐 '+(cap||'圖解')
+    + '・數字照《步操手冊》／《隊列和升掛國旗及區旗指引》，現場以口令同示範為準</figcaption></figure></details>';
 };
 
 App.printSec = function(el){
@@ -428,7 +430,7 @@ App.buildSearchIndex = function(){
       text:('儀式 '+c.n+' 升旗 宣誓 步操 敬禮 隊列 點名 降旗 開始 結束 開禮 禮成 '+ (c.steps||[]).map(function(s){return s.h+' '+s.d;}).join(' ')).toLowerCase()});
   });
   idx.push({type:'制服', title:'制服佩戴（陸／海／空小分頁）＋自查清單', link:'#uniform', desc:'', text:'制服 領巾 徽章 佩戴 恤衫 褲裙 帽 皮帶 襪 鞋 儀容 海深資 空深資 陸深資 棗紅 軟帽 白頂帽 深資童軍'});
-  idx.push({type:'制服', title:'🧣 領巾・巾圈・領帶（4 色）・皮帶皮鞋襪', link:'#uniform/acc', desc:'按手冊 3.4–3.6', text:'領巾 巾圈 領帶 顏色巾圈 童軍巾圈 小隊活動巾圈 基維爾巾圈 基維爾領巾 木章 皮帶 皮鞋 短襪 襪褲 捲巾 3.5cm 12至15cm windsor 棗紅 深綠 黑 深藍 配件 對照'});
+  idx.push({type:'制服', title:'🧣 領巾・巾圈・領帶（3 色）・皮帶皮鞋襪', link:'#uniform/acc', desc:'按手冊 3.4–3.6', text:'領巾 旅巾 特別活動領巾 童軍巾圈 領帶 棗紅 黑 深藍 皮帶 皮鞋 短襪 襪褲 捲巾 3.5cm 12至15cm windsor 配件'});
   idx.push({type:'制服', title:'🎖️ 徽章佩戴位置圖（胸袋上下層＋衫袖＋肩章）', link:'#uniform/badge', desc:'附位置圖', text:'徽章 佩戴 位置 圖 胸袋 袋蓋 3cm 肩章 金帶 旅章 區章 地域章 香港章 服務年星 進度性獎章 會員章 圖解'});
   idx.push({type:'手冊', title:'誓詞規律銘言＋執委會制度＋報班', link:'#book', desc:'', text:'誓詞 規律 銘言 準備 報班 訓練班 考章 執委會'});
   idx.push({type:'手冊', title:'執委會制度＋執委職責＋會議記錄表', link:'#book/exec', desc:'已併入手冊', text:'執委會 執委 制度 會議記錄 主席 秘書 司庫 自務自治'});
@@ -570,6 +572,14 @@ App.renderMeeting = function(tid){
           if(!usedFig['dgm:'+dgmFullKey] && typeof IMG!=='undefined' && IMG.map[dgmFullKey]){ usedFig['dgm:'+dgmFullKey] = 1;
             H += App.dgmFigure(dgmFullKey, (typeof IMG!=='undefined'&&IMG.alt?IMG.alt(dgmFullKey):'平面圖解'));
           }
+        }
+        /* v54：教材段可以手動指定多張圖解（b.dgms），照順序逐張出（先睇圖再講） */
+        if(b.dgms && b.dgms.length){
+          b.dgms.forEach(function(kk){
+            var fk = kk.indexOf('.') >= 0 ? kk : 'top.'+kk;
+            if(!usedFig['dgm:'+fk] && typeof IMG!=='undefined' && IMG.map[fk]){ usedFig['dgm:'+fk] = 1;
+              H += App.dgmFigure(fk, IMG.alt(fk)); }
+          });
         }
         if(b.points) H += '<h5>📌 要點</h5><ul class="bullet tight">'+b.points.map(function(pt){
           return '<li><b>'+pt.t+'</b>'+App.teachD(pt.d)+'</li>';
@@ -911,11 +921,7 @@ App.pages.search = function(sub){
 App.pages.plan = function(){
   var wrap = App.h('div','page plan-page');
   wrap.appendChild(App.h('h1',null,'📅 集會目錄'));
-  var guide = App.h('div','role-guide');
-  guide.innerHTML = '<div><span class="role-ic">🧭</span><p><b>第一次帶集會</b><br>先揀一場跟程序表做；儀式／制服／手冊係必修知識。</p></div>'+
-    '<div><span class="role-ic">⚡</span><p><b>熟手領袖搵料</b><br>心中有想法，直接去下方「素材庫／活動／技能／獎章／AYP」攞料。</p></div>';
-  wrap.appendChild(guide);
-  wrap.appendChild(App.h('p','lede','新領袖：由 c01 開始，一場跟一場。每場入去有「今日你點帶」＋時間表＋物資＋教材。內容跟《深資童軍訓練綱要》會員章→肩章，唔係抄套包功課。'));
+  wrap.appendChild(App.h('p','lede','新領袖：由 c01 開始，一場跟一場。每場入去有「今日你點帶」＋時間表＋物資＋教材。內容跟《深資童軍訓練綱要》會員章→肩章。'));
   var how = App.h('div','card teach-card');
   how.innerHTML = '<h3>第一次帶集會：跟呢 5 步</h3><ol class="steps">'+
     '<li><b>開會前</b>：開嗰場「執袋＋通知」，袋齊物資；自己讀一次「照住講」。</li>'+
@@ -1017,14 +1023,19 @@ App.pages.ceremony = function(sub){
     }
   }
 
-  wrap.appendChild(App.h('p','lede','新領袖只需要三樣：<b>FALL IN 集隊</b>、<b>宣誓</b>、<b>立正／稍息／三指敬禮</b>。深資唔設小隊、唔設團呼。齊步、旗操、分列式去訓練班，唔抄成本《步操手冊》。'));
+  wrap.appendChild(App.h('p','lede','新領袖只需要三樣：<b>FALL IN 集隊</b>、<b>宣誓</b>、<b>立正／稍息／三指敬禮</b>。深資唔設小隊、唔設團呼。齊步、旗操、分列式屬訓練班範圍。'));
   var ref = App.h('div','callout');
-  ref.innerHTML = '📚 <b>本頁內容全部照呢啲官方檔抄錄／整理（唔自創）：</b><ul class="bullet" style="margin:6px 0 0 18px;">' +
+  ref.innerHTML = '📚 <b>本頁內容出處：</b><ul class="bullet" style="margin:6px 0 0 18px;">' +
     CEREMONY.source.refs.map(function(r){return '<li>'+r+'</li>';}).join('') +
     '<li><a href="https://www.scout.org.hk/uploads/tc/circulars/16450/guidelines-of-chinese-foot-drill-and-national-flag-and-regional-flag-raising.pdf" target="_blank" rel="noopener">《隊列和升掛國旗及區旗指引》（2024 年 6 月版本）PDF——動作要領原文喺呢度</a></li>' +
     '<li><a href="https://drive.google.com/file/d/1F8aZSr_WzRbJCLy7l41iDO2tEUxpKCvE/view?usp=drive_link" target="_blank" rel="noopener">《深資童軍訓練綱要》第十一版 PDF（2026-08-15 生效）</a></li>' +
     '</ul><p class="mut">'+CEREMONY.source.note+'</p>';
   wrap.appendChild(ref);
+  /* v54：步操／隊列圖解以 AVIF 直接內置（照《步操手冊》第二至四、六章＋2024 指引數字重繪），唔再用外部分頁連結 */
+  var dm = App.h('p','mut');
+  dm.style.margin='4px 0 10px';
+  dm.innerHTML='🪖 本頁每一步嘅隊形／動作圖解已用 AVIF 直接內置，照《步操手冊》（2003 年 7 月第二版）同《隊列和升掛國旗及區旗指引》(2024) 嘅數字重繪。';
+  wrap.appendChild(dm);
   var pg = App.sec('⏱ 建議 90 分鐘節奏（跟綱要教到為準，時間可調）', {id:'cer-program'});
   pg._body.innerHTML = '<div class="card"><table class="meeting-table"><thead><tr><th width="8%">#</th><th width="16%">環節</th><th width="12%">時間</th><th>內容</th></tr></thead><tbody>'+
     CEREMONY.program.rows.map(function(r){return '<tr><td>'+r[0]+'</td><td><b>'+r[1]+'</b></td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';}).join('')+
@@ -1129,21 +1140,19 @@ App.pages.uniform = function(sub){
   }
 
   if(cur==='acc'){
-    var NW = UNIFORM.neckwear, KW = UNIFORM.kilwell, BS = UNIFORM.beltSocks;
+    var NW = UNIFORM.neckwear, BS = UNIFORM.beltSocks;
       wrap.appendChild(App.h('p','lede','領巾・巾圈・領帶：按《儀容與制服手冊》3.4–3.6。宣誓後才可佩戴；深資童軍一般集會戴旅巾＋童軍巾圈，正式場合打領帶（陸＝棗紅、海＝黑、空＝深藍）。'));
     wrap.appendChild(App.block('🔑 四條通則',
       '<div class="card"><ul class="bullet">'+NW.rules.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'));
-    wrap.appendChild(App.block('🧣 領巾 4 種（邊個戴）',
+    wrap.appendChild(App.block('🧣 領巾（邊個戴）',
       '<div class="card"><ul class="bullet">'+NW.scarves.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
-    wrap.appendChild(App.block('🔘 巾圈 4 種',
+    wrap.appendChild(App.block('🔘 巾圈',
       '<div class="card"><ul class="bullet">'+NW.rings.map(function(x){return '<li><b>'+x.n+'</b>：'+x.who+'</li>';}).join('')+'</ul>'
       +'<p class="mut">'+NW.ringsOther+'</p></div>'));
-    wrap.appendChild(App.block('🧣 領巾點戴（捲巾 8 步＋規格）',
+    wrap.appendChild(App.block('🧣 領巾點戴（捲巾步驟＋規格）',
       '<div class="card"><ol class="steps">'+NW.wear.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ol></div>'));
-    wrap.appendChild(App.block('👔 領帶 4 色＋佩戴',
+    wrap.appendChild(App.block('👔 領帶（深資陸／海／空）＋佩戴',
       '<div class="card"><ul class="bullet">'+NW.ties.map(function(x){return '<li><b>'+x.n+'</b>：'+x.who+'</li>';}).join('')+'</ul>'+      '<ol class="steps">'+NW.tieWear.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ol></div>'));
-    wrap.appendChild(App.block('🪵 基維爾巾圈・基維爾領巾・木章（成年成員對照）',
-      '<div class="card"><ul class="bullet">'+KW.points.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>'+      '<p class="mut">'+KW.note+'</p>'+      '<ul class="bullet">'+KW.wear.map(function(x){return '<li><b>'+x.t+'</b>：'+x.d+'</li>';}).join('')+'</ul></div>'));
     wrap.appendChild(App.block('👖 皮帶・皮鞋・襪（按第三章原文）',
       '<div class="card"><ul class="bullet">'+BS.items.map(function(x){return '<li><b>'+x.n+'</b>：'+x.d+'</li>';}).join('')+'</ul><p class="mut">'+BS.source+'</p></div>'));
     // 毛衣（3.7）＋附加配件（3.8）
@@ -1538,7 +1547,7 @@ App.filterItems = function(wrap, filt, all, show){
 App.pages.play = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎮 活動（即插即用單項）'));
-  wrap.appendChild(App.h('p','lede','熟手領袖：今日想塞一項服務／探險／執委會練習，喺呢度揀一張跟流程做。'));
+  wrap.appendChild(App.h('p','lede','單項活動：今日想加一項服務／探險／執委會練習，喺呢度揀一張跟流程做。'));
   var cats = ITEMS.cats(ITEMS.activities);
   var filt = App.h('div','filters'); filt.setAttribute('role','tablist');
   [{k:'all',n:'全部'}].concat(cats.map(function(c){return {k:c,n:c};})).forEach(function(b,i){

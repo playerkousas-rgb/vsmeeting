@@ -43,6 +43,14 @@ IMG.map = {
   'map.orient': { f:'img/dia/map-orient.avif', w:720, h:512, alt:'正置地圖兩步圖：①指南針放地圖上轉動地圖直到紅針指住 N 箭 ②正置後圖上方向等於真實地形方向，你喺度標記' },
   'top.compass': { f:'img/dia/dgm-compass.avif', w:720, h:720, alt:'指南針八方位圖：紅針永遠指北，標示東南西北及四個方位角' },
   'top.pack': { f:'img/dia/dgm-pack.avif', w:720, h:847, alt:'背囊分層圖：頂放雨衣小食、貼背放重物、中間放衫、底放睡袋、外掛營柱地墊' },
+  /* ── v54：步操／隊列教學圖解（PIL 程式繪製；數字照 2024 指引＋《步操手冊》）── */
+  'drill.attention': { f:'img/dia/drill-attention.avif', w:720, h:556, alt:'立正圖解：正面（眼望無限遠、兩肩平、中指貼褲縫、腳跟靠攏）＋腳位俯視（兩腳尖分開約60度、每腳同中線成30度）＋側面（上體微向前傾、兩腿挺直）' },
+  'drill.standease': { f:'img/dia/drill-standease.avif', w:720, h:520, alt:'稍息跨立圖解：稍息（左腳順腳尖伸出約全腳三分之二、重心多在右腳）＋跨立（左腳向左跨約一腳之長、左手握右手腕）＋步操手冊稍息（腳跟分開305毫米、右掌疊左掌）' },
+  'drill.turns': { f:'img/dia/drill-turns.avif', w:720, h:470, alt:'原地轉法圖解：向右轉90度以右腳跟為軸、向左轉90度以左腳跟為軸、向後轉180度經右邊轉，俯視腳位同旋轉弧' },
+  'drill.salute': { f:'img/dia/drill-salute.avif', w:720, h:590, alt:'三指敬禮圖解：食指指尖喺右眼對上25毫米、三指伸直併攏拇指壓尾指、側面前臂同指尖成一直線、注目禮轉頭唔超過45度' },
+  'drill.dress': { f:'img/dia/drill-dress.avif', w:720, h:582, alt:'看齊報數圖解：三排橫隊俯視，基準員喺右、前四名通視基準員、第五名起睇右側第三人、報數由右至左、間隔約10厘米、距離約75厘米' },
+  'drill.formation': { f:'img/dia/drill-formation.avif', w:720, h:470, alt:'隊列名詞圖解：橫隊按列排、縱隊按路排、左右翼、行進基準（橫隊以右翼為基準、縱隊以左翼為基準）、間隔同距離' },
+  'drill.march': { f:'img/dia/drill-march.avif', w:720, h:520, alt:'行進立定圖解：齊步行進步幅750毫米腳跟先著地、立定三步分解（再行一步、半步375毫米、後腳靠攏）' },
 };
 IMG.alt = function(key){ var m = IMG.map[key]; return m ? m.alt : (key || '示意圖'); };
 /* 出一張圖（img 標籤）：一律加 dia-img 類＋onerror 文字後備；冇登記就回傳空字串，由呼叫者決定要唔要出後備 */
