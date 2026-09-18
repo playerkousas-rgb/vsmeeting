@@ -1,4 +1,4 @@
-var CACHE = "scout-v53-themes-20260918";
+var CACHE = "scout-v54-drill-20260918";
 var ASSETS = [
   "./", "./index.html", "./manifest.webmanifest", "./css/app.css",
   "./js/data.js", "./js/teach.js", "./js/teach2.js", "./js/interests.js", "./js/ceremony.js", "./js/uniform.js", "./js/dia.js", "./js/ayp.js",
@@ -53,6 +53,13 @@ var ASSETS = [
   "./img/dia/skill-sos.avif",
   "./img/dia/skill-stove.avif",
   "./img/dia/skill-tent.avif",
+  "./img/dia/drill-attention.avif",
+  "./img/dia/drill-standease.avif",
+  "./img/dia/drill-turns.avif",
+  "./img/dia/drill-salute.avif",
+  "./img/dia/drill-dress.avif",
+  "./img/dia/drill-formation.avif",
+  "./img/dia/drill-march.avif",
   "./icons/icon-192.avif", "./icons/icon-192.png", "./icons/icon-512.avif", "./icons/icon-512.png", "./icons/icon-maskable-512.png"
 ];
 var EXTERNAL_PREFIX = "https://";

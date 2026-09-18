@@ -217,9 +217,7 @@ var GAME_FIG = {
   '繩索挑戰':'game-shape',
   '飛毯':'game-tarp',
   '執包比賽':'game-pack',
-  '結繩接力賽':'game-relay-cards',
   '急救情境賽':'game-aid',
-  '定向尋寶':'game-orienteer',
   '沙灘旗':'game-beachflag',
   '運水接力':'game-water',
   '大風吹':'game-chairs'
