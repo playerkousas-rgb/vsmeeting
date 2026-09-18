@@ -1,9 +1,9 @@
 # 深資童軍團集會助手 — Handover Notes（交下一個 Agent 用）
 
-> 最後更新：2026-09-17（v46）
-> 目前 branch：`arena/01a0ae7e-vsmeeting`（**v46**：深資童軍版 — 16 場＋8 套儀式卡＋單項項目庫 18／19＋獎章 34 項＋AYP＋教材列點＋聚會 GAME 3 類（互動工具／遊戲卡／即印素材，工作紙已搬去各教案內）；技能／活動卡唔再以獎章做主軸——唔係人人都要考 Dragon Award；前端零 SVG・文案清走全部自我糾正 meta 字句）
+> 最後更新：2026-09-18（v49）
+> 目前 branch：`arena/01a0b204-vsmeeting`（**v49**：用戶第六輪 6 項投訴——地圖教材「跟住就能教」（c11/c12 拆課＋4 張程式繪製教學圖）＋獎章 tab 畀旅團領袖（團內可考＝會員章＋肩章）＋考章安排改具體四步計劃＋23 張遊戲卡兩屏主持流程＋MINI-GAME 重設（領袖手機主導・投影中性版唔漏答案）＋儀式深資審計）
 >
-> **最新＝§37 v46（技能／活動卡改以「教學／活動」做主軸，唔再以獎章做主軸）**；§36 係 v45（用戶 8 項回饋：清 meta 字句／GAME 去工作紙／簡體字修正／Drive 圖片擷取限制已記錄）；§2.6 係 v43 大修（用家 6 項投訴）＋v44（第二／三輪：誰是臥底主持版・刪 21 點・文案清理）；§2.5 係 v42；以下係 v41 快照（架構仍適用）。
+> **最新＝§41 v49（6 項投訴全數落地：地圖教材重做／獎章定位／考核具體計劃／遊戲兩屏玩法／MINI-GAME 重設／儀式深資審計）**；§40 係 v48（集會分頁 16→5＋國旗官方圖連結＋插圖誤配修正）；§37 係 v46；§36 係 v45；§2.6 係 v43 大修＋v44；§2.5 係 v42；以下係 v41 快照（架構仍適用）。
 >
 > **v41 快照（下面 v19–v40 係歷史記錄）**
 > - **深資童軍版全量重建**：16 場教案（會員章 c01–c06／肩章認識 c07–c09／肩章技能 c10–c16）、7 套儀式卡（無團呼）、深資制服 6 款（官網原圖 link-only）、獎章 20 項（會員章 11＋肩章 7＋獎章路 2，只查不記）、繩結 9 個、地圖 1:20,000、急救 5 種＋復原臥式；v39：底部第 5 格由營火會改做 AYP（概覽＋三級＋五科＋參加，只查不記）；v40：手冊加「AYP 領袖指南」分頁（什麼是AYP＋團員參加＋領袖參與＋成立執行處支部）；v41：頂欄改姊妹 app 直連（圖書館＋AYP＋升團）。
@@ -1007,3 +1007,46 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 - 冇新增圖片檔案；`img/fig/` 維持 856KB（1.2MB 上限內）。
 - `sw.js` CACHE → `scout-v48-tabsimg-20260918`；README.md 4 處同步。
 - `npm test`（smoke＋runtime）248 項全綠。
+
+## 41. v49：用戶第六輪 6 項投訴（2026-09-18：地圖教材／獎章定位／考核計劃／遊戲兩屏／MINI-GAME／儀式深資）
+
+用戶原話（摘錄）：(1) 獎章 tab 定位錯——app 畀旅團領袖睇，唔使介紹金帶點考，應介紹團內可考乜（會員章＋肩章）；(2) 深資童軍獎章＝四個段章，唔使「四條金帶」式冗餘講法；(3) 唔好「請照原文核實／本 app 不自行填補」呢類複製貼上建議，要「我應該如何考核成員」嘅具體計劃；(4) 聚會遊戲完全唔玩到——投影就係投影上去、又點唔到，全世界都睇到答案；(5) 集會儀式要按深資童軍寫；(6) 集會目錄教材接近完全用唔到——純文字連唔識嘅領袖都學唔到，地圖連圖例都全文字。
+
+### 改動 1（投訴 6）：c11/c12 地圖教材重做「跟住就能教」
+新 4 張教學圖（`img/dia/map-*.avif`，PIL 程式繪製、非 AI，入 `IMG.map` 34 張）：① 行山地圖常用圖例表（16 符號）② 1:20,000 樣本行山地圖（四要素①–④＋比例尺實例）③ 等高線四種讀法四格 ④ 正置地圖兩步圖。`TEACH.c11` 拆 5 課（四要素→圖例→比例尺→等高線→方格位置）、`TEACH.c12` 拆 3 課（正置→指南針→術語）；每課「先睇圖→📌 要點→🗣 講稿（照讀）→🛠 示範（照步做）→❓ 抽問→📋 做完要見到」。`App.renderMeeting` 圖解順序改「圖喺要點之前」；示範步開放顯示。檔案：`js/c11-lesson.js`、`js/c12-lesson.js`（TEACH 內容）、`js/dia.js`（map.* 4 key）、`js/app.js`。
+
+### 改動 2（投訴 1＋2）：獎章 tab 重新定位
+`App.pages.badges`（`js/app.js`）：lead 明確畀**旅團領袖**——團內可考＝會員章 12＋肩章（認識 1–9＋技能四類），達標照「手冊→考章安排」考核；**深資童軍獎章＝四個段章**（活動策劃／社會服務／多元技能／戶外探險），完成後經 VSL 提名、區會安排主考簽發；金帶、榮譽童軍獎章屬區會程序。`GOLD_MERGED` skip `g-plan-gold`／`g-service-gold`／`g-outdoor-gold`，代以一張「金帶同榮譽童軍獎章（經區會考核）」參考卡（`data-cat='path'`，講明程序：2 個月諮詢→1 個月計劃書→1 個月報告書→四帶齊→總會批核）。sugTitle 分組：member/shoulder＝「💡 考核要點（點問／點示範）」，其餘＝「📋 考核、簽發與注意」。尾 callout：四段章→申請深資童軍獎章鏈（VSL 提名→區總監推薦→地域總監批核→青少年活動總監確認）。skills 頁 badgeCard 標題同改「💡 團內考核要點」。
+
+### 改動 3（投訴 3）：考章安排＝具體考核計劃
+`INTERESTS.assessPlan`（`js/interests.js`，插入喺 `byKey` block 之後）：`intro`＋`stages[4]`（① 定標準同排期 ② 安排實操＋口試（兩人規則）③ 考核記錄 ④ 頒發同跟進）＋`sheets[3]`（會員章／肩章・認識／肩章・技能考核表，每張 4 欄 meeting-table 可直接印）＋`points`（兩人規則、4.3 肩帶佩戴）。`App.pages.book('apply')` 重寫：四步 sec（照四步做）→ 考核表 sec（print:true）→ 行政鏈 sec（`howToApply.steps` 7 步＋troopNote＋otherGroupsNote）。`js/interests.js` header 改「只供查閱＋以官方頁最新清單為準，出發前同區會確認」；10 處 suggest/req 清晒 hedge（「不自行填補」「請照原文核實」）。
+
+### 改動 4（投訴 4）：23 張遊戲卡兩屏主持流程
+`DATA.games`（`js/data.js`）每項加 `host:[…]`（3–5 步，格式：🖥️ 投影＝規則／題目／模板（唔投答案）／📱 領袖手機＝答案、計時、評分、私人內容／揭曉＝點時先投答案）。特例：營火反思圈＝全程唔投影熄燈；黑夜無聲＝遊戲期間唔投影；壓力與時間管理＝壓力量表私人；問答挑戰賽＝投題目唔投答案、最後 3 分鐘先逐題揭。問答挑戰賽另加 `answers:[4]`（3 固定題：1913 聖若瑟書院首旅 1914 註冊／九龍柯士甸道／貝登堡＋c02 時間線加分題），step 4 內嵌答案改做「答案喺下方答案卡」。
+`App.printPanel('games')`（`js/app.js`）：遊戲卡渲染 `host` 做「🎬 主持流程（兩屏版）」list；`answers` 做 `<details class="host-answers">🔒 答案卡（投影時唔好包含）</details>`；「🖥️ 投講解」改調 **`App.projGameIdx(i)`**（淨投人數／物資／描述／玩法 steps／安全——host 同答案卡唔投影），唔再 `App.projSec` 整卡投影（舊做法會連答案卡投出去）。
+
+### 改動 5（投訴 4）：MINI-GAME 重設——領袖一部手機主導、投影中性版
+設計原則（寫入 `js/minigame.js` header）：投影屏冇觸控，所有掣只喺領袖手機；答案／秘密永遠只喺領袖手機；投影版中性，要揭先由領袖撳掣出嚟。
+- **誰是臥底**：`spyState`（setup/play/result）；setup 加「🎬 主持流程」5 步；host 面板（`details.mg-host`，紅框預設收起）先至有身份詞／普通詞＋「🖨️ 印卡（A4）」（`spyPrintCards` 彈出視窗印普通卡 N-1＋臥底卡 1）；play 期投影＝第 X 輪＋邊個先講（**兩個詞都唔出**），result 先出兩詞。
+- **機密特務**：`agentState.grid` 25 格（紅2＋藍2＋炸彈1＋平民20）＋`turn`（紅／藍）＋`over`。手機＝「🔒 隊長面板」（`agent-secret` 紅框，色卡 `agentGridHtml(grid,true)` 有色框＋每格翻牌掣＋換邊隊＋新盤＋計分）；投影＝`agentProjGrid()`（inline style 5×5，未翻＝灰、翻咗先出紅／藍／黑炸彈／綠平民，第二屏冇 app.css 都啱）。`agentFlip` 撞炸彈→`over=true`（in-UI banner，唔再 `alert`）。
+- **骰子**：`diceState` 加 `secret`＋`projLocked`。🔒 秘密擲＝擲完結果淨係手機（領袖核對），投影一直「🔒 秘密擲」，領袖撳「️ 投出結果」先出骰面（可「再鎖」）；公開擲保留大話骰遮擋。
+- **轉盤**：加「🎬 主持流程」（任務先唔投→投空盤→即場抽人轉→轉完先投結果）。
+- `App.printPanel('tools')` 加「🖥️ 兩屏玩法」callout（投影冇觸控、掣手機、答案類只喺手機）。
+- `js/projector.js` 第二屏 `<style>` 補 `.pj-big/.pj-huge/.pj-note/.pj-score/.pj-clock/.pj-group/.pj-turn`（舊第二屏呢啲 class 冇樣式）；第二屏一直 `button{display:none}`＝純顯示。
+- CSS：`css/app.css` 尾加 mg-*/spy-*/agent-*/ag-cell 等手機版樣式。
+
+### 改動 6（投訴 5）：儀式深資審計
+逐卡審 8 張儀式卡（open/close/footdrill/flag/oath/salute/fallin/purpose）：全部深資版——全團集隊（無小隊／無小隊長，1970 起執委會制）、主席發口令領袖監禮、無團呼／齊讀口號、散會自行離開（無「等家長接」）、進階步操明確標明屬訓練班範圍（連 2024《隊列和升掛國旗及區旗指引》）。`js/ceremony.js` 冇「幼童軍／小隊報告」字樣；smoke＋runtime 守門（`!/小隊長[：:]/`、`!/家長接送|由家長接/`、`/唔設小隊/`）通過。
+
+### 測試（`tests/runtime.mjs` 更新）
+舊 API（`renderSpyUI`／`spyPickPair`／`spyClockText`）換做新設計守門：
+- 誰是臥底：play 期 `projHtml()` 唔包含身份詞／普通詞；result 先包含。
+- 機密特務：25 格；未翻詞全部唔喺投影；`agentFlip(bombIdx)`→`over===true`。
+- 骰子：`secret=true, projLocked=true`→投影「🔒」且冇骰面；unlock 先出。
+- 遊戲卡：23 項全部 `host.length>=3`；問答挑戰賽 `answers.length>=4` 且 steps 唔再含「1913」；`App.projGameIdx`（shim `Projector.html` 攞 body）淨有玩法、冇答案。
+- `MiniGame` 上掛 `spyPrintCards/renderSpy/agentDeal/agentFlip/rollDice/spinWheel` 等（`MiniGame.xxx` 可呼叫）。
+
+### 版本＋測試
+- 改動檔案：`js/data.js`（host×23＋answers）、`js/interests.js`（assessPlan＋hedge 清）、`js/app.js`（badges/book/apply/printPanel/projGameIdx）、`js/minigame.js`（全重設）、`js/projector.js`（第二屏 style）、`css/app.css`（mg 樣式）、`js/c11-lesson.js`、`js/c12-lesson.js`、`js/dia.js`（map.* 4 圖）、`tests/runtime.mjs`、`img/dia/map-*.avif`×4。
+- `sw.js` CACHE → `scout-v49-games-20260918`；README v49 段同步。
+- `npm test`（smoke＋runtime）全綠。

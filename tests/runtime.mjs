@@ -160,16 +160,50 @@ for (const m of DATA.meetings) {
   const tools = App.printPanel('tools');
   ok(['mg-spy-box','mg-agent-box','mg-dice-box','mg-wheel-box'].every(k => tools.innerHTML.includes(k)), '互動工具分頁有 4 個掛載點（唔係只剩標題）');
   ok(!tools.innerHTML.includes('mg-bj-box'), '唔再有 21 點掛載點（零賭注）');
-  ok(typeof sb.MiniGame === 'object' && ['mount','renderSpyUI','renderAgentUI','renderDiceUI','renderWheelUI','spyPrintCards','spyReveal','spyPickPair'].every(k => typeof sb.MiniGame[k] === 'function'), 'minigame.js 載入成功（語法正確）＋4 個 render 函式齊');
+  ok(typeof sb.MiniGame === 'object' && ['mount','projHtml','htmlBlock','spyPrintCards'].every(k => typeof sb.MiniGame[k] === 'function'), 'minigame.js 載入成功（語法正確）＋核心函式齊');
   ok(typeof sb.MiniGame.renderBjUI !== 'function' && typeof sb.MiniGame.bjState === 'undefined', '21 點程式碼已移走');
-  sb.MiniGame.spyPickPair();
-  const st = sb.MiniGame.spyState;
-  ok(!!st.pair.civil && !!st.pair.spy && st.pair.civil !== st.pair.spy, '誰是臥底抽詞：平民詞／臥底詞成對且唔同');
-  ok(sb.MiniGame.spyClockText(180) === '03:00' && sb.MiniGame.spyClockText(65) === '01:05', '誰是臥底發言計時格式（mm:ss）');
-  ok(sb.MiniGame.spyRules.length === 3, '誰是臥底玩法列點（3 條）');
+  /* 誰是臥底：抽詞成對；play 期間投影唔漏身份詞／普通詞，揭曉先至出 */
+  const pair = sb.spyPickWord();
+  ok(!!pair.common && !!pair.spy && pair.common !== pair.spy, '誰是臥底抽詞：普通詞／臥底詞成對且唔同');
+  sb.spyState.words = pair; sb.spyState.phase = 'play';
+  sb.MiniGame.projMode = 'spy';
+  const spyPlayProj = sb.MiniGame.projHtml();
+  ok(!spyPlayProj.includes(pair.common) && !spyPlayProj.includes(pair.spy), '誰是臥底 play 階段：投影唔漏身份詞／普通詞（淨係領袖手機有）');
+  sb.spyState.phase = 'result';
+  const spyResProj = sb.MiniGame.projHtml();
+  ok(spyResProj.includes(pair.spy) && spyResProj.includes(pair.common), '誰是臥底揭曉階段：投影先至出兩個詞');
+  sb.spyState.phase = 'setup';
+  /* 機密特務：25 格；未翻嘅詞唔投影（灰牌）；撞炸彈即結束 */
+  sb.agentDeal();
+  ok(sb.agentState.grid.length === 25, '機密特務：25 詞牌盤（紅2＋藍2＋炸彈1＋平民20）');
+  sb.MiniGame.projMode = 'agent';
+  const hiddenWords = sb.agentState.grid.filter(c => !c.revealed).map(c => c.word);
+  ok(hiddenWords.every(w => !sb.MiniGame.projHtml().includes(w)), '機密特務：未翻牌嘅詞唔喺投影（中性灰牌）');
+  const bombIdx = sb.agentState.grid.findIndex(c => c.type === 'assassin');
+  sb.agentFlip(bombIdx);
+  ok(sb.agentState.over === true, '機密特務：撞炸彈＝遊戲立即結束');
+  /* 骰子：秘密擲——鎖定時投影 🔒 唔見骰面；領袖「投出結果」先至出 */
+  sb.diceState.secret = true; sb.diceState.value = 6; sb.diceState.projLocked = true; sb.diceState.rolling = false; sb.diceState.hidden = false;
+  sb.MiniGame.projMode = 'dice';
+  const diceLocked = sb.MiniGame.projHtml();
+  ok(diceLocked.includes('\ud83d\udd12') && !/\b6\b/.test(diceLocked.replace(/<[^>]*>/g, ' ')), '骰子秘密擲：鎖定時投影係 🔒、睇唔到骰面');
+  sb.diceState.projLocked = false;
+  ok(sb.MiniGame.projHtml().includes('6'), '骰子秘密：領袖「投出結果」後投影先出骰面');
+  /* 遊戲卡：23 個都有「主持流程（兩屏版）」；問答挑戰賽答案收埋入答案卡 */
   const gamesP = App.printPanel('games');
   const gCards = gamesP.querySelectorAll('.game-card');
   ok(gCards.length === sb.DATA.games.length, '集會遊戲卡分頁有 ' + gCards.length + ' 個遊戲（有玩法／物資／安全）');
+  ok(sb.DATA.games.every(g => Array.isArray(g.host) && g.host.length >= 3), '23 個遊戲都有「主持流程（兩屏版）」（≥3 步，標明邊步投影／邊步只喺手機）');
+  const qa = sb.DATA.games.find(g => g.n.indexOf('問答挑戰賽') >= 0);
+  ok(Array.isArray(qa.answers) && qa.answers.length >= 4, '問答挑戰賽有「答案卡」（3 固定題＋加分題時間線）');
+  ok(!qa.steps.join(' ').includes('1913'), '問答挑戰賽玩法步驟唔再內嵌答案（收埋入答案卡）');
+  /* 遊戲卡「🖥️ 投講解」：淨投規則＋玩法，唔含答案卡 */
+  const realProj = sb.Projector;
+  const captured = [];
+  sb.Projector = { html: (t, h) => { captured.push({ t, h }); } };
+  App.projGameIdx(sb.DATA.games.indexOf(qa));
+  sb.Projector = realProj;
+  ok(captured.length === 1 && captured[0].h.includes('玩法') && !captured[0].h.includes('1913') && !captured[0].h.includes('聖若瑟書院'), '遊戲卡「投講解」：淨投規則＋玩法，答案唔投影');
   const sheet = App.printPanel('sheet');
   const html = String(sheet.innerHTML);
   const aid = (html.match(/aid-wrap/g) || []).length;

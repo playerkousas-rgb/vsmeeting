@@ -37,6 +37,10 @@ IMG.map = {
   'skillx.sos': { f:'img/dia/skill-sos.avif', w:720, h:233, alt:'SOS 哨音節拍圖：三短三長三短嘅節奏' },
   'skillx.stove': { f:'img/dia/skill-stove.avif', w:720, h:296, alt:'爐具安全示意圖：氣爐離帳篷 3 米、保持通風同安全圈位置' },
   'skillx.tent': { f:'img/dia/skill-tent.avif', w:720, h:296, alt:'搭帳篷六步側視圖：清地、鋪地布、穿柱、起篷、45 度拉營繩、打營釘' },
+  'map.legend': { f:'img/dia/map-legend.avif', w:720, h:884, alt:'行山地圖常用圖例表：主要道路、全天候公路、行山徑、小徑、河流、水塘、樹林、等高線、高程點、山峰、建築物、橋、營地、觀景台、國家公園界線、電纜線共 16 個符號同名稱' },
+  'map.sample': { f:'img/dia/map-sample.avif', w:720, h:700, alt:'1:20,000 樣本行山地圖：格網參考、等高線山丘加山峰高程 198、溪流、公路過橋、行山徑、營地、樹林、圖例欄、比例尺 0-200 米、指北針，四要素標註 ①圖名 ②比例尺 ③圖例 ④指北針' },
+  'map.contour': { f:'img/dia/map-contour.avif', w:720, h:452, alt:'等高線四種讀法四格圖：線密＝坡陡、閉合圈＝山頂、V 尖朝上（上游）＝山谷有溪流、兩峰之間低谷＝鞍部（坳口）' },
+  'map.orient': { f:'img/dia/map-orient.avif', w:720, h:512, alt:'正置地圖兩步圖：①指南針放地圖上轉動地圖直到紅針指住 N 箭 ②正置後圖上方向等於真實地形方向，你喺度標記' },
   'top.compass': { f:'img/dia/dgm-compass.avif', w:720, h:720, alt:'指南針八方位圖：紅針永遠指北，標示東南西北及四個方位角' },
   'top.pack': { f:'img/dia/dgm-pack.avif', w:720, h:847, alt:'背囊分層圖：頂放雨衣小食、貼背放重物、中間放衫、底放睡袋、外掛營柱地墊' },
 };
