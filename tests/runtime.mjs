@@ -68,7 +68,7 @@ const App = sb.App, DATA = sb.DATA;
 ok(!App.__err, 'app.js 載入冇 throw');
 
 /* 全部頁面 render 一次 */
-const pages = ['plan', 'play', 'skills', 'uniform', 'ceremony', 'book', 'badges', 'print', 'ayp', 'search'];
+const pages = ['plan', 'play', 'skills', 'uniform', 'ceremony', 'book', 'badges', 'print', 'ayp', 'search', 'tvagent'];
 for (const p of pages) {
   if (typeof App.pages[p] !== 'function') { ok(false, 'pages.' + p + ' 唔存在'); continue; }
   try { const node = App.pages[p](); ok(!!node, 'pages.' + p + ' render'); }
@@ -182,6 +182,24 @@ for (const m of DATA.meetings) {
   const bombIdx = sb.agentState.grid.findIndex(c => c.type === 'assassin');
   sb.agentFlip(bombIdx);
   ok(sb.agentState.over === true, '機密特務：撞炸彈＝遊戲立即結束');
+  /* 機密特務：盤面代號（兩部手機方案）——round-trip＋TV 屏重組同一盤 */
+  sb.agentDeal();
+  const code1 = sb.agentCodeEncode(sb.agentState.grid);
+  ok(typeof code1 === 'string' && code1.length === 5, '機密特務：盤面代號＝5 字');
+  const types1 = sb.agentCodeDecode(code1);
+  ok(sb.agentState.grid.every((c, i) => types1[i] === c.type), '機密特務：代號 round-trip（重組到完全同一盤）');
+  ok(sb.agentCodeDecode('0IO11') === null && sb.agentCodeDecode('AB') === null, '機密特務：壞代號被拒');
+  sb.tvAgentSet(code1);
+  ok(sb.tvAgentState.types && sb.tvAgentState.types.length === 25 && sb.tvAgentState.types.every((t, i) => t === sb.agentState.grid[i].type), 'TV 屏：輸入代號＝重組同一盤');
+  let threw = false; try { sb.renderTvAgent(); } catch (e) { threw = true; }
+  ok(!threw, 'TV 屏：render 唔 throw（無 box 就 quietly return）');
+  const tvHtml = sb.tvAgentState.types.map((t, i) => t === 'assassin' ? i : -1).find(x => x >= 0);
+  sb.tvAgentFlip(tvHtml);
+  ok(sb.tvAgentState.over === true, 'TV 屏：撳炸彈格＝遊戲結束（中性盤只出💣，唔出色）');
+  sb.tvAgentReset();
+  /* 考章安排：官方簽發鏈＋考核方式（報告／分享／實操／紀錄） */
+  ok(sb.INTERESTS.assessPlan.methods.length >= 4, '考章安排：考核方式 4 類（講／做／經歷／核）');
+  ok(sb.INTERESTS.assessPlan.issuing.length === 2 && sb.INTERESTS.assessPlan.planForm.includes('PT/65'), '考章安排：簽發鏈＋PT/65 計劃表（官方原文）');
   /* 骰子：秘密擲——鎖定時投影 🔒 唔見骰面；領袖「投出結果」先至出 */
   sb.diceState.secret = true; sb.diceState.value = 6; sb.diceState.projLocked = true; sb.diceState.rolling = false; sb.diceState.hidden = false;
   sb.MiniGame.projMode = 'dice';

@@ -36,7 +36,7 @@ App.route = function(){
   var tab = parts[0];
   var sub = null;
   try{ sub = parts[1] ? decodeURIComponent(parts[1]) : null; }catch(e){ sub = parts[1]||null; }
-  var allowed = ['plan','ceremony','uniform','official','book','print','play','skills','badges','ayp','search'];
+  var allowed = ['plan','ceremony','uniform','official','book','print','play','skills','badges','ayp','search','tvagent'];
   if(allowed.indexOf(tab)<0){ tab = 'plan'; sub=null; }
   document.querySelectorAll('#topnav a, #tabbar a').forEach(function(a){
     a.classList.toggle('active', a.getAttribute('data-tab')===tab);
@@ -1025,6 +1025,18 @@ App.ceremonySec = function(c, full){
   return s;
 };
 
+/* 🖥️ TV 屏・機密特務（第二部手機／TV 專用版面：中性盤、冇詞冇色、可安全投屏） */
+App.pages.tvagent = function(){
+  var wrap = App.h('div','page tvagent-page');
+  wrap.appendChild(App.h('h1',null,'🖥️ TV 屏・機密特務'));
+  wrap.appendChild(App.h('p','lede','第二部手機／TV 專用：<b>輸入領袖喊嘅盤面代號（5 字）</b>＝重組同一盤。呢個版面<b>冇詞、冇顏色</b>——可以投屏／mirror，觀衆睇唔到答案。操作：團員喊號碼 → 撳該號碼 → 領袖喊結果 → 撳該隊＋1。'));
+  var box = App.h('div',null,'');
+  box.id = 'tvagent-box';
+  wrap.appendChild(box);
+  try{ renderTvAgent(); }catch(e){}
+  return wrap;
+};
+
 /* 👕 制服（陸／海／空小分頁） */
 App.pages.uniform = function(sub){
   var wrap = App.h('div','page');
@@ -1220,6 +1232,14 @@ App.pages.book = function(sub){
       sChain.add(App.h('p',null,st.d));
     });
     wrap.appendChild(sChain);
+    /* 考核方式（點考） */
+    var sHow = App.sec('🤔 點考：考核方式（照項目性質揀）',{print:false});
+    P.methods.forEach(function(m){
+      sHow.add(App.h('h4',null,m.t+'　<span class="tag">'+m.items+'</span>'));
+      sHow.add(App.h('p',null,m.how));
+    });
+    sHow.add(App.h('div','callout ok-callout','📌 '+P.methodsNote));
+    wrap.appendChild(sHow);
     /* 提名鏈＋計劃表＋記錄 */
     var sIssue = App.sec('📋 簽發鏈＋計劃表（照綱要原文）',{print:true});
     P.issuing.forEach(function(st){

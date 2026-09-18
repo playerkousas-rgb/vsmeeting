@@ -1090,3 +1090,29 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 ### 下輪注意
 - 用戶若提供套包「團集會儀式」段原文或綱要 Ch6 p.64 內容 → 開/閉禮卡可補官方細節（而家只到「由執委會按 Ch6＋團例安排」級別）。
 - 問答挑戰賽固定題 2/3（總部位址/創辦人）係 app 自備補充題（c02 教材＋總會事實），唔係套包原文——如用戶要嚴格只照套包，可再收。
+
+## 43. v51：用戶第八輪——考核點考／機密特務兩裝置／Drive 資料夾（2026-09-18）
+
+用戶三問：① 考核＝「團長如何對成員進行考核，例如報告形式、實操、分享？」② 機密特務「又要投影中性盤、又要手機睇答案，點同時做？」③ Drive working 資料夾（1MXnolz8wKE2Yqde2EKPnRgcgVTaBEA_J）「有冇圖可以加分入去（AVIF）」。
+
+### 改動 1：考核＝「點考」（`js/interests.js`＋`js/app.js` book/apply）
+`INTERESTS.assessPlan.methods[4]`＋`methodsNote`：報告／分享（講）＝理解類（官方形式＝套包問答挑戰賽）／現場實操（做）＝技能類（會員章第 10 項官方用字「示範」）／實際活動＋報告（經歷）＝服務・遠足・金帶（活動內考＋報告提問，金帶計劃書＋報告書官方）／紀錄・文件核對（核）＝出席 6 次＋保護兒童。methodsNote 講明官方訂明主考人權限同完成要求、方式由主考人按項目安排（綱要「為主考人提供清晰及適當嘅指示」原文）。app.js apply 頁加「🤔 點考：考核方式（照項目性質揀）」sec。
+
+### 改動 2：機密特務兩裝置方案（`js/minigame.js`＋`js/app.js`＋`css/app.css`）
+核心：**一部機同時 mirror 去 TV 就會見到你部機顯示緊嘅色卡——答案同投影必須分兩部機**。
+- **盤面代號**：`agentCodeEncode(grid)`→5 字（base32，字母 `ABCDEFGHJKLMNPRSTUVWXYZ`＋數字 `23456789`，無 0/1/I/O）；編碼＝bomb 位(25)×紅對 C(25,2)=300×藍對 C(23,2)=253，max 1,897,499 < 2^21；`agentCodeDecode` 反編；round-trip 2000 次全過（runtime 守門 1 次＋壞代號拒）。
+- **TV 屏版面**：新路由 `#tvagent`（`allowed[]` 加 `tvagent`；`App.pages.tvagent`）；`tvAgentState{types,picked,red,blue,over,msg}`＋`tvAgentSet/Flip/Score/Reset`＋`renderTvAgent`：輸入 5 字代號→重組同一盤（中性：未翻＝？、收咗＝✓、炸彈格＝💣＋over banner，**冇詞冇色**）；格位編號 1–25 同隊長盤一致；紅藍計分＋/−（領袖喊出、負責團員撳）。
+- **隊長面板**：新盤後出「📡 盤面代號：XXXXX」行（monospace 大字）；格位加 1–25 編號（`.ag-num` 角標）；投影格（agentProjGrid）同步加編號＋position:relative。
+- **主持流程改寫**（agent howto）：明確「投影永遠中性盤」「隊長預設＝領袖／私下畀團員睇色卡」「兩部機做法 A. 電腦＋投影機（第二視窗/🪟）B. 兩部手機（A 接 TV 開 #tvagent 輸代號；B 領袖翻牌喊結果，團員 A 撳號＋計分）」＋完整流程＋炸彈即止。
+- MiniGame 掛 `agentCodeEncode/Decode`＋`tvAgentSet/Flip/Score/Reset/renderTvAgent`。
+- CSS：`.ag-cell{position:relative}`、`.ag-num`、`.agent-code`、`.mg-proj-link`、`.tvagent-*`。
+
+### 改動 3：Drive「working」資料夾（fetch_page 審視）
+內有：幼童軍訓練綱要 20260809（1-30/31-60/61-85/全）＋P 系列通告（p007-23=P07/2023、p014-16=P14/2016、p031-20=P31/2020、**p037-19=P37/2019 幼童軍徽章評核**——已讀，係幼童軍範圍）＋制服手冊 5 分割（151-180/181-210/211-224 新）＋步操手冊 8 分割（已有連結）＋《森林王子》Handout＋TeachingAids（《香港童軍》158–170 期故事，可作集會故事）＋港島第 82 旅深資團 30 週年旅慶通知（已讀）＋證書 docx（幼童軍／先修章）＋ghmeeting_mascot.png＋scout_app_icon_grid.jpg＋4 個 HTML（brand/index）。
+- **新增儀式卡「特別日子：旅慶／週年（實際例子）」**（`k:'special'`）：照 82 旅 30 週年真實深資團通知——執委會主席發通知知會旅長＋VSL、覆誓＋頒發年度獎項、宿營/年度回顧/營火會/團體遊戲/夜行、$280 含 $70 深資津貼、未滿 18 家長同意書；CEREMONY.source.refs 加該通知。
+- **圖片限制**：sandbox 無 Google HTTPS（curl exit 35；lh3 縮圖亦 35；fetch_page 圖片 URL=500）——**無法下載 Drive 圖片檔**，PDF 內圖片只返 OCR 文字。→ 已告知用戶：mascot/icon 想加入請直接喺對話附圖（轉 AVIF 收）。
+
+### 版本＋測試
+- 改動檔案：`js/minigame.js`、`js/app.js`、`js/interests.js`、`js/ceremony.js`、`css/app.css`、`tests/runtime.mjs`、`sw.js`、`README.md`、`HANDOVER.md`。
+- `sw.js` CACHE → `scout-v51-tvboard-20260918`。
+- `npm test`（smoke＋runtime）全綠。
