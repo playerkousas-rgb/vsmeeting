@@ -184,10 +184,17 @@ for (const m of DATA.meetings) {
   ok(sb.agentState.over === true, '機密特務：撞炸彈＝遊戲立即結束');
   /* 機密特務：盤面代號（兩部手機方案）——round-trip＋TV 屏重組同一盤 */
   sb.agentDeal();
-  const code1 = sb.agentCodeEncode(sb.agentState.grid);
-  ok(typeof code1 === 'string' && code1.length === 5, '機密特務：盤面代號＝5 字');
+  const g25 = sb.agentState.grid;
+  ok(g25.every(c => typeof c.word === 'string' && c.word.length > 0), '機密特務：25 格詞全數有效（無 undefined／重複）');
+  ok(new Set(g25.map(c => c.word)).size === 25, '機密特務：25 詞全唔重複（分類字庫 47 詞）');
+  const hint2 = sb.agentState.hint;
+  const grp = sb.AGENT_WORD_GROUPS;
+  const r2 = g25.filter(c => c.type === 'red'), b2 = g25.filter(c => c.type === 'blue');
+  ok(grp[hint2.redCat].includes(r2[0].word) && grp[hint2.redCat].includes(r2[1].word) && grp[hint2.blueCat].includes(b2[0].word) && grp[hint2.blueCat].includes(b2[1].word) && hint2.redCat !== hint2.blueCat, '機密特務：主題配對（紅/藍各自同类、類別唔同——「主題，2 塊」提示一定做得到）');
+  const code1 = sb.agentCodeEncode(g25);
+  ok(typeof code1 === 'string' && code1.length === 5, '機密特務：盤面代號＝5 字（32 字母表）');
   const types1 = sb.agentCodeDecode(code1);
-  ok(sb.agentState.grid.every((c, i) => types1[i] === c.type), '機密特務：代號 round-trip（重組到完全同一盤）');
+  ok(g25.every((c, i) => types1[i] === c.type), '機密特務：代號 round-trip（隨機布局重組到完全同一盤）');
   ok(sb.agentCodeDecode('0IO11') === null && sb.agentCodeDecode('AB') === null, '機密特務：壞代號被拒');
   sb.tvAgentSet(code1);
   ok(sb.tvAgentState.types && sb.tvAgentState.types.length === 25 && sb.tvAgentState.types.every((t, i) => t === sb.agentState.grid[i].type), 'TV 屏：輸入代號＝重組同一盤');
