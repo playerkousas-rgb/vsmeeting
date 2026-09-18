@@ -1213,28 +1213,25 @@ App.pages.book = function(sub){
   if(cur==='apply'){
     var P = INTERESTS.assessPlan;
     wrap.appendChild(App.h('p','lede',P.intro));
-    /* 四步具體計劃 */
-    var sPlan = App.sec('🎖️ 如何考核成員（照四步做）',{print:false});
+    /* 考核權責（四級，照綱要原文） */
+    var sChain = App.sec('🎖️ 考核與簽發（照綱要原文）',{print:false});
     P.stages.forEach(function(st){
-      sPlan.add(App.h('h4',null,st.t));
-      var ol = App.h('ol','steps tight');
-      ol.innerHTML = st.steps.map(function(x){ return '<li>'+x+'</li>'; }).join('');
-      sPlan.add(ol);
+      sChain.add(App.h('h4',null,st.t));
+      sChain.add(App.h('p',null,st.d));
     });
-    wrap.appendChild(sPlan);
-    /* 考核表（可列印） */
-    var sSheet = App.sec('🖨️ 考核表＋考核要點（可列印）',{print:true});
-    P.sheets.forEach(function(sh){
-      sSheet.add(App.h('h4',null,sh.t));
-      var tbl = App.h('table','meeting-table');
-      tbl.innerHTML = '<tbody>'+sh.rows.map(function(r){
-        return '<tr><th width="150">'+r[0]+'</th><td>'+r[1]+'</td>'+(r.length>2?'<th width="130">'+r[2]+'</th><td>'+r[3]+'</td>':'')+'</tr>';
-      }).join('')+'</tbody>';
-      sSheet.add(tbl);
+    wrap.appendChild(sChain);
+    /* 提名鏈＋計劃表＋記錄 */
+    var sIssue = App.sec('📋 簽發鏈＋計劃表（照綱要原文）',{print:true});
+    P.issuing.forEach(function(st){
+      sIssue.add(App.h('h4',null,st.t));
+      sIssue.add(App.h('p',null,st.d));
     });
-    wrap.appendChild(sSheet);
-    /* 行政同簽發鏈（表格・版本・補考） */
-    var sAdmin = App.sec('📝 行政同簽發鏈（版本・表格・佩戴・補考）',{print:true});
+    sIssue.add(App.h('h4',null,'📄 計劃表（PT/65）'));
+    sIssue.add(App.h('p',null,P.planForm));
+    sIssue.add(App.h('div','callout ok-callout','️ '+P.record+'　<a href="'+EXTERNAL.vsbadge+'" target="_blank" rel="noopener">進度追蹤 →</a>'));
+    wrap.appendChild(sIssue);
+    /* 行政：表格／佩戴／補考 */
+    var sAdmin = App.sec('📝 行政（版本・表格・佩戴・補考）',{print:true});
     var ol3 = App.h('ol','steps');
     ol3.innerHTML = INTERESTS.howToApply.steps.map(function(s){
       return '<li><b>'+s.t+'</b>：'+s.d+'</li>';
@@ -1539,11 +1536,11 @@ App.badgeFig = function(k){
     + '<figcaption>'+b.cap+'</figcaption></figure>';
 };
 
-/* 🎖️ 獎章（面向旅團領袖：團內可考＝會員章＋肩章；只查不記） */
+/* 🎖️ 獎章（團內可考＝會員章＋肩章；段章／金帶／榮譽照考核鏈；只查不記） */
 App.pages.badges = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎖️ 獎章'));
-  wrap.appendChild(App.h('p','lede','呢頁畀<b>旅團領袖</b>用：你哋團內可以安排考核嘅＝<b>會員章（12 項）＋肩章（認識 1–9＋技能四類）</b>。成員達標就照 <a href="#book/apply">📖 手冊 → 考章安排</a>（四步具體計劃＋可列印考核表）考核。<br><b>深資童軍獎章＝四個段章</b>（活動策劃／社會服務／多元技能／戶外探險）：完成後經 VSL 提名，區會安排主考及簽發；金帶、榮譽童軍獎章一樣屬區會程序。以下卡片係查要求用，唔係考核安排。'));
+  wrap.appendChild(App.h('p','lede','深資童軍進度性獎章要求（第十一版，2026-08-15 生效）。團內考核：<b>會員章＋肩章</b>（考核與簽發照 <a href="#book/apply">📖 手冊 → 考章安排</a>，進度記錄用頂欄「🎖️ 深資童軍進度追蹤」）。<b>深資童軍獎章＝四個段章</b>（活動策劃／社會服務／多元技能／戶外探險）：完成後由團長提名，經區總監推薦→地域總監批核→青少年活動總監確認簽發；金帶、榮譽童軍獎章照同一考核鏈（見「考章安排」）。以下卡片＝各獎章官方要求查閱。'));
   var filt = App.h('div','filters');
   var btns = [{k:'all',n:'全部'}].concat(INTERESTS.categories.map(function(c){return {k:c.k,n:c.ic+' '+c.n};}));
   btns.forEach(function(b,i){
