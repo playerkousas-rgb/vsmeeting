@@ -207,6 +207,7 @@ function agentDeal(){
   agentState.turn = 'red';
   agentState.over = false;
   agentState.winner = '';
+  if(agentSync.mode==='host') agentSyncBroadcast();
   renderAgent();
 }
 /* ══ 盤面代號：將 25 格布局（1 炸彈＋2 紅＋2 藍）編碼做 5 個字，
@@ -261,6 +262,7 @@ function agentFlip(i){
   if(c.type==='assassin'){
     agentState.over = true;
     agentState.winner = '';
+    if(agentSync.mode==='host') agentSyncBroadcast();
     renderAgent();
     return;
   }
@@ -271,21 +273,32 @@ function agentFlip(i){
   var needBlue = agentState.grid.filter(function(g){return g.type==='blue';}).length;
   if(red>=needRed){ agentState.over = true; agentState.winner = 'red'; }
   else if(blue>=needBlue){ agentState.over = true; agentState.winner = 'blue'; }
+  if(agentSync.mode==='host') agentSyncBroadcast();
   renderAgent();
 }
-function agentTurn(){ agentState.turn = agentState.turn==='red'?'blue':'red'; renderAgent(); }
+function agentTurn(){ agentState.turn = agentState.turn==='red'?'blue':'red'; if(agentSync.mode==='host') agentSyncBroadcast(); renderAgent(); }
 function renderAgent(){
   var box = document.getElementById('mg-agent-box');
   if(!box) return;
   var H = '';
   if(!agentState.grid.length){
-    H += '<div class="agent-howto"><b>🎬 主持流程（投影邊個版面？答案點睇？）</b><ol class="steps tight"><li><b>投影永遠係「中性盤」</b>——未翻＝灰牌、冇顏色、冇詞。色卡（邊塊係紅／藍／炸彈）<b>淨係呢部機有，絕對唔好投</b>——投咗＝全場睇到答案。</li><li><b>隊長＝邊個</b>：預設＝領袖自己（睇「 隊長答案卡」）；想團員做隊長，就領袖喺呢部機<b>私下</b>畀佢睇色卡。隊長一定要知道布局（靠位置＋顏色出詞），觀衆永遠淨係睇中性盤。</li><li><b>「又要投影中性盤、又要睇答案」點同時做？答案同投影要分兩部機</b>——一部機影咗去 TV，TV 就會見到你部機顯示緊嘅色卡。兩種做法：<br>A. <b>電腦＋投影機（最好）</b>：撳「️ 投影」開第二視窗拖去投影機（或用「🪟 開第二螢幕」）——投影機＝中性盤，電腦畫面＝隊長答案卡＋翻牌掣。<br>B. <b>兩部手機</b>：手機 A 接 TV，開「<a href="#tvagent">🖥️ TV 屏・機密特務</a>」；手機 B＝領袖（呢個版面）。撳「 新盤」後領袖喊出「盤面代號」（5 字），手機 A 輸入代號＝同一盤。其後：團員喊號碼 → 領袖喺手機 B 翻牌（自己見到顏色）＋喊結果（例「13 號，紅＋1」）→ 負責團員喺手機 A 撳 13 號＋紅＋1。</li><li><b>流程</b>：新盤 → 隊長喊「主題＋數量」（例：「食物，3 塊」）→ 團員逐個喊號碼 → 領袖翻牌（TV 同步）→ 收晒自己色＝嗰隊贏 → 換邊隊。</li><li>撞炸彈＝即時結束（TV 屏自動出「遊戲結束」）。</li></ol></div>';
+    H += '<div class="agent-howto"><b>🎬 主持流程（投影邊個版面？答案點睇？）</b><ol class="steps tight"><li><b>投影永遠係「中性盤」</b>——未翻＝灰牌、冇顏色、冇詞。色卡（邊塊係紅／藍／炸彈）<b>淨係領袖部機有，絕對唔好投</b>——投咗＝全場睇到答案。</li><li><b>隊長＝邊個</b>：預設＝領袖自己（睇「 隊長答案卡」）；想團員做隊長，就領袖喺呢部機<b>私下</b>畀佢睇色卡。隊長一定要知道布局（靠位置＋顏色出詞），觀衆永遠淨係睇中性盤。</li><li><b>「又要投影、又要睇答案」點同時做？答案同投影分兩部機＋掃 QR 同步</b>（一部機影咗去 TV 就會見到色卡）：<br>A. <b>電腦＋投影機</b>：電腦開呢個版面＝隊長答案卡＋翻牌掣；投影機用「🖥️ 投影」第二視窗（中性盤）。<br>B. <b>兩部手機（推薦）</b>：領袖部機（呢度）新盤後撳「<b>📡 配對 TV</b>」→ 出 QR；TV 手機<b>掃 QR 自動連線</b>（或開「<a href="#tvagent">🖥️ TV 屏</a>」輸入代號）→ 成盤<b>雙向即時同步</b>：邊部機翻牌兩邊都翻。無網絡先至用「手動設盤」（单向、離線）。</li><li><b>流程</b>：新盤 → 隊長喊「主題＋數量」（例：「食物，3 塊」）→ 團員逐個喊號碼 → 領袖部機翻牌（自己見到顏色）／或 TV 屏撳號碼（同步返嚟）→ 收晒自己色＝嗰隊贏 → 換邊隊。</li><li>撞炸彈＝即時結束（兩邊同步出結果）。</li></ol></div>';
     H += '<div class="mg-btns"><button class="mg-primary" onclick="agentDeal()">🎲 新盤（25 詞）</button><button class="mg-proj" onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影（中性盤：未翻＝灰牌）</button><a class="mg-proj mg-proj-link" href="#tvagent">🖥️ TV 屏（第二部手機）</a></div>';
     box.innerHTML = H; return;
   }
   /* 隊長面板（色卡＝答案，領袖手機專用，唔好投屏） */
   H += '<div class="agent-secret"><div class="agent-secret-head">🔒 隊長答案卡・色卡（淨係呢部手機・絕對唔好投屏）<span class="agent-turn-tag '+(agentState.turn==='red'?'t-red':'t-blue')+'">'+(agentState.turn==='red'?'🔴 紅隊輪到喊提示':'🔵 藍隊輪到喊提示')+'</span></div>';
-  H += '<div class="agent-code">📡 盤面代號：<b>'+agentCodeEncode(agentState.grid)+'</b><small>＝呢盤布局（位置）嘅 5 字密碼。第二部裝置（TV／投影機）開「<a href="#tvagent">🖥️ TV 屏・機密特務</a>」輸入呢 5 個字＝重組同一盤；TV 屏淨係中性盤，冇詞、冇顏色。</small></div>';
+  var _syncCode = agentCodeEncode(agentState.grid);
+  H += '<div class="agent-code">📡 盤面代號：<b>'+_syncCode+'</b>';
+  if(agentSync.mode==='host'){
+    H += agentQrHtml(agentSync.code);
+    H += '<div class="agent-sync-status">'+agentSync.status+'</div>';
+    H += '<button class="mg-sync-btn" onclick="agentSyncStop()">✕ 停止配對</button>';
+  } else {
+    H += '<small>第二部裝置（TV）掃 QR 即時同步；掃唔到就開「<a href="#tvagent">🖥️ TV 屏・機密特務</a>」輸入代號。</small>';
+    H += '<button class="mg-sync-btn" onclick="agentSyncStart()">📡 配對 TV（出 QR）</button>';
+  }
+  H += '</div>';
   H += agentGridHtml(agentState.grid, true);
   H += '<div class="mg-btns">';
   if(agentState.over){
@@ -343,6 +356,92 @@ function agentProjGrid(){
   return H;
 }
 
+/* ══════════ 機密特務・TV 同步（QR 配對＋PeerJS/WebRTC 雙向即時；參考 pocket-play 做法）══════════
+   領袖手機（host）：新盤後撳「 配對 TV」→ 出 QR（QR 內容＝?agent=盤面代號）＋房間代號。
+   TV 手機（client）：掃 QR＝自動開啟加入頁面並連線；或開 #tvagent 手動輸入代號「📡 連線」。
+   連線後盤面狀態（25 格 types/revealed/turn/over）雙向即時同步——兩邊邊部機撳翻牌，兩邊同步。
+   無網絡時（PeerJS 要上網）＝手動 5 字代號「手動設盤」（单向，離線可用）落後方案。 */
+var AGENT_PEER_PREFIX = 'vsagent-';
+var agentSync = { mode:'local', code:'', peer:null, conns:[], conn:null, status:'' };
+function agentSyncStart(){
+  if(!agentState.grid.length) return;
+  agentSyncStop();
+  if(typeof Peer === 'undefined'){ agentSync.status='⚠️ 連線程式未載入（要上網）——改用下方手動代號'; renderAgent(); return; }
+  agentSync.mode='host';
+  agentSync.code=agentCodeEncode(agentState.grid);
+  agentSync.status='建立房間中…';
+  renderAgent();
+  var peer=new Peer(AGENT_PEER_PREFIX+agentSync.code.toLowerCase());
+  agentSync.peer=peer;
+  peer.on('open',function(){ agentSync.status='📡 房間已建：'+agentSync.code+'（TV 手機掃 QR 或輸入代號連線）'; renderAgent(); });
+  peer.on('connection',function(conn){
+    conn.on('open',function(){
+      agentSync.conns.push(conn);
+      conn.on('data',function(m){
+        if(!m||typeof m!=='object') return;
+        if(m.type==='hello'){ agentSyncBroadcast(); }
+        else if(m.type==='flip'&&!agentState.over){ agentFlip(m.i); }
+        else if(m.type==='turn'){ agentTurn(); }
+      });
+      conn.on('close',function(){ agentSync.conns=agentSync.conns.filter(function(c){return c!==conn;}); agentSync.status='房間 '+agentSync.code+'・已連線 '+agentSync.conns.length; renderAgent(); });
+      conn.on('error',function(){});
+      agentSyncBroadcast();
+    });
+  });
+  peer.on('error',function(){ agentSync.status='⚠️ 連線失敗——請確認網絡，或改用手動代號'; renderAgent(); });
+  peer.on('disconnected',function(){ try{ peer.reconnect(); }catch(e){} });
+}
+function agentSyncBroadcast(){
+  if(agentSync.mode!=='host'||!agentState.grid.length) return;
+  var msg={ type:'board', code:agentCodeEncode(agentState.grid),
+    types:agentState.grid.map(function(c){return c.type;}),
+    revealed:agentState.grid.map(function(c){return c.revealed?1:0;}),
+    turn:agentState.turn, over:agentState.over?1:0, winner:agentState.winner||'' };
+  agentSync.conns.forEach(function(c){ try{ c.send(msg); }catch(e){} });
+  agentSync.status='房間 '+agentSync.code+'・已連線 '+agentSync.conns.length;
+}
+function agentSyncStop(){
+  try{ if(agentSync.peer) agentSync.peer.destroy(); }catch(e){}
+  agentSync.peer=null; agentSync.conns=[]; agentSync.conn=null;
+  if(agentSync.mode==='host'){ agentSync.mode='local'; agentSync.status=''; }
+}
+function agentQrHtml(code){
+  if(typeof qrcode!=='function') return '';
+  try{
+    var url=(window.location.origin||'')+(window.location.pathname||'')+'?agent='+code;
+    var qr=qrcode(0,'M'); qr.addData(url); qr.make();
+    var tag=qr.createImgTag(6,4);
+    return '<div class="agent-qr">'+tag+'</div><a class="agent-qr-link" href="'+url+'" target="_blank" rel="noopener">📲 開啟加入頁面（掃唔到就撳呢度）</a>';
+  }catch(e){ return ''; }
+}
+function agentSyncJoin(code){
+  code=String(code||'').trim().toUpperCase();
+  if(code.length!==5){ if(tvAgentState) tvAgentState.msg='❌ 代號要 5 個字（A–Z／2–9）'; renderTvAgent(); return; }
+  if(typeof Peer==='undefined'){ if(tvAgentState) tvAgentState.msg='⚠️ 連線程式未載入——確認網絡後重整'; renderTvAgent(); return; }
+  agentSyncStop();
+  agentSync.mode='client'; agentSync.code=code;
+  tvAgentState={ types:null, picked:{}, red:0, blue:0, over:false, msg:'📡 正在連線「'+code+'」…' };
+  renderTvAgent();
+  var peer=new Peer(); agentSync.peer=peer;
+  peer.on('open',function(){
+    var conn=peer.connect(AGENT_PEER_PREFIX+code.toLowerCase(),{ reliable:true });
+    agentSync.conn=conn;
+    conn.on('open',function(){ try{ conn.send({ type:'hello' }); }catch(e){} });
+    conn.on('data',function(m){
+      if(!m||m.type!=='board'||!Array.isArray(m.types)||m.types.length!==25) return;
+      tvAgentState={ types:m.types.slice(), picked:{}, red:0, blue:0, over:!!m.over, msg:'' };
+      m.revealed.forEach(function(r,i){ if(r) tvAgentState.picked[i]=true; });
+      if(tvAgentState.over){ tvAgentState.msg = m.winner==='red' ? '🏆 紅隊贏咗！' : (m.winner==='blue' ? '🏆 藍隊贏咗！' : '💣 撞咗炸彈——喊提示嗰隊輸，遊戲結束。'); }
+      else { tvAgentState.msg='✅ 已連線——領袖部機翻牌，呢度即時同步。'; }
+      renderTvAgent();
+    });
+    conn.on('close',function(){ tvAgentState.msg='⚠️ 連線中斷——重新掃 QR 或再撳「📡 連線」'; renderTvAgent(); });
+    conn.on('error',function(){});
+  });
+  peer.on('error',function(){ tvAgentState.msg='⚠️ 連線失敗——對吓代號同網絡（領袖部機要已「📡 配對 TV」）'; renderTvAgent(); });
+  peer.on('disconnected',function(){ try{ peer.reconnect(); }catch(e){} });
+}
+
 /* ══════════ TV 屏・機密特務（第二部手機／TV 專用：中性盤、冇詞冇色、可安全投屏）══════════
    用法：領袖喺主版面「🎲 新盤」後喊出「盤面代號」（5 字）；呢度輸入代號＝重組同一盤。
    操作：團員喊號碼 → 呢度撳該號碼（翻牌＝收咗）→ 撞炸彈＝自動出「遊戲結束」；
@@ -351,12 +450,13 @@ var tvAgentState = { types: null, picked: {}, red: 0, blue: 0, over: false, msg:
 function tvAgentSet(code){
   var t = agentCodeDecode(code);
   if(!t){ tvAgentState.msg = '❌ 代號唔啱：要 5 個字（A–Z／2–9，無 0、1、I、O）。再對吓領袖喊嘅代號。'; renderTvAgent(); return; }
-  tvAgentState = { types: t, picked: {}, red: 0, blue: 0, over: false, msg: '✅ 盤面設好（25 格：1 炸彈＋2 紅＋2 藍）。等領袖喊「開局」。' };
+  tvAgentState = { types: t, picked: {}, red: 0, blue: 0, over: false, msg: '✅ 盤面設好（单向・離線模式）——其後领袖部機翻牌唔會同步，需喺呢度跟住撳相同號碼。' };
   renderTvAgent();
 }
 function tvAgentFlip(i){
   var s = tvAgentState;
   if(!s.types || s.over || s.picked[i]) return;
+  if(agentSync.mode==='client'&&agentSync.conn){ try{ agentSync.conn.send({ type:'flip', i:i }); }catch(e){} }
   s.picked[i] = true;
   if(s.types[i] === 'assassin'){ s.over = true; s.msg = '💣 撞咗炸彈（特務）！遊戲結束。'; }
   else if(s.types[i] === 'red' || s.types[i] === 'blue'){ s.msg = (i+1)+' 號已收——領袖喊邊隊＋1，就撳該隊＋1。'; }
@@ -373,11 +473,15 @@ function renderTvAgent(){
   if(!box) return;
   var s = tvAgentState;
   var H = '';
+  H += '<div class="tvagent-join"><b>📡 掃 QR 或輸入代號連線（即時同步，推薦）</b><div class="tvagent-code"><input id="tvagent-code" maxlength="5" placeholder="AKJST" autocomplete="off" style="letter-spacing:0.3em;text-transform:uppercase;font-size:1.5rem;font-weight:800;width:100%"><button class="mg-primary" onclick="agentSyncJoin(document.getElementById(\'tvagent-code\').value)">📡 連線（掃 QR 會自動填）</button></div>'
+    + (agentSync.mode==='client' ? '<p class="tvagent-msg '+(s.over?'':'tvagent-live')+'">📡 連線中：房間 <b>'+agentSync.code+'</b>'+((s.types)?'（已連線，雙向同步）':'')+'</p>' : '')
+    + '<small class="tvagent-fallback">無網絡？掃 QR 後仍連唔到＝改下方「手動設盤」（单向、離線）。</small></div>';
   if(!s.types){
-    H += '<div class="agent-howto"><b>📡 設盤（輸入領袖喊嘅盤面代號）</b><ol class="steps tight"><li>領袖喺「機密特務」版面撳「 新盤」，會出一個 <b>5 字盤面代號</b>（例：K7Q3Z）。</li><li>領袖喊出代號 → 呢度輸入 → 「設盤」。</li><li>其後照喊：團員喊號碼 → 撳該號碼 → 領袖喊結果 → 撳該隊＋1。此版面<b>冇詞、冇顏色</b>，可放心投屏／mirror。</li></ol></div>';
-    H += '<div class="tvagent-code"><input id="tvagent-code" maxlength="5" placeholder="K7Q3Z" autocomplete="off" style="letter-spacing:0.3em;text-transform:uppercase;font-size:1.6rem;font-weight:800;width:100%"><button class="mg-primary" onclick="tvAgentSet(document.getElementById(\'tvagent-code\').value)">📡 設盤</button></div>';
     if(s.msg) H += '<p class="tvagent-msg">'+s.msg+'</p>';
+    H += '<div class="tvagent-manual"><b>🔧 手動設盤（離線・单向）</b><div class="tvagent-code"><input id="tvagent-code2" maxlength="5" placeholder="AKJST" autocomplete="off" style="letter-spacing:0.3em;text-transform:uppercase;font-size:1.5rem;font-weight:800;width:100%"><button class="mg-primary" onclick="tvAgentSet(document.getElementById(\'tvagent-code2\').value)">🔧 設盤</button></div></div>';
   } else {
+    var red=0, blue=0;
+    s.types.forEach(function(t,i){ if(!s.picked[i]) return; if(t==='red') red++; else if(t==='blue') blue++; });
     H += '<div class="tvagent-grid">';
     s.types.forEach(function(t,i){
       var cls = 'tvagent-cell';
@@ -386,9 +490,9 @@ function renderTvAgent(){
       H += '<button class="'+cls+'" onclick="tvAgentFlip('+i+')"><i class="ag-num">'+(i+1)+'</i><span>'+label+'</span></button>';
     });
     H += '</div>';
-    H += '<div class="tvagent-score"><span class="t-red">🔴 紅隊 <b>'+s.red+'</b><button onclick="tvAgentScore(\'red\',-1)">−</button><button onclick="tvAgentScore(\'red\',1)">＋1</button></span><span class="t-blue">🔵 藍隊 <b>'+s.blue+'</b><button onclick="tvAgentScore(\'blue\',-1)">−</button><button onclick="tvAgentScore(\'blue\',1)">＋1</button></span></div>';
+    H += '<div class="tvagent-score"><span class="t-red">🔴 紅隊已收 <b>'+red+'</b>／2</span><span class="t-blue">🔵 藍隊已收 <b>'+blue+'</b>／2</span></div>';
     if(s.msg) H += '<p class="tvagent-msg">'+s.msg+'</p>';
-    if(s.over) H += '<div class="agent-over tvagent-over">'+(s.msg.indexOf('💣')>=0 ? '💣 撞咗炸彈——喊提示嗰隊輸，遊戲結束。' : '🏆 遊戲結束。')+'<br><button class="mg-primary" onclick="tvAgentReset()">🔄 等新盤（等領袖喊新代號）</button></div>';
+    if(s.over) H += '<div class="agent-over tvagent-over">'+(s.msg.indexOf('💣')>=0 ? '💣 撞咗炸彈——喊提示嗰隊輸，遊戲結束。' : (s.msg||'🏆 遊戲結束。'))+'<br><small>領袖部機「 新盤」後，呢度自動更新。</small></div>';
   }
   box.innerHTML = H;
 }
@@ -583,6 +687,10 @@ MiniGame.tvAgentFlip = tvAgentFlip;
 MiniGame.tvAgentScore = tvAgentScore;
 MiniGame.tvAgentReset = tvAgentReset;
 MiniGame.renderTvAgent = renderTvAgent;
+MiniGame.agentSyncStart = agentSyncStart;
+MiniGame.agentSyncStop = agentSyncStop;
+MiniGame.agentSyncJoin = agentSyncJoin;
+MiniGame.agentQrHtml = agentQrHtml;
 MiniGame.rollDice = rollDice;
 MiniGame.spinWheel = spinWheel;
 

@@ -1116,3 +1116,31 @@ cer-flag 圖內旗面刻意只畫色塊（國旗／區旗細節唔好靠 AI）�
 - 改動檔案：`js/minigame.js`、`js/app.js`、`js/interests.js`、`js/ceremony.js`、`css/app.css`、`tests/runtime.mjs`、`sw.js`、`README.md`、`HANDOVER.md`。
 - `sw.js` CACHE → `scout-v51-tvboard-20260918`。
 - `npm test`（smoke＋runtime）全綠。
+
+## 44. v52：機密特務 QR 互聯（學 pocket-play）＋82 旅卡刪除＋Drive 出範圍（2026-09-18）
+
+用戶三指令：① 盤面代號方法「可以更好」——參考用戶另一個 app `github.com/playerkousas-rgb/minigame`（pocket-play），佢用 **QR CODE 實現互聯**；② Drive working 資料夾（1MXnolz8wKE2Yqde2EKPnRgcgVTaBEA_J）係**畀其他 agent 搵資料用**，唔係深資童軍支部嘅，**唔好收**；③ **82 旅 30 週年旅慶通知唔好用**（v51 加嘅 special 卡要刪除）。
+
+### 改動 1：QR 配對＋PeerJS 雙向即時同步（學 pocket-play 架構）
+pocket-play 做法（已讀其 `app.js`）：QR 內容＝deep-link URL（`?join=CODE&p=slot`）；掃 QR 開啟 app → boot 讀 `location.search` 自動 join；PeerJS（WebRTC，雲 broker）做真同步：host＝host 裝置（peer id `pocket-play-CODE`）、client 連線，JSON 訊息（hello/apply/name/state）過 data channel。
+移植入機密特務（`js/minigame.js`）：
+- **vendor**：`vendor/qrcode.js`（QR Code Generator for JS）＋`vendor/peerjs.min.js`（同 pocket-play 同一份）；index.html 加兩個 script（minigame.js 之前）；sw ASSETS 同步。
+- **host（領袖手機）**：`agentSyncStart()`——peer id `vsagent-<盤面代號小寫>`；`peer.on('connection')`→hello 時 `agentSyncBroadcast()`（board 訊息＝types[25]＋revealed[25]＋turn＋over＋winner）；client 撳翻牌→`{type:'flip',i}`→host `agentFlip(i)`→broadcast（**雙向**）；agentFlip/agentTurn/agentDeal 加 broadcast hook。隊長面板出「📡 盤面代號」＋**QR**（`agentQrHtml`：qrcode(0,'M')，QR 內容＝`origin+pathname?agent=CODE`）＋「📲 開啟加入頁面」連結＋「✕ 停止配對」＋連線狀態。
+- **client（TV 手機 #tvagent）**：`agentSyncJoin(code)`——`new Peer()`→`peer.connect('vsagent-'+code)`→hello→收 board 訊息即重組盤面（picked 由 revealed 重設）；TV 撳翻牌→send flip→host 確認；斷線提示；`tvAgentState.msg` 顯示連線狀態。計分改**自動**（已收紅/藍數由 revealed 派生，刪咗手動＋/−）。
+- **boot 自動 join**（`App.init`）：讀 `?agent=CODE`→hash 設 `#tvagent`→300ms 後 `agentSyncJoin(code)`。
+- 落後方案：無網絡（PeerJS 要上網）→「🔧 手動設盤」（5 字代號、单向、離線）保留。
+- 主持流程改寫：QR 配對做主方案（掃 QR 自動連線、雙向同步）；電腦＋投影機第二方案；手動代號＝離線落後。
+
+### 改動 2：82 旅卡刪除＋Drive 出範圍
+- `js/ceremony.js`：刪 `k:'special'` 卡（v51 加）＋source refs 入面 82 旅行；儀式卡還原 **8 套**（smoke 守門 9→8、README「8 套儀式卡」check 還原）。
+- HANDOVER/README 標記：Drive working 資料夾唔屬深資 app 範圍，其後唔收。
+- 留低 v51 嘅盤面代號編解碼（agentCodeEncode/Decode）——QR payload 同手動落後方案都用。
+
+### 版本＋測試
+- 改動檔案：`js/minigame.js`、`js/app.js`、`js/ceremony.js`、`index.html`、`vendor/qrcode.js`、`vendor/peerjs.min.js`、`css/app.css`、`sw.js`、`tests/runtime.mjs`、`tests/smoke.mjs`、`README.md`、`HANDOVER.md`。
+- `sw.js` CACHE → `scout-v52-qr-20260918`。
+- `npm test`（smoke＋runtime）全綠。
+
+### 下輪注意
+- PeerJS 用其公共雲 broker——集會場無 WiFi 時 QR 配對用唔到（有手動落後方案）；要完全離線可考慮本地热点 broker，暫時唔做。
+- pocket-play 嘅其他遊戲（wolf/spy/one-night 等）有相似多機玩法——如用戶之後想其他集會遊戲（例：誰是臥底）都做 QR 多機，同一套 agentSync 模式可以直接抄。

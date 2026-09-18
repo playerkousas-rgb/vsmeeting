@@ -198,6 +198,7 @@ for (const m of DATA.meetings) {
   ok(sb.tvAgentState.over === true, 'TV 屏：撳炸彈格＝遊戲結束（中性盤只出💣，唔出色）');
   sb.tvAgentReset();
   /* 考章安排：官方簽發鏈＋考核方式（報告／分享／實操／紀錄） */
+  ok(['agentSyncStart','agentSyncStop','agentSyncJoin','agentQrHtml'].every(k => typeof sb[k] === 'function'), '機密特務 QR 同步：host/client API 齊（QR＋PeerJS，落後方案＝手動代號）');
   ok(sb.INTERESTS.assessPlan.methods.length >= 4, '考章安排：考核方式 4 類（講／做／經歷／核）');
   ok(sb.INTERESTS.assessPlan.issuing.length === 2 && sb.INTERESTS.assessPlan.planForm.includes('PT/65'), '考章安排：簽發鏈＋PT/65 計劃表（官方原文）');
   /* 骰子：秘密擲——鎖定時投影 🔒 唔見骰面；領袖「投出結果」先至出 */

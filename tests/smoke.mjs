@@ -157,7 +157,7 @@ function srcView(g){ const o={}; for (const k in ctx.IMG.svg) if (k.indexOf(g+'.
 function srcOf(key){ return ctx.IMG.svg[key] || (ctx.IMG.map[key] ? ctx.IMG.map[key].alt : '') || ''; }
 console.log('✅ JS 執行：', Object.keys(ctx.App.pages).join(','));
 console.log('✅ 儀式卡',ctx.CEREMONY.cards.length,'制服類型',ctx.UNIFORM.types.length,'制服分支',ctx.UNIFORM.branches.length);
-if (ctx.CEREMONY.cards.length !== 9) { console.error('❌ 儀式卡應為 9 套（含支部目的卡＋特別日子旅慶）'); process.exit(1); }
+if (ctx.CEREMONY.cards.length !== 8) { console.error('❌ 儀式卡應為 8 套（含支部目的卡）'); process.exit(1); }
 if (ctx.UNIFORM.types.length !== 9) { console.error('❌ 制服類型應為 9 款（深資陸海空 × 男／女＋女長褲變體）'); process.exit(1); }
 const codes=['C01','C02','C03','C04','C05','C06','C07','C08','C09','C10','C11','C12','C13','C14','C15','C16'];
 for(let i=0;i<codes.length;i++){
@@ -538,7 +538,7 @@ if(!rm.includes('深資童軍團集會助手') || !rm.includes('Scout System 出
     if (!/85 分鐘/.test(ctx.CEREMONY.program.note)) { console.error('❌ 程序表冇交代套包每場 85 分鐘（75′ 流程＋10′ 緩衝）'); process.exit(1); }
   }
   const rm = readFileSync(root+'README.md','utf8');
-  if (!/9 套儀式卡/.test(rm)) { console.error('❌ README 冇講明儀式卡係 9 套（改咗卡數要同步）'); process.exit(1); }
+  if (!/8 套儀式卡/.test(rm)) { console.error('❌ README 冇講明儀式卡係 8 套（改咗卡數要同步）'); process.exit(1); }
   if (!/dgm-fold\{/.test(readFileSync(root+'css/app.css','utf8'))) { console.error('❌ css 缺 .dgm-fold（逐步圖解折疊用）'); process.exit(1); }
   console.log('✅ v42 範圍收斂：儀式卡 '+ctx.CEREMONY.cards.length+' 張・步操照 2024 指引・無自創動作・c01 85 分鐘');
 }
@@ -1139,4 +1139,4 @@ console.log('✅ v34：新／熟手定位・手機 44px・安全圖片 fallback�
   console.log('✅ v42：獎章 34 項（第十一版 8 類＋第十版對照）・考章報班各 7 步・制服 6 款官網圖・16 場分鐘數啱');
 }
 
-console.log('\n🎉 全部 smoke test 通過（v44：16 場教材＋9 套儀式卡＋單項項目庫＋第十一版獎章路＋手冊原文章位・前端零 SVG・本地圖全 AVIF）');
+console.log('\n🎉 全部 smoke test 通過（v44：16 場教材＋8 套儀式卡＋單項項目庫＋第十一版獎章路＋手冊原文章位・前端零 SVG・本地圖全 AVIF）');

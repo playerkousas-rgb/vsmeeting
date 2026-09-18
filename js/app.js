@@ -7,6 +7,12 @@ App.init = function(){
   window.addEventListener('online', App.netState);
   window.addEventListener('offline', App.netState);
   App.netState();
+  /* QR 配對 deep-link：掃領袖部機 QR（?agent=CODE）＝自動開 TV 屏＋連線 */
+  var qagent = (function(){ try{ return new URLSearchParams(window.location.search).get('agent') || ''; }catch(e){ return ''; } })();
+  if(qagent){
+    if(window.location.hash !== '#tvagent'){ window.location.hash = '#tvagent'; }
+    setTimeout(function(){ try{ agentSyncJoin(qagent); }catch(e){} }, 300);
+  }
   App.route();
 };
 
@@ -1029,7 +1035,7 @@ App.ceremonySec = function(c, full){
 App.pages.tvagent = function(){
   var wrap = App.h('div','page tvagent-page');
   wrap.appendChild(App.h('h1',null,'🖥️ TV 屏・機密特務'));
-  wrap.appendChild(App.h('p','lede','第二部手機／TV 專用：<b>輸入領袖喊嘅盤面代號（5 字）</b>＝重組同一盤。呢個版面<b>冇詞、冇顏色</b>——可以投屏／mirror，觀衆睇唔到答案。操作：團員喊號碼 → 撳該號碼 → 領袖喊結果 → 撳該隊＋1。'));
+  wrap.appendChild(App.h('p','lede','第二部手機／TV 專用——呢個版面<b>冇詞、冇顏色</b>，可以投屏／mirror。最簡單：<b>直接掃領袖部機嘅 QR</b>（自動連線，雙向即時同步）；掃唔到就輸入代號「📡 連線」。操作：團員喊號碼 → 撳該號碼（兩邊同步）。'));
   var box = App.h('div',null,'');
   box.id = 'tvagent-box';
   wrap.appendChild(box);
