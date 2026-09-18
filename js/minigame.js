@@ -235,12 +235,12 @@ function renderAgent(){
   if(!box) return;
   var H = '';
   if(!agentState.grid.length){
-    H += '<p class="mut">🎬 主持流程：① 撳「新盤」→ ② 隊長（領袖）喺手機「色卡」看邊塊係紅／藍（<b>唔好投屏</b>）→ ③ 隊長喊「主題＋數量」→ ④ 喺手機逐塊「翻牌」＝全場翻（投影同步）→ ⑤ 換邊隊 → ⑥ 撞炸彈＝立即結束。</p>';
-    H += '<div class="mg-btns"><button class="mg-primary" onclick="agentDeal()">🎲 新盤（25 詞）</button><button onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影</button></div>';
+    H += '<div class="agent-howto"><b>🎬 主持流程（投影邊個版面？）</b><ol class="steps tight"><li><b>投影永遠係「中性盤」</b>——撳「️ 投影（中性盤）」開第二屏：未翻＝灰牌、冇顏色。色卡（邊塊係紅／藍）<b>淨係呢部手機有，絕對唔好投</b>——投咗＝全場睇到答案。</li><li><b>隊長＝邊個</b>：預設＝領袖自己（「🔒 隊長面板」＝隊長答案卡）；想團員做隊長，就領袖喺呢部手機<b>私下</b>畀佢睇色卡（近距離睇，唔上大螢幕）。</li><li>新盤 → 隊長<b>知道</b>布局先喊「主題＋數量」（例：「食物，3 塊」）——呢個遊戲隊長一定要知道答案，觀衆永遠淨係睇中性盤。</li><li>領袖喺呢部手機逐塊「翻牌」→ 大螢幕同步翻出嚟；收晒自己色＝嗰隊贏；換邊隊喊。</li><li>撞炸彈＝即時結束（投影自動出結果）。</li></ol></div>';
+    H += '<div class="mg-btns"><button class="mg-primary" onclick="agentDeal()">🎲 新盤（25 詞）</button><button class="mg-proj" onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影（中性盤：未翻＝灰牌）</button></div>';
     box.innerHTML = H; return;
   }
   /* 隊長面板（色卡＝答案，領袖手機專用，唔好投屏） */
-  H += '<div class="agent-secret"><div class="agent-secret-head">🔒 隊長面板・色卡（領袖手機專用・絕對唔好投屏）<span class="agent-turn-tag '+(agentState.turn==='red'?'t-red':'t-blue')+'">'+(agentState.turn==='red'?'🔴 紅隊輪到喊提示':'🔵 藍隊輪到喊提示')+'</span></div>';
+  H += '<div class="agent-secret"><div class="agent-secret-head">🔒 隊長答案卡・色卡（淨係呢部手機・絕對唔好投屏）<span class="agent-turn-tag '+(agentState.turn==='red'?'t-red':'t-blue')+'">'+(agentState.turn==='red'?'🔴 紅隊輪到喊提示':'🔵 藍隊輪到喊提示')+'</span></div>';
   H += agentGridHtml(agentState.grid, true);
   H += '<div class="mg-btns">';
   if(agentState.over){
@@ -252,7 +252,7 @@ function renderAgent(){
     H += '<button onclick="agentTurn()">🔄 換邊隊喊（'+(agentState.turn==='red'?'🔵 藍隊':'🔴 紅隊')+'）</button>';
     H += '<button onclick="agentDeal()">🎲 新盤</button>';
   }
-  H += '<button class="mg-proj" onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影（中性版）</button>';
+  H += '<button class="mg-proj" onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影（中性盤：未翻＝灰牌）</button>';
   H += '</div></div>';
   /* 計分（已翻幾多） */
   var red=0, blue=0, civ=0, bomb=false;

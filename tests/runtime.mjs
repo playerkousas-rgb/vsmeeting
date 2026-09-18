@@ -197,6 +197,8 @@ for (const m of DATA.meetings) {
   const qa = sb.DATA.games.find(g => g.n.indexOf('問答挑戰賽') >= 0);
   ok(Array.isArray(qa.answers) && qa.answers.length >= 4, '問答挑戰賽有「答案卡」（3 固定題＋加分題時間線）');
   ok(!qa.steps.join(' ').includes('1913'), '問答挑戰賽玩法步驟唔再內嵌答案（收埋入答案卡）');
+  ok(qa.answers.some(a => a.includes('1909')), '問答挑戰賽固定題 1 答案照官方套包＝1909（非 1913）');
+  ok(qa.steps.some(s => s.includes('兩人一組')) && qa.steps.some(s => s.includes('執行委員會主席或領袖主持')), '問答挑戰賽流程照套包：兩人一組 15 分鐘研讀＋執委會主席或領袖主持');
   /* 遊戲卡「🖥️ 投講解」：淨投規則＋玩法，唔含答案卡 */
   const realProj = sb.Projector;
   const captured = [];
