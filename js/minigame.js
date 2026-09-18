@@ -20,7 +20,7 @@ var spyState = {
 };
 var SPY_WORDS = [
   ['番茄','番茄沙律'],['紅豆','綠豆'],['奶茶','咖啡'],['巴士','的士'],
-  ['床','梳化'],['眼鏡','隐形眼鏡'],['生日派對','婚禮'],['游泳','浮水'],
+  ['床','梳化'],['眼鏡','隱形眼鏡'],['生日派對','婚禮'],['游泳','浮水'],
   ['醫生','護士'],['飛機','直升機'],['薯條','炸魚柳'],['猫','猫頭鷹']
 ];
 function spyPickWord(){
@@ -206,7 +206,7 @@ function agentShuffle(arr){
   return a;
 }
 function agentDeal(){
-  /* 主題配對：隨機 2 個唔同類別 → 紅 2 詞（同类）＋藍 2 詞（同类）；
+  /* 主題配對：隨機 2 個唔同類別 → 紅 2 詞（同類）＋藍 2 詞（同類）；
      平民 20＋炸彈 1 由其餘 6 個類別隨機填（25 詞全唔重複） */
   var cats = agentShuffle(Object.keys(AGENT_WORD_GROUPS));
   var redCat = cats[0], blueCat = cats[1];
@@ -311,14 +311,14 @@ function renderAgent(){
   if(!box) return;
   var H = '';
   if(!agentState.grid.length){
-    H += '<div class="agent-howto"><b>🎬 主持流程（投影邊個版面？答案點睇？）</b><ol class="steps tight"><li><b>投影永遠係「中性盤」</b>——未翻＝灰牌、冇顏色、冇詞。色卡（邊塊係紅／藍／炸彈）<b>淨係領袖部機有，絕對唔好投</b>——投咗＝全場睇到答案。</li><li><b>隊長＝邊個</b>：預設＝領袖自己（睇「 隊長答案卡」）；想團員做隊長，就領袖喺呢部機<b>私下</b>畀佢睇色卡。隊長一定要知道布局（靠位置＋顏色出詞），觀衆永遠淨係睇中性盤。</li><li><b>「又要投影、又要睇答案」點同時做？答案同投影分兩部機＋掃 QR 同步</b>（一部機影咗去 TV 就會見到色卡）：<br>A. <b>電腦＋投影機</b>：電腦開呢個版面＝隊長答案卡＋翻牌掣；投影機用「🖥️ 投影」第二視窗（中性盤）。<br>B. <b>兩部手機（推薦）</b>：領袖部機（呢度）新盤後撳「<b>📡 配對 TV</b>」→ 出 QR；TV 手機<b>掃 QR 自動連線</b>（或開「<a href="#tvagent">🖥️ TV 屏</a>」輸入代號）→ 成盤<b>雙向即時同步</b>：邊部機翻牌兩邊都翻。無網絡先至用「手動設盤」（单向、離線）。</li><li><b>流程</b>：新盤 → 隊長喊「主題，2 塊」（主題＝自己 2 張卡嘅類別，例：「食物，2 塊」）→ 團員逐個喊號碼 → 領袖部機翻牌（自己見到顏色）／或 TV 屏撳號碼（同步返嚟）→ 收晒自己色＝嗰隊贏 → 換邊隊；每翻到一块隊長可加提示（例：「其中一條係早餐」）。</li><li>撞炸彈＝即時結束（兩邊同步出結果）。</li></ol></div>';
+    H += '<div class="agent-howto"><b>🎬 主持流程（投影邊個版面？答案點睇？）</b><ol class="steps tight"><li><b>投影永遠係「中性盤」</b>——未翻＝灰牌、冇顏色、冇詞。色卡（邊塊係紅／藍／炸彈）<b>淨係領袖部機有，絕對唔好投</b>——投咗＝全場睇到答案。</li><li><b>隊長＝邊個</b>：預設＝領袖自己（睇「 隊長答案卡」）；想團員做隊長，就領袖喺呢部機<b>私下</b>畀佢睇色卡。隊長一定要知道布局（靠位置＋顏色出詞），觀眾永遠淨係睇中性盤。</li><li><b>「又要投影、又要睇答案」點同時做？答案同投影分兩部機＋掃 QR 同步</b>（一部機影咗去 TV 就會見到色卡）：<br>A. <b>電腦＋投影機</b>：電腦開呢個版面＝隊長答案卡＋翻牌掣；投影機用「🖥️ 投影」第二視窗（中性盤）。<br>B. <b>兩部手機（推薦）</b>：領袖部機（呢度）新盤後撳「<b>📡 配對 TV</b>」→ 出 QR；TV 手機<b>掃 QR 自動連線</b>（或開「<a href="#tvagent">🖥️ TV 屏</a>」輸入代號）→ 成盤<b>雙向即時同步</b>：邊部機翻牌兩邊都翻。無網絡先至用「手動設盤」（單向、離線）。</li><li><b>流程</b>：新盤 → 隊長喊「主題，2 塊」（主題＝自己 2 張卡嘅類別，例：「食物，2 塊」）→ 團員逐個喊號碼 → 領袖部機翻牌（自己見到顏色）／或 TV 屏撳號碼（同步返嚟）→ 收晒自己色＝嗰隊贏 → 換邊隊；每翻到一塊隊長可加提示（例：「其中一條係早餐」）。</li><li>撞炸彈＝即時結束（兩邊同步出結果）。</li></ol></div>';
     H += '<div class="mg-btns"><button class="mg-primary" onclick="agentDeal()">🎲 新盤（25 詞）</button><button class="mg-proj" onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影（中性盤：未翻＝灰牌）</button><a class="mg-proj mg-proj-link" href="#tvagent">🖥️ TV 屏（第二部手機）</a></div>';
     box.innerHTML = H; return;
   }
   /* 隊長面板（色卡＝答案，領袖手機專用，唔好投屏） */
   H += '<div class="agent-secret"><div class="agent-secret-head">🔒 隊長答案卡・色卡（淨係呢部手機・絕對唔好投屏）<span class="agent-turn-tag '+(agentState.turn==='red'?'t-red':'t-blue')+'">'+(agentState.turn==='red'?'🔴 紅隊輪到喊提示':'🔵 藍隊輪到喊提示')+'</span></div>';
   var _syncCode = agentCodeEncode(agentState.grid);
-  H += '<div class="agent-theme">🎯 喊法：<b>紅隊喊「'+agentState.hint.redCat+'，2 塊」</b>（='+agentState.hint.redWords.join('、')+'）；<b>藍隊喊「'+agentState.hint.blueCat+'，2 塊」</b>（='+agentState.hint.blueWords.join('、')+'）。每翻到一块可以加提示（例：「其中一條係早餐」）。</div>';
+  H += '<div class="agent-theme">🎯 喊法：<b>紅隊喊「'+agentState.hint.redCat+'，2 塊」</b>（='+agentState.hint.redWords.join('、')+'）；<b>藍隊喊「'+agentState.hint.blueCat+'，2 塊」</b>（='+agentState.hint.blueWords.join('、')+'）。每翻到一塊可以加提示（例：「其中一條係早餐」）。</div>';
   H += '<div class="agent-code">📡 盤面代號：<b>'+_syncCode+'</b>';
   if(agentSync.mode==='host'){
     H += agentQrHtml(agentSync.code);
@@ -390,7 +390,7 @@ function agentProjGrid(){
    領袖手機（host）：新盤後撳「 配對 TV」→ 出 QR（QR 內容＝?agent=盤面代號）＋房間代號。
    TV 手機（client）：掃 QR＝自動開啟加入頁面並連線；或開 #tvagent 手動輸入代號「📡 連線」。
    連線後盤面狀態（25 格 types/revealed/turn/over）雙向即時同步——兩邊邊部機撳翻牌，兩邊同步。
-   無網絡時（PeerJS 要上網）＝手動 5 字代號「手動設盤」（单向，離線可用）落後方案。 */
+   無網絡時（PeerJS 要上網）＝手動 5 字代號「手動設盤」（單向，離線可用）落後方案。 */
 var AGENT_PEER_PREFIX = 'vsagent-';
 var agentSync = { mode:'local', code:'', peer:null, conns:[], conn:null, status:'' };
 function agentSyncStart(){
@@ -480,7 +480,7 @@ var tvAgentState = { types: null, picked: {}, red: 0, blue: 0, over: false, msg:
 function tvAgentSet(code){
   var t = agentCodeDecode(code);
   if(!t){ tvAgentState.msg = '❌ 代號唔啱：要 5 個字（A–Z／2–9，無 0、1、I、O）。再對吓領袖喊嘅代號。'; renderTvAgent(); return; }
-  tvAgentState = { types: t, picked: {}, red: 0, blue: 0, over: false, msg: '✅ 盤面設好（单向・離線模式）——其後领袖部機翻牌唔會同步，需喺呢度跟住撳相同號碼。' };
+  tvAgentState = { types: t, picked: {}, red: 0, blue: 0, over: false, msg: '✅ 盤面設好（單向・離線模式）——其後領袖部機翻牌唔會同步，需喺呢度跟住撳相同號碼。' };
   renderTvAgent();
 }
 function tvAgentFlip(i){
@@ -505,10 +505,10 @@ function renderTvAgent(){
   var H = '';
   H += '<div class="tvagent-join"><b>📡 掃 QR 或輸入代號連線（即時同步，推薦）</b><div class="tvagent-code"><input id="tvagent-code" maxlength="5" placeholder="AKJST" autocomplete="off" style="letter-spacing:0.3em;text-transform:uppercase;font-size:1.5rem;font-weight:800;width:100%"><button class="mg-primary" onclick="agentSyncJoin(document.getElementById(\'tvagent-code\').value)">📡 連線（掃 QR 會自動填）</button></div>'
     + (agentSync.mode==='client' ? '<p class="tvagent-msg '+(s.over?'':'tvagent-live')+'">📡 連線中：房間 <b>'+agentSync.code+'</b>'+((s.types)?'（已連線，雙向同步）':'')+'</p>' : '')
-    + '<small class="tvagent-fallback">無網絡？掃 QR 後仍連唔到＝改下方「手動設盤」（单向、離線）。</small></div>';
+    + '<small class="tvagent-fallback">無網絡？掃 QR 後仍連唔到＝改下方「手動設盤」（單向、離線）。</small></div>';
   if(!s.types){
     if(s.msg) H += '<p class="tvagent-msg">'+s.msg+'</p>';
-    H += '<div class="tvagent-manual"><b>🔧 手動設盤（離線・单向）</b><div class="tvagent-code"><input id="tvagent-code2" maxlength="5" placeholder="AKJST" autocomplete="off" style="letter-spacing:0.3em;text-transform:uppercase;font-size:1.5rem;font-weight:800;width:100%"><button class="mg-primary" onclick="tvAgentSet(document.getElementById(\'tvagent-code2\').value)">🔧 設盤</button></div></div>';
+    H += '<div class="tvagent-manual"><b>🔧 手動設盤（離線・單向）</b><div class="tvagent-code"><input id="tvagent-code2" maxlength="5" placeholder="AKJST" autocomplete="off" style="letter-spacing:0.3em;text-transform:uppercase;font-size:1.5rem;font-weight:800;width:100%"><button class="mg-primary" onclick="tvAgentSet(document.getElementById(\'tvagent-code2\').value)">🔧 設盤</button></div></div>';
   } else {
     var red=0, blue=0;
     s.types.forEach(function(t,i){ if(!s.picked[i]) return; if(t==='red') red++; else if(t==='blue') blue++; });
