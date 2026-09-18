@@ -1144,3 +1144,32 @@ pocket-play 做法（已讀其 `app.js`）：QR 內容＝deep-link URL（`?join=
 ### 下輪注意
 - PeerJS 用其公共雲 broker——集會場無 WiFi 時 QR 配對用唔到（有手動落後方案）；要完全離線可考慮本地热点 broker，暫時唔做。
 - pocket-play 嘅其他遊戲（wolf/spy/one-night 等）有相似多機玩法——如用戶之後想其他集會遊戲（例：誰是臥底）都做 QR 多機，同一套 agentSync 模式可以直接抄。
+
+## 45. v53：機密特務設計審計——隨機主題配對＋2 隻隱藏 bug（2026-09-18）
+
+用戶問「mini game 個設計係咪合理D？但我覺得你個隨機題目很不錯」。審計發現設計合理（队长秘密信息＋喊號碼體感＋QR 兩裝置），但「隨機題目」有 3 個問題：
+
+### Bug 1：20 詞庫 < 25 格
+`AGENT_WORDS` 只有 20 詞，25 格盤 → `words[20..24] = undefined`：**5 格翻牌會喺大螢幕出「undefined」**＋4 詞重複。
+
+### Bug 2：盤面代號字母表 31 字
+`'ABCDEFGHJKLMNPRSTUVWXYZ23456789'` 排咗 B/I/O/Q → 只 23 字母＋8 數字＝31 字；digit≥31 → `charAt` 返空 → 代號靜默短咗 → decode 返 null。舊測試全用固定布局（b=4/red={0,1}/blue={2,3}），該布局 digit 全 <31 → **假陽性全過**。修正＝32 字：`ABCDEFGHJKLMNPQRSTUVWXYZ23456789`（24 字母無 I/O＋2–9）。
+
+### Bug 3：pair 排名公式（順手發現）
+`agentPairIdx` base 公式錯（`p[0]*(total-p[0]-1)` 重疊）→ 只有特定值啱；修正＝`base = a*(total-1) - a*(a-1)/2`。**全量暴力測試：1,593,900 種布局（25×C(25,2)×C(23,2) 扣邊界）round-trip 0 失敗**＋pair 雙射 300/300。
+
+### 設計改動：主題配對（保留隨機）
+純隨機 2 詞配對大概率無共同類別 → 「主題，2 塊」提示做唔到（紅＝醫生＋月亮喊咩主題？）。改：
+- `AGENT_WORD_GROUPS` 47 詞 8 類（食物/交通/動物/地點/天象/職業/運動/物件）；`AGENT_WORDS`＝平鋪（兼容）。
+- `agentDeal()`：隨機 2 個唔同類別 → 紅 2 詞（同类）＋藍 2 詞（同类）；平民 20＋炸彈 1 由其餘 6 類隨機填（避免平民卡係紅/藍主題詞）；25 位置洗牌；`agentState.hint={redCat,redWords,blueCat,blueWords}`。
+- 隊長面板新增「🎯 喊法」行：紅隊喊「X，2 塊」（＝詞、詞）＋每翻一块可加提示。
+- howto 流程更新：「主題，2 塊」（主題＝類別）＋跟進提示機制。
+- 遊戲邏輯（收晒 2 張自己色先贏、炸彈即止）唔變。
+
+### 版本＋測試
+- 改動檔案：`js/minigame.js`、`css/app.css`、`tests/runtime.mjs`、`sw.js`、`README.md`、`HANDOVER.md`。
+- `sw.js` CACHE → `scout-v53-themes-20260918`。
+- `npm test` 全綠（runtime 新守門：25 詞有效不重複／主題同类配對／5 字代號隨機布局 round-trip）。
+
+### 教訓
+- 編碼類功能（base32、排名公式）要**全量暴力測試**，唔好只測「典型」輸入——固定布局令 31 字表 bug 隱藏咗兩版。

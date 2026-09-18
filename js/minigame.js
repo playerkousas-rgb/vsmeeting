@@ -181,28 +181,53 @@ function spyCardsHtml(){
    → ④ 隊長喺手機逐塊撳「翻牌」＝全場翻牌（投影同步）→ ⑤ 換邊隊 → ⑥ 撞炸彈＝立即結束。 */
 var agentState = {
   grid: [],        /* 25 格：{word, type:'red'|'blue'|'assassin', revealed} */
+  hint: null,      /* {redCat,redWords,blueCat,blueWords}——主題配對（淨係隊長面板有） */
   turn: 'red',     /* 邊隊輪到喊提示 */
   over: false,
   winner: ''
 };
-var AGENT_WORDS = [
-  '蘋果','咖啡','火車','醫院','書包','大海','太陽','醫生','學校','蛋糕',
-  '足球','警察','飛機','餅乾','森林','月亮','老師','漢堡','電話','雪地'
-];
+/* 分類字庫（47 詞）：每盤隨機揀 2 個類別做紅/藍主題——主題一定存在，而每盤都唔同。
+   平民詞只由「其他類別」出，避免平民卡剛好係紅/藍主題嘅詞搞亂提示。 */
+var AGENT_WORD_GROUPS = {
+  '食物':['蘋果','漢堡','蛋糕','雲吞麵','披薩','冰激凌'],
+  '交通':['火車','飛機','巴士','單車','的士','渡輪'],
+  '動物':['貓','狗','魚','金魚','兔仔','馬'],
+  '地點':['學校','醫院','超市','銀行','公園','圖書館'],
+  '天象':['太陽','月亮','大雨','雪','狂風','打雷'],
+  '職業':['醫生','老師','警察','廚師','消防員','的士司機'],
+  '運動':['足球','籃球','游泳','排球','羽毛球'],
+  '物件':['書包','電話','手錶','鑰匙','雨遮','鉛筆']
+};
+var AGENT_WORDS = [];
+Object.keys(AGENT_WORD_GROUPS).forEach(function(k){ AGENT_WORDS = AGENT_WORDS.concat(AGENT_WORD_GROUPS[k]); });
+function agentShuffle(arr){
+  var a = arr.slice();
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
 function agentDeal(){
-  var words = AGENT_WORDS.slice();
-  /* 洗牌 */
-  for(var i=words.length-1;i>0;i--){
-    var j = Math.floor(Math.random()*(i+1));
-    var t = words[i]; words[i]=words[j]; words[j]=t;
-  }
-  var grid = [];
-  /* 2 紅 + 2 藍 + 1 炸彈 + 20 平民 */
-  var types = ['red','red','blue','blue','assassin'];
-  for(var k=5;k<25;k++) types.push('civil');
-  for(var m=0;m<types.length;m++){
-    grid.push({ word: words[m], type: types[m], revealed:false });
-  }
+  /* 主題配對：隨機 2 個唔同類別 → 紅 2 詞（同类）＋藍 2 詞（同类）；
+     平民 20＋炸彈 1 由其餘 6 個類別隨機填（25 詞全唔重複） */
+  var cats = agentShuffle(Object.keys(AGENT_WORD_GROUPS));
+  var redCat = cats[0], blueCat = cats[1];
+  var redWords = agentShuffle(AGENT_WORD_GROUPS[redCat]).slice(0,2);
+  var blueWords = agentShuffle(AGENT_WORD_GROUPS[blueCat]).slice(0,2);
+  var pool = [];
+  cats.forEach(function(c){
+    if(c===redCat||c===blueCat) return;
+    pool = pool.concat(AGENT_WORD_GROUPS[c]);
+  });
+  var fill = agentShuffle(pool).slice(0,21);
+  var grid = [
+    { word:redWords[0], type:'red', revealed:false },
+    { word:redWords[1], type:'red', revealed:false },
+    { word:blueWords[0], type:'blue', revealed:false },
+    { word:blueWords[1], type:'blue', revealed:false }
+  ];
+  grid.push({ word:fill[0], type:'assassin', revealed:false });
+  for(var m=1;m<21;m++) grid.push({ word:fill[m], type:'civil', revealed:false });
+  grid = agentShuffle(grid);
+  agentState.hint = { redCat:redCat, redWords:redWords, blueCat:blueCat, blueWords:blueWords };
   agentState.grid = grid;
   agentState.turn = 'red';
   agentState.over = false;
@@ -213,12 +238,16 @@ function agentDeal(){
 /* ══ 盤面代號：將 25 格布局（1 炸彈＋2 紅＋2 藍）編碼做 5 個字，
    第二部裝置（TV 屏）輸入代號即可重組同一盤——兩機唔使網絡、唔使同步。
    代號只包含「位置」，唔包含任何詞。 ══ */
-var AGENT_CODE_ALPHABET = 'ABCDEFGHJKLMNPRSTUVWXYZ23456789'; /* 32 字（無 0/1/I/O，易讀易喊） */
-function agentPairIdx(p, total){ return p[0]*(total-p[0]-1) + (p[1]-p[0]-1); }
+var AGENT_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; /* 32 字（24 字母無 I/O＋8 數字，易讀易喊） */
+function agentPairIdx(p, total){
+  var base = p[0]*(total-1) - p[0]*(p[0]-1)/2;
+  return base + (p[1]-p[0]-1);
+}
 function agentPairFromIdx(idx, total){
   for(var a=0;a<total-1;a++){
+    var base = a*(total-1) - a*(a-1)/2;
     var cnt = total-a-1;
-    if(idx < a*cnt + cnt){ return [a, a + (idx - a*cnt) + 1]; }
+    if(idx < base + cnt){ return [a, a + (idx-base) + 1]; }
   }
   return null;
 }
@@ -282,13 +311,14 @@ function renderAgent(){
   if(!box) return;
   var H = '';
   if(!agentState.grid.length){
-    H += '<div class="agent-howto"><b>🎬 主持流程（投影邊個版面？答案點睇？）</b><ol class="steps tight"><li><b>投影永遠係「中性盤」</b>——未翻＝灰牌、冇顏色、冇詞。色卡（邊塊係紅／藍／炸彈）<b>淨係領袖部機有，絕對唔好投</b>——投咗＝全場睇到答案。</li><li><b>隊長＝邊個</b>：預設＝領袖自己（睇「 隊長答案卡」）；想團員做隊長，就領袖喺呢部機<b>私下</b>畀佢睇色卡。隊長一定要知道布局（靠位置＋顏色出詞），觀衆永遠淨係睇中性盤。</li><li><b>「又要投影、又要睇答案」點同時做？答案同投影分兩部機＋掃 QR 同步</b>（一部機影咗去 TV 就會見到色卡）：<br>A. <b>電腦＋投影機</b>：電腦開呢個版面＝隊長答案卡＋翻牌掣；投影機用「🖥️ 投影」第二視窗（中性盤）。<br>B. <b>兩部手機（推薦）</b>：領袖部機（呢度）新盤後撳「<b>📡 配對 TV</b>」→ 出 QR；TV 手機<b>掃 QR 自動連線</b>（或開「<a href="#tvagent">🖥️ TV 屏</a>」輸入代號）→ 成盤<b>雙向即時同步</b>：邊部機翻牌兩邊都翻。無網絡先至用「手動設盤」（单向、離線）。</li><li><b>流程</b>：新盤 → 隊長喊「主題＋數量」（例：「食物，3 塊」）→ 團員逐個喊號碼 → 領袖部機翻牌（自己見到顏色）／或 TV 屏撳號碼（同步返嚟）→ 收晒自己色＝嗰隊贏 → 換邊隊。</li><li>撞炸彈＝即時結束（兩邊同步出結果）。</li></ol></div>';
+    H += '<div class="agent-howto"><b>🎬 主持流程（投影邊個版面？答案點睇？）</b><ol class="steps tight"><li><b>投影永遠係「中性盤」</b>——未翻＝灰牌、冇顏色、冇詞。色卡（邊塊係紅／藍／炸彈）<b>淨係領袖部機有，絕對唔好投</b>——投咗＝全場睇到答案。</li><li><b>隊長＝邊個</b>：預設＝領袖自己（睇「 隊長答案卡」）；想團員做隊長，就領袖喺呢部機<b>私下</b>畀佢睇色卡。隊長一定要知道布局（靠位置＋顏色出詞），觀衆永遠淨係睇中性盤。</li><li><b>「又要投影、又要睇答案」點同時做？答案同投影分兩部機＋掃 QR 同步</b>（一部機影咗去 TV 就會見到色卡）：<br>A. <b>電腦＋投影機</b>：電腦開呢個版面＝隊長答案卡＋翻牌掣；投影機用「🖥️ 投影」第二視窗（中性盤）。<br>B. <b>兩部手機（推薦）</b>：領袖部機（呢度）新盤後撳「<b>📡 配對 TV</b>」→ 出 QR；TV 手機<b>掃 QR 自動連線</b>（或開「<a href="#tvagent">🖥️ TV 屏</a>」輸入代號）→ 成盤<b>雙向即時同步</b>：邊部機翻牌兩邊都翻。無網絡先至用「手動設盤」（单向、離線）。</li><li><b>流程</b>：新盤 → 隊長喊「主題，2 塊」（主題＝自己 2 張卡嘅類別，例：「食物，2 塊」）→ 團員逐個喊號碼 → 領袖部機翻牌（自己見到顏色）／或 TV 屏撳號碼（同步返嚟）→ 收晒自己色＝嗰隊贏 → 換邊隊；每翻到一块隊長可加提示（例：「其中一條係早餐」）。</li><li>撞炸彈＝即時結束（兩邊同步出結果）。</li></ol></div>';
     H += '<div class="mg-btns"><button class="mg-primary" onclick="agentDeal()">🎲 新盤（25 詞）</button><button class="mg-proj" onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影（中性盤：未翻＝灰牌）</button><a class="mg-proj mg-proj-link" href="#tvagent">🖥️ TV 屏（第二部手機）</a></div>';
     box.innerHTML = H; return;
   }
   /* 隊長面板（色卡＝答案，領袖手機專用，唔好投屏） */
   H += '<div class="agent-secret"><div class="agent-secret-head">🔒 隊長答案卡・色卡（淨係呢部手機・絕對唔好投屏）<span class="agent-turn-tag '+(agentState.turn==='red'?'t-red':'t-blue')+'">'+(agentState.turn==='red'?'🔴 紅隊輪到喊提示':'🔵 藍隊輪到喊提示')+'</span></div>';
   var _syncCode = agentCodeEncode(agentState.grid);
+  H += '<div class="agent-theme">🎯 喊法：<b>紅隊喊「'+agentState.hint.redCat+'，2 塊」</b>（='+agentState.hint.redWords.join('、')+'）；<b>藍隊喊「'+agentState.hint.blueCat+'，2 塊」</b>（='+agentState.hint.blueWords.join('、')+'）。每翻到一块可以加提示（例：「其中一條係早餐」）。</div>';
   H += '<div class="agent-code">📡 盤面代號：<b>'+_syncCode+'</b>';
   if(agentSync.mode==='host'){
     H += agentQrHtml(agentSync.code);
