@@ -209,6 +209,50 @@ function agentDeal(){
   agentState.winner = '';
   renderAgent();
 }
+/* ══ 盤面代號：將 25 格布局（1 炸彈＋2 紅＋2 藍）編碼做 5 個字，
+   第二部裝置（TV 屏）輸入代號即可重組同一盤——兩機唔使網絡、唔使同步。
+   代號只包含「位置」，唔包含任何詞。 ══ */
+var AGENT_CODE_ALPHABET = 'ABCDEFGHJKLMNPRSTUVWXYZ23456789'; /* 32 字（無 0/1/I/O，易讀易喊） */
+function agentPairIdx(p, total){ return p[0]*(total-p[0]-1) + (p[1]-p[0]-1); }
+function agentPairFromIdx(idx, total){
+  for(var a=0;a<total-1;a++){
+    var cnt = total-a-1;
+    if(idx < a*cnt + cnt){ return [a, a + (idx - a*cnt) + 1]; }
+  }
+  return null;
+}
+function agentCodeEncode(grid){
+  var b=-1, reds=[], blues=[];
+  grid.forEach(function(c,i){ if(c.type==='assassin') b=i; else if(c.type==='red') reds.push(i); else if(c.type==='blue') blues.push(i); });
+  if(b<0) return '';
+  reds.sort(function(x,y){return x-y;}); blues.sort(function(x,y){return x-y;});
+  var rest=[];
+  for(var i=0;i<25;i++){ if(i!==reds[0] && i!==reds[1]) rest.push(i); }
+  var bp = [rest.indexOf(blues[0]), rest.indexOf(blues[1])];
+  var n = (b*300 + agentPairIdx(reds,25))*253 + agentPairIdx(bp,23);
+  var code='';
+  for(var k=0;k<5;k++){ code = AGENT_CODE_ALPHABET.charAt(n%32) + code; n = Math.floor(n/32); }
+  return code;
+}
+function agentCodeDecode(code){
+  code = String(code||'').trim().toUpperCase();
+  if(code.length!==5) return null;
+  var n=0;
+  for(var k=0;k<5;k++){ var d=AGENT_CODE_ALPHABET.indexOf(code[k]); if(d<0) return null; n = n*32+d; }
+  var blueIdx = n % 253; var m = Math.floor(n/253);
+  var redIdx = m % 300; var b = Math.floor(m/300);
+  if(b>24 || redIdx>299 || blueIdx>252) return null;
+  var reds = agentPairFromIdx(redIdx,25);
+  if(!reds) return null;
+  var rest=[];
+  for(var i=0;i<25;i++){ if(i!==reds[0] && i!==reds[1]) rest.push(i); }
+  var bp = agentPairFromIdx(blueIdx,23);
+  if(!bp) return null;
+  var types = [];
+  for(i=0;i<25;i++) types.push('civil');
+  types[b]='assassin'; types[reds[0]]='red'; types[reds[1]]='red'; types[rest[bp[0]]]='blue'; types[rest[bp[1]]]='blue';
+  return types;
+}
 function agentFlip(i){
   if(!agentState.grid[i]) return;
   var c = agentState.grid[i];
@@ -235,12 +279,13 @@ function renderAgent(){
   if(!box) return;
   var H = '';
   if(!agentState.grid.length){
-    H += '<div class="agent-howto"><b>🎬 主持流程（投影邊個版面？）</b><ol class="steps tight"><li><b>投影永遠係「中性盤」</b>——撳「️ 投影（中性盤）」開第二屏：未翻＝灰牌、冇顏色。色卡（邊塊係紅／藍）<b>淨係呢部手機有，絕對唔好投</b>——投咗＝全場睇到答案。</li><li><b>隊長＝邊個</b>：預設＝領袖自己（「🔒 隊長面板」＝隊長答案卡）；想團員做隊長，就領袖喺呢部手機<b>私下</b>畀佢睇色卡（近距離睇，唔上大螢幕）。</li><li>新盤 → 隊長<b>知道</b>布局先喊「主題＋數量」（例：「食物，3 塊」）——呢個遊戲隊長一定要知道答案，觀衆永遠淨係睇中性盤。</li><li>領袖喺呢部手機逐塊「翻牌」→ 大螢幕同步翻出嚟；收晒自己色＝嗰隊贏；換邊隊喊。</li><li>撞炸彈＝即時結束（投影自動出結果）。</li></ol></div>';
-    H += '<div class="mg-btns"><button class="mg-primary" onclick="agentDeal()">🎲 新盤（25 詞）</button><button class="mg-proj" onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影（中性盤：未翻＝灰牌）</button></div>';
+    H += '<div class="agent-howto"><b>🎬 主持流程（投影邊個版面？答案點睇？）</b><ol class="steps tight"><li><b>投影永遠係「中性盤」</b>——未翻＝灰牌、冇顏色、冇詞。色卡（邊塊係紅／藍／炸彈）<b>淨係呢部機有，絕對唔好投</b>——投咗＝全場睇到答案。</li><li><b>隊長＝邊個</b>：預設＝領袖自己（睇「 隊長答案卡」）；想團員做隊長，就領袖喺呢部機<b>私下</b>畀佢睇色卡。隊長一定要知道布局（靠位置＋顏色出詞），觀衆永遠淨係睇中性盤。</li><li><b>「又要投影中性盤、又要睇答案」點同時做？答案同投影要分兩部機</b>——一部機影咗去 TV，TV 就會見到你部機顯示緊嘅色卡。兩種做法：<br>A. <b>電腦＋投影機（最好）</b>：撳「️ 投影」開第二視窗拖去投影機（或用「🪟 開第二螢幕」）——投影機＝中性盤，電腦畫面＝隊長答案卡＋翻牌掣。<br>B. <b>兩部手機</b>：手機 A 接 TV，開「<a href="#tvagent">🖥️ TV 屏・機密特務</a>」；手機 B＝領袖（呢個版面）。撳「 新盤」後領袖喊出「盤面代號」（5 字），手機 A 輸入代號＝同一盤。其後：團員喊號碼 → 領袖喺手機 B 翻牌（自己見到顏色）＋喊結果（例「13 號，紅＋1」）→ 負責團員喺手機 A 撳 13 號＋紅＋1。</li><li><b>流程</b>：新盤 → 隊長喊「主題＋數量」（例：「食物，3 塊」）→ 團員逐個喊號碼 → 領袖翻牌（TV 同步）→ 收晒自己色＝嗰隊贏 → 換邊隊。</li><li>撞炸彈＝即時結束（TV 屏自動出「遊戲結束」）。</li></ol></div>';
+    H += '<div class="mg-btns"><button class="mg-primary" onclick="agentDeal()">🎲 新盤（25 詞）</button><button class="mg-proj" onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影（中性盤：未翻＝灰牌）</button><a class="mg-proj mg-proj-link" href="#tvagent">🖥️ TV 屏（第二部手機）</a></div>';
     box.innerHTML = H; return;
   }
   /* 隊長面板（色卡＝答案，領袖手機專用，唔好投屏） */
   H += '<div class="agent-secret"><div class="agent-secret-head">🔒 隊長答案卡・色卡（淨係呢部手機・絕對唔好投屏）<span class="agent-turn-tag '+(agentState.turn==='red'?'t-red':'t-blue')+'">'+(agentState.turn==='red'?'🔴 紅隊輪到喊提示':'🔵 藍隊輪到喊提示')+'</span></div>';
+  H += '<div class="agent-code">📡 盤面代號：<b>'+agentCodeEncode(agentState.grid)+'</b><small>＝呢盤布局（位置）嘅 5 字密碼。第二部裝置（TV／投影機）開「<a href="#tvagent">🖥️ TV 屏・機密特務</a>」輸入呢 5 個字＝重組同一盤；TV 屏淨係中性盤，冇詞、冇顏色。</small></div>';
   H += agentGridHtml(agentState.grid, true);
   H += '<div class="mg-btns">';
   if(agentState.over){
@@ -253,6 +298,7 @@ function renderAgent(){
     H += '<button onclick="agentDeal()">🎲 新盤</button>';
   }
   H += '<button class="mg-proj" onclick="Projector.live(\'mg:agent\',\'🕴️ 機密特務\')">🖥️ 投影（中性盤：未翻＝灰牌）</button>';
+  H += '<a class="mg-proj mg-proj-link" href="#tvagent">🖥️ TV 屏（第二部手機）</a>';
   H += '</div></div>';
   /* 計分（已翻幾多） */
   var red=0, blue=0, civ=0, bomb=false;
@@ -272,30 +318,81 @@ function agentGridHtml(grid, showColor){
       cls += ' hide';
     }
     var label = c.revealed ? c.word : '？';
-    H += '<button class="'+cls+'" onclick="agentFlip('+i+')"><span>'+label+'</span><small>'+(c.revealed?(showColor?'':''):'撳翻')+'</small></button>';
+    H += '<button class="'+cls+'" onclick="agentFlip('+i+')"><i class="ag-num">'+(i+1)+'</i><span>'+label+'</span></button>';
   });
   H += '</div>';
   return H;
 }
 /* 投影用嘅中性 grid（未翻＝灰，冇任何顏色暗示）——inline style，第二屏冇 app.css 都啱 */
 function agentProjGrid(){
-  var base = 'background:#1b3a29;color:#E8F5E9;border:1px solid #4E6B57;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05em;line-height:1.2;padding:1vh 0.4vw;text-align:center;';
+  var base = 'position:relative;background:#1b3a29;color:#E8F5E9;border:1px solid #4E6B57;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05em;line-height:1.2;padding:1vh 0.4vw;text-align:center;';
   var H = '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0.8vw;margin:1.4vh 0;">';
-  agentState.grid.forEach(function(c){
+  agentState.grid.forEach(function(c,i){
     var bg = base;
     var label = '？';
     if(c.revealed){
-      if(c.type==='red') bg = 'background:#B71C1C;color:#FFF;border:1px solid #FF8A80;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05em;line-height:1.2;padding:1vh 0.4vw;text-align:center;';
-      else if(c.type==='blue') bg = 'background:#0D47A1;color:#FFF;border:1px solid #82B1FF;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05em;line-height:1.2;padding:1vh 0.4vw;text-align:center;';
-      else if(c.type==='assassin') bg = 'background:#212121;color:#FF5252;border:2px solid #FF5252;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05em;line-height:1.2;padding:1vh 0.4vw;text-align:center;';
-      else bg = 'background:#2E7D32;color:#FFF;border:1px solid #A5D6A7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05em;line-height:1.2;padding:1vh 0.4vw;text-align:center;';
+      if(c.type==='red') bg = 'position:relative;background:#B71C1C;color:#FFF;border:1px solid #FF8A80;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05em;line-height:1.2;padding:1vh 0.4vw;text-align:center;';
+      else if(c.type==='blue') bg = 'position:relative;background:#0D47A1;color:#FFF;border:1px solid #82B1FF;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05em;line-height:1.2;padding:1vh 0.4vw;text-align:center;';
+      else if(c.type==='assassin') bg = 'position:relative;background:#212121;color:#FF5252;border:2px solid #FF5252;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05em;line-height:1.2;padding:1vh 0.4vw;text-align:center;';
+      else bg = 'position:relative;background:#2E7D32;color:#FFF;border:1px solid #A5D6A7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05em;line-height:1.2;padding:1vh 0.4vw;text-align:center;';
       label = c.word;
     }
-    H += '<div style="'+bg+'">'+label+'</div>';
+    H += '<div style="'+bg+'"><span style="position:absolute;top:4px;left:8px;font-size:0.55em;font-weight:600;opacity:0.8">'+(i+1)+'</span>'+label+'</div>';
   });
   H += '</div>';
   return H;
 }
+
+/* ══════════ TV 屏・機密特務（第二部手機／TV 專用：中性盤、冇詞冇色、可安全投屏）══════════
+   用法：領袖喺主版面「🎲 新盤」後喊出「盤面代號」（5 字）；呢度輸入代號＝重組同一盤。
+   操作：團員喊號碼 → 呢度撳該號碼（翻牌＝收咗）→ 撞炸彈＝自動出「遊戲結束」；
+   得分由領袖喊出（例「紅＋1」），負責團員撳對應＋1。此版面冇任何答案內容。 */
+var tvAgentState = { types: null, picked: {}, red: 0, blue: 0, over: false, msg: '' };
+function tvAgentSet(code){
+  var t = agentCodeDecode(code);
+  if(!t){ tvAgentState.msg = '❌ 代號唔啱：要 5 個字（A–Z／2–9，無 0、1、I、O）。再對吓領袖喊嘅代號。'; renderTvAgent(); return; }
+  tvAgentState = { types: t, picked: {}, red: 0, blue: 0, over: false, msg: '✅ 盤面設好（25 格：1 炸彈＋2 紅＋2 藍）。等領袖喊「開局」。' };
+  renderTvAgent();
+}
+function tvAgentFlip(i){
+  var s = tvAgentState;
+  if(!s.types || s.over || s.picked[i]) return;
+  s.picked[i] = true;
+  if(s.types[i] === 'assassin'){ s.over = true; s.msg = '💣 撞咗炸彈（特務）！遊戲結束。'; }
+  else if(s.types[i] === 'red' || s.types[i] === 'blue'){ s.msg = (i+1)+' 號已收——領袖喊邊隊＋1，就撳該隊＋1。'; }
+  renderTvAgent();
+}
+function tvAgentScore(team, d){
+  var s = tvAgentState;
+  if(!s.types || s.over) return;
+  s[team] = Math.max(0, s[team] + d);
+  renderTvAgent();
+}
+function renderTvAgent(){
+  var box = document.getElementById('tvagent-box');
+  if(!box) return;
+  var s = tvAgentState;
+  var H = '';
+  if(!s.types){
+    H += '<div class="agent-howto"><b>📡 設盤（輸入領袖喊嘅盤面代號）</b><ol class="steps tight"><li>領袖喺「機密特務」版面撳「 新盤」，會出一個 <b>5 字盤面代號</b>（例：K7Q3Z）。</li><li>領袖喊出代號 → 呢度輸入 → 「設盤」。</li><li>其後照喊：團員喊號碼 → 撳該號碼 → 領袖喊結果 → 撳該隊＋1。此版面<b>冇詞、冇顏色</b>，可放心投屏／mirror。</li></ol></div>';
+    H += '<div class="tvagent-code"><input id="tvagent-code" maxlength="5" placeholder="K7Q3Z" autocomplete="off" style="letter-spacing:0.3em;text-transform:uppercase;font-size:1.6rem;font-weight:800;width:100%"><button class="mg-primary" onclick="tvAgentSet(document.getElementById(\'tvagent-code\').value)">📡 設盤</button></div>';
+    if(s.msg) H += '<p class="tvagent-msg">'+s.msg+'</p>';
+  } else {
+    H += '<div class="tvagent-grid">';
+    s.types.forEach(function(t,i){
+      var cls = 'tvagent-cell';
+      if(s.picked[i]){ cls += ' picked'; if(t==='assassin') cls += ' bomb'; }
+      var label = s.picked[i] ? (t==='assassin' ? '💣' : '✓') : '？';
+      H += '<button class="'+cls+'" onclick="tvAgentFlip('+i+')"><i class="ag-num">'+(i+1)+'</i><span>'+label+'</span></button>';
+    });
+    H += '</div>';
+    H += '<div class="tvagent-score"><span class="t-red">🔴 紅隊 <b>'+s.red+'</b><button onclick="tvAgentScore(\'red\',-1)">−</button><button onclick="tvAgentScore(\'red\',1)">＋1</button></span><span class="t-blue">🔵 藍隊 <b>'+s.blue+'</b><button onclick="tvAgentScore(\'blue\',-1)">−</button><button onclick="tvAgentScore(\'blue\',1)">＋1</button></span></div>';
+    if(s.msg) H += '<p class="tvagent-msg">'+s.msg+'</p>';
+    if(s.over) H += '<div class="agent-over tvagent-over">'+(s.msg.indexOf('💣')>=0 ? '💣 撞咗炸彈——喊提示嗰隊輸，遊戲結束。' : '🏆 遊戲結束。')+'<br><button class="mg-primary" onclick="tvAgentReset()">🔄 等新盤（等領袖喊新代號）</button></div>';
+  }
+  box.innerHTML = H;
+}
+function tvAgentReset(){ tvAgentState = { types: null, picked: {}, red: 0, blue: 0, over: false, msg: '' }; renderTvAgent(); }
 
 /* ══════════ 骰子（大話骰／公開擲＋秘密擲）══════════ */
 /* 公開擲：動畫＋結果手機同投影一樣（适合「大話骰」要全場睇）。
@@ -479,6 +576,13 @@ MiniGame.renderDice = renderDice;
 MiniGame.renderWheel = renderWheel;
 MiniGame.agentDeal = agentDeal;
 MiniGame.agentFlip = agentFlip;
+MiniGame.agentCodeEncode = agentCodeEncode;
+MiniGame.agentCodeDecode = agentCodeDecode;
+MiniGame.tvAgentSet = tvAgentSet;
+MiniGame.tvAgentFlip = tvAgentFlip;
+MiniGame.tvAgentScore = tvAgentScore;
+MiniGame.tvAgentReset = tvAgentReset;
+MiniGame.renderTvAgent = renderTvAgent;
 MiniGame.rollDice = rollDice;
 MiniGame.spinWheel = spinWheel;
 

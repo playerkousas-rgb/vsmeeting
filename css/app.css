@@ -3395,3 +3395,28 @@ details.mg-host.open>summary{color:#B71C1C}
 .mg-wheel-list li{margin:3px 0}
 .mg-del{border:none;background:#FFEBEE;color:#C62828;border-radius:7px;padding:2px 8px;font-weight:800;font-family:inherit}
 .mg-p{font-weight:700}
+
+/* ── 機密特務：位置編號＋盤面代號＋TV 屏（v51） ── */
+.ag-cell{position:relative}
+.ag-num{position:absolute;top:3px;left:5px;font-size:0.6em;font-weight:700;opacity:0.65;font-style:normal;line-height:1}
+.ag-cell.hide .ag-num{color:#90A4AE}
+.ag-cell.rev .ag-num{color:rgba(255,255,255,0.85)}
+.agent-code{background:#FFF8E1;border:1.5px dashed #F9A825;border-radius:10px;padding:8px 10px;margin-bottom:8px;font-size:0.92rem}
+.agent-code b{font-size:1.5rem;letter-spacing:0.25em;font-family:ui-monospace,Menlo,Consolas,monospace;color:#B77800;margin:0 2px}
+.agent-code small{display:block;color:#8D6E63;margin-top:2px;line-height:1.4}
+.mg-proj-link{display:inline-block;text-decoration:none;text-align:center}
+/* TV 屏版面（第二部手機） */
+.tvagent-page{max-width:640px}
+.tvagent-code{display:flex;flex-direction:column;gap:10px;align-items:center;margin:14px 0}
+.tvagent-code input{border:2.5px solid #2E7D32;border-radius:12px;padding:8px 14px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.tvagent-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}
+.tvagent-cell{position:relative;border:2px solid #4E6B57;background:#26493a;color:#CFD8DC;border-radius:12px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;font-family:inherit;padding:8px 2px;cursor:pointer}
+.tvagent-cell .ag-num{opacity:0.8;color:#CFD8DC}
+.tvagent-cell.picked{background:#37474F;border-color:#546E7A;color:#90A4AE}
+.tvagent-cell.picked.bomb{background:#212121;border:2.5px solid #FF5252;color:#FF5252}
+.tvagent-score{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:10px 0;font-size:1.05rem}
+.tvagent-score span{display:flex;align-items:center;gap:8px;background:#ECEFF1;border-radius:10px;padding:6px 12px}
+.tvagent-score b{font-size:1.3rem;min-width:1.2em;text-align:center}
+.tvagent-score button{border:none;background:#2E7D32;color:#fff;border-radius:8px;width:38px;height:38px;font-size:1rem;font-weight:800;cursor:pointer}
+.tvagent-msg{background:#FFF8E1;border:1.5px solid #F9A825;border-radius:10px;padding:8px 12px;font-size:0.95rem;line-height:1.5}
+.tvagent-over{text-align:center;margin-top:10px;line-height:1.7}
