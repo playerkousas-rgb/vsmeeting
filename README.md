@@ -10,8 +10,9 @@
 - **《步操手冊》圖解 AVIF 內置**：步操／隊列圖解（立正、稍息／跨立、轉法、敬禮、看齊／報數、集隊三排、齊步／立定）以 AVIF 直接內置，照《步操手冊》（2003 年 7 月第二版）同 2024 指引數字重繪，唔再用外部分頁連結。
 - **深資範圍收斂**：制服頁刪走基維爾、幼童軍／樂行／成年對照，只留深資童軍（陸／海／空）；新領袖入口文案去掉自辯字眼；刪走「熟手領袖搵料」。
 - **遊戲分工**：大風吹／沙灘旗／運水接力補返第三位負責位。
+- **刪走 🧭 流程條**：底部原本嗰句「選集會 → 印教材 → 執袋 → 設場 → 帶領」已刪（用戶：揀完集會照住順序做就得），連帶 `#flowbar` 元素、`App.renderFlow()` 同一堆 `.fb-*` 死 CSS 一併清走。
 - **常駐頁底法律行**：底部 5 個掣（🎮🧩🪢🎖️🌟）下面加一條永遠見到嘅細字 —— 「© 2026 Scout System・非官方輔助工具・一切以香港童軍總會公佈為準・v54」；原本要碌到底先見到嘅 `.site-footer` 已刪（避免重複版權行），頁面底部留白／浮動掣位置同步調高。
-- PWA cache：`scout-v54-footer-20260928`（原 `scout-v54-drill-20260918`；新增 7 張 `img/dia/drill-*.avif`）。
+- PWA cache：`scout-v54-footerfix-20260928`（原 `scout-v54-drill-20260918`；新增 7 張 `img/dia/drill-*.avif`）。
 
 ## ✅ v53 進度（2026-09-18：用戶第十輪——機密特務設計審計：隨機主題配對＋兩隻隱藏 bug 修正）
 
@@ -149,7 +150,7 @@
 ## 技術
 
 - 純靜態 HTML/CSS/vanilla JS，無 build
-- PWA：Service Worker `scout-v54-footer-20260928`（逐檔 add，缺圖唔會拖冧核心預緩存）
+- PWA：Service Worker `scout-v54-footerfix-20260928`（逐檔 add，缺圖唔會拖冧核心預緩存）
 - 示意圖片：`img/fig/*.avif`（AVIF，36 張約 1.2MB）；資料喺 `js/figs.js`（遊戲名→`GAME_FIG`、技能→`SKILL_FIG`、急救→`AID_FIG`）。`game-chairs.avif` 係 CC BY-SA 網上相片轉檔，來源見 `img/fig/SOURCES.md`。
 - 圖解（全部 AVIF、**前端零 SVG**）：`img/dia/*.avif`＋`js/dia.js`（`IMG.map` 對照表＋自動砌 `DIAGRAMS.*`，每個 key 出 `<img>`）；手繪 SVG 底稿只留喺 `assets_src/diasvg/`（build-only，唔會下載）。圖載唔到就出 alt 文字（`IMG.fallback`），唔會退回 SVG。
 - 深資制服服式圖唔本地存檔：制服頁連去香港童軍總會官網深資童軍頁原圖（永遠最新）；`img/uni/` 舊圖已唔再預緩存。

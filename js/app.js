@@ -2,7 +2,6 @@
 var App = {};
 
 App.init = function(){
-  App.renderFlow();
   window.addEventListener('hashchange', App.route);
   window.addEventListener('online', App.netState);
   window.addEventListener('offline', App.netState);
@@ -17,6 +16,7 @@ App.init = function(){
     setTimeout(function(){ try{ agentSyncJoin(qagent); }catch(e){} }, 300);
   }
   App.route();
+  App.syncBottom();
 };
 
 App.netState = function(){
@@ -83,24 +83,15 @@ App.projFab = function(){
 
 /* 全站搜尋 */
 
-App.renderFlow = function(){
-  var fb = document.getElementById('flowbar');
-  if(!fb) return;
-  fb.innerHTML = '<small>🧭 選集會 → 印教材 → 執袋 → 設場 → 帶領</small>';
-  App.syncBottom();
-};
-
-/* 頁底固定疊層實測高度：法律行＋5 掣（#tabbar）＋流程條（#flowbar）
-   量到幾高就寫入 --tabh／--botstack，浮動掣同內文留白跟住行，唔會再疊字。 */
+/* 頁底固定疊層實測高度：5 掣（#tabbar）＋常駐法律行
+   量到幾高就寫入 --tabh／--botstack，浮動掣同內文留白跟住行，唔會疊字。 */
 App.syncBottom = function(){
   var root = document.documentElement;
   if(!root || !root.style || !root.style.setProperty) return;
   var tb = document.getElementById('tabbar');
-  var fb = document.getElementById('flowbar');
   var th = (tb && tb.offsetHeight) ? tb.offsetHeight : 82;
   root.style.setProperty('--tabh', th + 'px');
-  var fh = (fb && fb.offsetHeight) ? fb.offsetHeight : 0;
-  root.style.setProperty('--botstack', (th + fh) + 'px');
+  root.style.setProperty('--botstack', th + 'px');
 };
 
 App.h = function(tag, cls, html){
