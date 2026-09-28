@@ -6,6 +6,9 @@ App.init = function(){
   window.addEventListener('hashchange', App.route);
   window.addEventListener('online', App.netState);
   window.addEventListener('offline', App.netState);
+  window.addEventListener('resize', function(){ App.syncBottom(); });
+  window.addEventListener('orientationchange', function(){ setTimeout(App.syncBottom, 150); });
+  setTimeout(App.syncBottom, 300);
   App.netState();
   /* QR 配對 deep-link：掃領袖部機 QR（?agent=CODE）＝自動開 TV 屏＋連線 */
   var qagent = (function(){ try{ return new URLSearchParams(window.location.search).get('agent') || ''; }catch(e){ return ''; } })();
@@ -84,6 +87,20 @@ App.renderFlow = function(){
   var fb = document.getElementById('flowbar');
   if(!fb) return;
   fb.innerHTML = '<small>🧭 選集會 → 印教材 → 執袋 → 設場 → 帶領</small>';
+  App.syncBottom();
+};
+
+/* 頁底固定疊層實測高度：法律行＋5 掣（#tabbar）＋流程條（#flowbar）
+   量到幾高就寫入 --tabh／--botstack，浮動掣同內文留白跟住行，唔會再疊字。 */
+App.syncBottom = function(){
+  var root = document.documentElement;
+  if(!root || !root.style || !root.style.setProperty) return;
+  var tb = document.getElementById('tabbar');
+  var fb = document.getElementById('flowbar');
+  var th = (tb && tb.offsetHeight) ? tb.offsetHeight : 82;
+  root.style.setProperty('--tabh', th + 'px');
+  var fh = (fb && fb.offsetHeight) ? fb.offsetHeight : 0;
+  root.style.setProperty('--botstack', (th + fh) + 'px');
 };
 
 App.h = function(tag, cls, html){

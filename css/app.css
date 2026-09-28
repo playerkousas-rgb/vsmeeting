@@ -32,7 +32,7 @@ small,.mut{color:var(--mute)}
 .topbtns{display:flex;gap:5px}
 @media(max-width:420px){.brand{font-size:.94rem}.iconbtn{width:33px;height:33px;font-size:1.02rem;border-radius:10px}
   #topbar{padding:8px 10px}}
-#view{max-width:860px;margin:0 auto;padding:14px 14px 130px}
+#view{max-width:860px;margin:0 auto;padding:14px 14px calc(var(--botstack,110px) + 26px)}
 /* ---- 上下兩條導航：🅰️ 上方＝事前準備 ／ 🅱️ 下方＝即插即用 ---- */
 .navcap{font-size:.62rem;font-weight:800;letter-spacing:.3px;text-align:center;padding:2px 6px 1px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -66,7 +66,8 @@ small,.mut{color:var(--mute)}
 #tabbar .legalbar{border-top:1px solid #F1E3E6;background:#FFF8F9;color:var(--mute);
   font-size:.58rem;line-height:1.3;font-weight:600;letter-spacing:.2px;text-align:center;
   padding:3px 10px 4px;overflow-wrap:anywhere}
-@media(max-width:340px){#tabbar .legalbar{font-size:.52rem}}
+@media(max-width:380px){#flowbar>small{font-size:.58rem;letter-spacing:0}}
+@media(max-width:340px){#tabbar .legalbar{font-size:.52rem}#flowbar>small{font-size:.54rem;padding:3px 6px}}
 @media(max-width:380px){#topnav .navrow a{font-size:.66rem}#tabbar a{font-size:.68rem}
   #topnav .navrow a span{font-size:1.05rem}#tabbar a span{font-size:1.25rem}}
 @media(max-width:340px){.navcap{font-size:.56rem}#topnav .navrow a,#tabbar a{font-size:.62rem}
@@ -129,8 +130,11 @@ small,.mut{color:var(--mute)}
   font-size:.72rem;font-weight:800;width:1.6em;height:1.6em;line-height:1.6em;text-align:center;flex:none}
 .song-act small{display:block;color:var(--mute);font-size:.78rem;margin-top:1px}
 /* ---- 🧭 嚮導條：揀咗集會之後一步步帶到散會（貼喺工具箱上面） ---- */
-#flowbar{position:fixed;left:0;right:0;bottom:0;z-index:51;pointer-events:none}
-#flowbar.on{pointer-events:auto;bottom:calc(86px + env(safe-area-inset-bottom))}
+#flowbar{position:fixed;left:0;right:0;bottom:var(--tabh,82px);z-index:49;pointer-events:none}
+#flowbar>small{display:block;text-align:center;font-size:.64rem;font-weight:800;letter-spacing:.2px;
+  color:var(--grd);background:#FFF3F5;border-top:1px solid #F1E3E6;padding:3px 10px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#flowbar.on{pointer-events:auto}
 #flowbar.on>*{box-sizing:border-box}
 #flowbar.on>*{max-width:860px;margin:0 auto}
 .fb-top{display:flex;align-items:center;gap:6px;background:linear-gradient(95deg,#5C1421,#7E1B2E);
@@ -2172,7 +2176,7 @@ figure.fig figcaption{font-size:.76rem;color:var(--mute);padding:7px 10px;border
   --brand:#7E1B2E;--brand-dark:#5C1421;--brand-light:#F8D8DC;
 }
 #topbar{background:linear-gradient(95deg,var(--ord),var(--or));color:#fff}
-#view{padding:14px 14px 130px;max-width:860px}
+#view{padding:14px 14px calc(var(--botstack,110px) + 26px);max-width:860px}
 
 /* ==== 舊版 Cub 特有元件保留（制服、敬禮、追蹤、教材台） ==== */
 .site-footer{text-align:center;padding:12px 16px 24px;color:var(--mute);font-size:12px}
@@ -2974,7 +2978,7 @@ ul.motto li{ font-size:15px; }
 /* 浮動投屏掣（右下，手機同桌面都有） */
 .proj-fab{position:fixed;right:14px;z-index:45;background:#1565C0;color:#fff;border-radius:99px;
   padding:10px 15px;font-weight:800;font-size:.86rem;box-shadow:0 6px 18px rgba(13,71,161,.35);
-  bottom:calc(86px + env(safe-area-inset-bottom))}
+  bottom:calc(var(--botstack,110px) + 12px)}
 @media(min-width:900px){.proj-fab{bottom:22px}}
 body.proj-on #app,body.proj-on #projfab,body.proj-on #leadroot{display:none!important}
 
@@ -3063,12 +3067,12 @@ textarea{font-family:inherit;border:1.5px solid var(--line);border-radius:12px;p
 .song-sheet .tag{margin-right:4px}
 .source-note{font-size:.78rem;color:var(--mute)}
 .song-float{position:fixed;right:14px;z-index:44;display:flex;flex-direction:column;gap:6px;
-  bottom:calc(142px + env(safe-area-inset-bottom))}
+  bottom:calc(var(--botstack,110px) + 58px)}
 .song-float button{background:#fff;border:1.5px solid var(--line);border-radius:99px;padding:7px 12px;
   font-size:.78rem;font-weight:800;color:var(--grd);box-shadow:var(--sh)}
 .song-float .spotify-btn{background:#1DB954;border-color:#1DB954;color:#fff}
 .song-float .yt-btn{background:#FF0000;border-color:#FF0000;color:#fff}
-@media(max-width:520px){.song-float{bottom:calc(130px + env(safe-area-inset-bottom));right:10px}}
+@media(max-width:520px){.song-float{bottom:calc(var(--botstack,110px) + 46px);right:10px}}
 
 /* ---- 列印：投屏掣、浮動掣一律唔印 ---- */
 @media print{
@@ -3156,7 +3160,7 @@ textarea{font-family:inherit;border:1.5px solid var(--line);border-radius:12px;p
   .brand{font-size:.9rem;line-height:1.2;min-width:0}
   .branch-tag{display:none}
   .iconbtn{width:44px;height:44px;flex-basis:44px;font-size:1.15rem}
-  #view{padding:12px 12px 134px}
+  #view{padding:12px 12px calc(var(--botstack,110px) + 30px)}
   h1{font-size:1.42rem}
   h2{font-size:1.12rem}
   .lede{font-size:.92rem;padding:10px 12px}
@@ -3171,7 +3175,7 @@ textarea{font-family:inherit;border:1.5px solid var(--line);border-radius:12px;p
   .sec .print-btn,.sec .proj-btn{min-height:44px;padding:7px 9px}
   .card-actions,.aid-ops{display:flex;flex-wrap:wrap;gap:7px}
   .card-actions button,.aid-ops button{margin:0}
-  .proj-fab{bottom:calc(90px + env(safe-area-inset-bottom));right:10px;min-height:44px}
+  .proj-fab{bottom:calc(var(--botstack,110px) + 12px);right:10px;min-height:44px}
 
   .role-guide{grid-template-columns:1fr;gap:7px}
   .role-guide>div{padding:10px 12px}
