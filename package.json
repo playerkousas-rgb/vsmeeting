@@ -7,5 +7,8 @@
     "start": "python3 -m http.server 8090 --bind 0.0.0.0",
     "test": "node tests/smoke.mjs && node tests/runtime.mjs",
     "test:runtime": "node tests/runtime.mjs"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
   }
 }
