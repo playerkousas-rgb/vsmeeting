@@ -1,0 +1,66 @@
+# ─────────────────────────────────────────────────────────────
+# .vercelignore — Vercel 部署瘦身
+#
+# 呢個 repo 係「零 build step」靜態 PWA。執行期真正需要嘅嘢只有：
+#   index.html, manifest.webmanifest, sw.js
+#   css/, js/, img/, icons/, vendor/
+#   templates/深資童軍團團章範本.docx   ← js/app.js 直接俾用家下載，唔可以排除
+#
+# 下面呢啲係原始設計檔、測試、工具同文件，網站行唔到，唔使上 Vercel。
+# 語法同 .gitignore 一樣（gitignore pattern）。
+# ─────────────────────────────────────────────────────────────
+
+# ── 版本控制 / CI ──
+.git/
+.gitattributes
+.github/
+
+# ── 原始設計檔同素材生成器（Python 圖解生成器、SVG 源碼）──
+assets_src/
+
+# ── 測試 ──
+tests/
+test/
+__tests__/
+coverage/
+playwright-report/
+test-results/
+
+# ── 工具 / 腳本 / 文件 ──
+scripts/
+tools/
+docs/
+*.md
+*.mdx
+# 團章範本 .docx 係前端下載檔，唔受 *.md / *.docx 影響（呢度特登白名單）
+!templates/*.docx
+
+# ── 設計原檔 / 壓縮包 ──
+*.psd
+*.ai
+*.sketch
+*.fig
+*.xd
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+
+# ── PDF：本專案冇「前端直接提供下載」嘅 PDF，所以全部排除。
+#    如果日後加入前端直接下載嘅 PDF，要喺呢度加一行白名單，例子：
+#      !templates/工作紙.pdf
+*.pdf
+
+# ── 憑證 / 環境檔 / 雜項 ──
+.env*
+*.log
+*.bak
+*.tmp
+.DS_Store
+Thumbs.db
+
+# ── 本機建置產物（唔好上傳舊嘢）──
+public/
+.vercel/
+node_modules/

@@ -170,6 +170,16 @@ python3 -m http.server 8080
 npm test   # smoke test（c01–c16 全覆蓋＋全部 tab render＋插畫/投屏/搜尋）＋ runtime（全部頁面 render＋行為測試）
 ```
 
+## 部署（Vercel）
+
+- 純靜態、**零 build step**：`index.html`＋`css/`＋`js/`＋`img/`＋`icons/`＋`vendor/`＋`manifest.webmanifest`＋`sw.js` 就係全部執行期檔案。
+- `.vercelignore`：原始設計檔（`assets_src/`）、測試（`tests/`）、文件（`*.md`）等唔上 deploy。⚠️ `templates/深資童軍團團章範本.docx` 係「素材庫 → 下載 Word 團章範本」嘅直接下載檔，**唔可以排除**。
+- `vercel.json`：
+  - `git.deploymentEnabled` = `{"**": false, "main": true}` → **淨係 `main` 自動部署**；其他分支唔會產生 preview deployment（慳部署配額，唔會有殘留 preview）。
+  - `ignoreCommand` → commit 訊息只要有 `[skip ci]`／`[skip deploy]`／`[skip vercel]`，就會**跳過呢次建置**（爬蟲／純文件更新唔會白燒一次 build）。冇標記就照建（fail-open）。
+  - `installCommand: ""` → 唔使 `npm install`（網站零 runtime npm 依賴；Web Analytics 用 `/_vercel/insights/script.js` 靜態注入）。
+- 圖標 PNG 全部壓過（單檔 < 200 KB）：`icon-1024.png` 571KB→127KB、`icon-512.png` 191KB→49KB、`icon-maskable-512.png` 123KB→19KB（PSNR > 47dB，視覺無分別）；`*.avif` 版本原封不動。
+
 ## 下一步
 
 - AYP 要求數字跟官方更新（主項／副項時數、評核旅程時數會變）

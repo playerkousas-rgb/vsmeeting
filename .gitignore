@@ -1,0 +1,6 @@
+# 本機開發／建置產物（唔入 git；部署用 .vercelignore 另一套規則）
+node_modules/
+public/
+.vercel/
+.DS_Store
+*.log
