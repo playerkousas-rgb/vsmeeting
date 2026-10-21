@@ -149,7 +149,7 @@
 🟦「合併到 MAIN。」
 🟩 今次工作分支 `arena/8b58da81-vsmeeting`；改動集中喺：`js/app.js`、`js/enhance.js`（新）、`js/data.js`、`js/figs.js`、`index.html`、`css/app.css`、`sw.js`、`tests/*`、`README.md`、`docs/*`。
 ⬜ 合併前必做：`npm test` **186 條斷言全 PASS**（smoke／runtime／quality）＋54 條路由掃描 0 error＋`node --check` 全部 JS／sw。
-⬜ PR 流程：開 PR（本分支 → `main`）→ 確認上面數字 → merge → 刪舊 arena 分支（如仍存在）。
+⬜ PR：**#13**（`arena/8b58da81-vsmeeting` → `main`）。流程：開 PR → 確認上面數字 → merge → 刪舊 arena 分支（如仍存在）。
 **其他 MEETING 照做**：一條分支一件事、合併前跑齊測試、合併後刪分支，唔好留一堆同名舊分支。
 
 ---
