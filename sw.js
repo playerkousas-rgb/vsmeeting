@@ -1,23 +1,83 @@
-var CACHE = "scout-v54-footerfix-20260928";
-var ASSETS = [
-  "./", "./index.html", "./manifest.webmanifest", "./css/app.css",
-  "./js/data.js", "./js/teach.js", "./js/teach2.js", "./js/interests.js", "./js/ceremony.js", "./js/uniform.js", "./js/dia.js", "./js/ayp.js",
-  "./js/figs.js", "./js/projector.js", "./vendor/qrcode.js", "./vendor/peerjs.min.js", "./js/minigame.js", "./js/items.js",
-  
-  
+/* sw.js — 離線快取
+ * v55：預快取拆兩層——核心（HTML／CSS／JS／icons，約 1.2MB）先裝；
+ *     圖（img/*，約 1.4MB）裝完先喺背景補，唔阻第一版畫面。
+ * 任何改動都要升 CACHE 版號，否則舊用戶唔會換新。
+ */
+var CACHE = "scout-v55-enhance-20261022";
+var CORE = [
+  "./index.html",
+  "./manifest.webmanifest",
+  "./css/app.css",
+  "./js/data.js",
+  "./js/teach.js",
+  "./js/teach2.js",
+  "./js/interests.js",
+  "./js/ceremony.js",
+  "./js/uniform.js",
+  "./js/dia.js",
+  "./js/ayp.js",
+  "./js/figs.js",
+  "./js/projector.js",
+  "./vendor/qrcode.js",
+  "./vendor/peerjs.min.js",
+  "./js/minigame.js",
+  "./js/items.js",
+  "./js/c01-lesson.js",
+  "./js/c02-lesson.js",
+  "./js/c03-lesson.js",
+  "./js/c04-lesson.js",
+  "./js/c05-lesson.js",
+  "./js/c06-lesson.js",
+  "./js/c07-lesson.js",
+  "./js/c08-lesson.js",
+  "./js/c09-lesson.js",
+  "./js/c10-lesson.js",
+  "./js/c11-lesson.js",
+  "./js/c12-lesson.js",
+  "./js/c13-lesson.js",
+  "./js/c14-lesson.js",
+  "./js/c15-lesson.js",
+  "./js/c16-lesson.js",
+  "./js/app.js",
+  "./js/enhance.js",
+  "./icons/icon-192.avif",
+  "./icons/icon-192.png",
+  "./icons/icon-512.avif",
+  "./icons/icon-512.png",
+  "./icons/icon-maskable-512.png"
+];
+/* 大圖：閒置時背景補；未補到都唔影響版面（fetch 會即場 cache） */
+var CACHE_EXTRA = [
   "./img/fig/game-banner.avif",
-  "./img/fig/game-ball.avif", "./img/fig/game-shape.avif", "./img/fig/game-tarp.avif",
-  "./img/fig/game-pack.avif", "./img/fig/game-relay-cards.avif", "./img/fig/game-tug.avif",
-  "./img/fig/game-aid.avif", "./img/fig/game-orienteer.avif",
-  "./img/fig/game-beachflag.avif", "./img/fig/game-water.avif", "./img/fig/game-chairs.avif",
-  "./img/fig/skill-ropecare.avif", "./img/fig/skill-legend.avif", "./img/fig/skill-tent.avif",
-  "./img/fig/skill-stove.avif", "./img/fig/skill-rice.avif", "./img/fig/skill-lost.avif",
+  "./img/fig/game-ball.avif",
+  "./img/fig/game-shape.avif",
+  "./img/fig/game-tarp.avif",
+  "./img/fig/game-pack.avif",
+  "./img/fig/game-relay-cards.avif",
+  "./img/fig/game-tug.avif",
+  "./img/fig/game-aid.avif",
+  "./img/fig/game-orienteer.avif",
+  "./img/fig/game-beachflag.avif",
+  "./img/fig/game-water.avif",
+  "./img/fig/game-chairs.avif",
+  "./img/fig/fire-circle.avif",
+  "./img/fig/skill-ropecare.avif",
+  "./img/fig/skill-legend.avif",
+  "./img/fig/skill-tent.avif",
+  "./img/fig/skill-stove.avif",
+  "./img/fig/skill-rice.avif",
+  "./img/fig/skill-lost.avif",
   "./img/fig/game-lineup.avif",
-  "./img/fig/skill-knife.avif", "./img/fig/skill-sos.avif",
+  "./img/fig/skill-knife.avif",
+  "./img/fig/skill-sos.avif",
   "./img/fig/skill-pack.avif",
-  "./img/fig/aid-nosebleed.avif", "./img/fig/aid-cramp.avif", "./img/fig/aid-burn.avif", "./img/fig/aid-cut.avif", "./img/fig/aid-sting.avif",
-  "./img/fig/skill-compass.avif", "./img/fig/skill-faint.avif",
-  "./js/c01-lesson.js", "./js/c02-lesson.js", "./js/c03-lesson.js", "./js/c04-lesson.js", "./js/c05-lesson.js", "./js/c06-lesson.js", "./js/c07-lesson.js", "./js/c08-lesson.js", "./js/c09-lesson.js", "./js/c10-lesson.js", "./js/c11-lesson.js", "./js/c12-lesson.js", "./js/c13-lesson.js", "./js/c14-lesson.js", "./js/c15-lesson.js", "./js/c16-lesson.js", "./js/app.js",
+  "./img/fig/aid-nosebleed.avif",
+  "./img/fig/aid-cramp.avif",
+  "./img/fig/aid-burn.avif",
+  "./img/fig/aid-cut.avif",
+  "./img/fig/aid-sting.avif",
+  "./img/fig/skill-compass.avif",
+  "./img/fig/skill-faint.avif",
   "./img/dia/cer-close.avif",
   "./img/dia/cer-flag.avif",
   "./img/dia/cer-formup.avif",
@@ -59,20 +119,23 @@ var ASSETS = [
   "./img/dia/drill-salute.avif",
   "./img/dia/drill-dress.avif",
   "./img/dia/drill-formation.avif",
-  "./img/dia/drill-march.avif",
-  "./icons/icon-192.avif", "./icons/icon-192.png", "./icons/icon-512.avif", "./icons/icon-512.png", "./icons/icon-maskable-512.png"
+  "./img/dia/drill-march.avif"
 ];
 var EXTERNAL_PREFIX = "https://";
 
+function cacheAll(list){
+  return caches.open(CACHE).then(function (c) {
+    return Promise.all(list.map(function (a) {
+      return c.add(a).catch(function () { return Promise.resolve(); });
+    }));
+  });
+}
 self.addEventListener("install", function (e) {
   e.waitUntil(
-    caches.open(CACHE).then(function (c) {
-      /* 逐個 add：其中一張圖 missing 都唔好拖冧晒核心檔案嘅預緩存 */
-      return Promise.all(ASSETS.map(function (a) {
-        return c.add(a).catch(function(){ return Promise.resolve(); });
-      }));
-    }).then(function () { return self.skipWaiting(); })
+    cacheAll(CORE).then(function () { return self.skipWaiting(); })
   );
+  /* 背景補圖：唔放入 waitUntil，核心裝好就即刻可用 */
+  setTimeout(function () { cacheAll(CACHE_EXTRA); }, 800);
 });
 
 self.addEventListener("activate", function (e) {

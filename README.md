@@ -2,7 +2,23 @@
 
 深資童軍支部（15–20 歲）恆常集會 PWA。依據《深資童軍訓練綱要》及官方集會套包（2026-09-01 版）編寫。Scout System 出品。
 
+
+> 📚 文件：`docs/dialogue-align-20261022.md`（11 回合對齊紀錄＋四大類清單）｜`docs/feedback-system.md`（意見回報接入／私隱）｜`docs/app-scorecard-20261022.md`（每身份 ≥90 評分）
 > **定位**：領袖帶隊工具。上方 5 格畀**新領袖**：集會目錄（跟程序表做）＋儀式／制服／官方套包／手冊（必修知識）；下方 5 格畀**熟手領袖**心中有想法時搵料：素材庫・活動・技能・獎章・AYP。主色森林綠 #2E7D32 + 金色 #F9A825。
+
+## ✅ v55 進度（2026-10-22：對齊幼童軍 MEETING 標準——進度／分批／預快取分層／意見回報／App.wrap）
+
+- **帶會進度＋繼續上次**：每場加「☑️ 標記為已帶」；集會目錄加「未帶／已帶」篩選、已帶統計，最頂「⏯ 繼續上次」卡顯示上次場次同段落（只記本機 `localStorage`，冇帳戶、冇上傳）。
+- **活動／技能分批**：18／19 張卡改「首批 12＋睇多啲」；撳分類會自動補齊，唔會空頁（活動字數 4,764→3,326；技能 7,718→5,280）。
+- **預快取分層**：110 檔 2.29 MB → 核心 40 檔 1.07 MB 先裝，圖 72 檔 1.24 MB 背景補（`CACHE_EXTRA`）；`CACHE` 升 `scout-v55-enhance-20261022`。
+- **列印修正**：`App.printPage()` 列印前自動打開全部 `<details>`，`afterprint` 還原（之前摺疊內容印唔到）。
+- **意見回報**：接 Scout Admin 統一回報 v1（`data-app="深資童軍集會"`）＋離線後備卡／模態；見 `docs/feedback-system.md`。
+- **架構**：新增 `App.wrap()`／`App.wrapOn()` 擴充登記處；`pages.plan`／`pages.book` 各 1 層，測試有棘輪防止私自覆寫。
+- **BUG 修正**：補漏定義嘅 `App.toast()`；導覽 `.on`＋`aria-current`（外連唔再被當目前頁）；導覽掣 ≥44px。
+- **綱要直連**：`DATA.source.url` 改為官方 PDF 全文（Drive `1F8aZSr_…`），網上版留 `onlineUrl` 後備。
+- **真實相片紀律**：音樂椅相片只留「大風吹」；「營火反思圈」改用平面示意圖（`img/fig/fire-circle.avif`，標明非相片）。
+- 測試：`npm test` 186 條斷言（smoke＋runtime＋quality）全 PASS；54 條路由每頁 1 個 `h1`、0 重複 id。
+- PWA cache：`scout-v55-enhance-20261022`。
 
 ## ✅ v54 進度（步操圖解＋深資範圍收斂）
 
@@ -12,7 +28,7 @@
 - **遊戲分工**：大風吹／沙灘旗／運水接力補返第三位負責位。
 - **刪走 🧭 流程條**：底部原本嗰句「選集會 → 印教材 → 執袋 → 設場 → 帶領」已刪（用戶：揀完集會照住順序做就得），連帶 `#flowbar` 元素、`App.renderFlow()` 同一堆 `.fb-*` 死 CSS 一併清走。
 - **常駐頁底法律行**：底部 5 個掣（🎮🧩🪢🎖️🌟）下面加一條永遠見到嘅細字 —— 「© 2026 Scout System・非官方輔助工具・一切以香港童軍總會公佈為準・v54」；原本要碌到底先見到嘅 `.site-footer` 已刪（避免重複版權行），頁面底部留白／浮動掣位置同步調高。
-- PWA cache：`scout-v54-footerfix-20260928`（原 `scout-v54-drill-20260918`；新增 7 張 `img/dia/drill-*.avif`）。
+- PWA cache：`scout-v55-enhance-20261022`（原 `scout-v54-drill-20260918`；新增 7 張 `img/dia/drill-*.avif`；v55 拆核心／背景兩層預快取）。
 
 ## ✅ v53 進度（2026-09-18：用戶第十輪——機密特務設計審計：隨機主題配對＋兩隻隱藏 bug 修正）
 
@@ -150,7 +166,7 @@
 ## 技術
 
 - 純靜態 HTML/CSS/vanilla JS，無 build
-- PWA：Service Worker `scout-v54-footerfix-20260928`（逐檔 add，缺圖唔會拖冧核心預緩存）
+- PWA：Service Worker `scout-v55-enhance-20261022`（逐檔 add，缺圖唔會拖冧核心預緩存）
 - 示意圖片：`img/fig/*.avif`（AVIF，36 張約 1.2MB）；資料喺 `js/figs.js`（遊戲名→`GAME_FIG`、技能→`SKILL_FIG`、急救→`AID_FIG`）。`game-chairs.avif` 係 CC BY-SA 網上相片轉檔，來源見 `img/fig/SOURCES.md`。
 - 圖解（全部 AVIF、**前端零 SVG**）：`img/dia/*.avif`＋`js/dia.js`（`IMG.map` 對照表＋自動砌 `DIAGRAMS.*`，每個 key 出 `<img>`）；手繪 SVG 底稿只留喺 `assets_src/diasvg/`（build-only，唔會下載）。圖載唔到就出 alt 文字（`IMG.fallback`），唔會退回 SVG。
 - 深資制服服式圖唔本地存檔：制服頁連去香港童軍總會官網深資童軍頁原圖（永遠最新）；`img/uni/` 舊圖已唔再預緩存。

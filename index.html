@@ -50,7 +50,7 @@
       <a href="#badges" data-tab="badges"><span>🎖️</span>獎章</a>
       <a href="#ayp" data-tab="ayp"><span>🌟</span>AYP</a>
     </div>
-    <div class="legalbar">© 2026 Scout System・非官方輔助工具・一切以香港童軍總會公佈為準・v54</div>
+    <div class="legalbar">© 2026 Scout System・非官方輔助工具・一切以香港童軍總會公佈為準・v55</div>
   </nav>
 </div>
 <button id="projfab" class="proj-fab hidden" onclick="App.projPage()" title="將目前頁面逐節投到投影機／大電視（← → 轉版）">🖥️ 投整頁</button>
@@ -88,6 +88,7 @@
 <script src="vendor/peerjs.min.js"></script>
 <script src="js/minigame.js"></script>
 <script src="js/app.js"></script>
+<script src="js/enhance.js"></script>
 <script>
 if ("serviceWorker" in navigator) {
   /* 喺 localhost 開發唔註冊 service worker：免得攞到舊 cache，睇唔到啱啱改嘅嘢 */
@@ -105,5 +106,6 @@ try {
   document.getElementById("view").innerHTML = "<p>出錯，重新整理試下。<br><small>"+(e&&e.message?e.message:e)+"</small></p>";
 }
 </script>
+<script src="https://scout-admin-blue.vercel.app/widget.js" data-app="深資童軍集會" defer></script>
 </body>
 </html>
