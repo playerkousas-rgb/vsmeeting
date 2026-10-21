@@ -51,8 +51,15 @@ App.route = function(){
   try{ sub = parts[1] ? decodeURIComponent(parts[1]) : null; }catch(e){ sub = parts[1]||null; }
   var allowed = ['plan','ceremony','uniform','official','book','print','play','skills','badges','ayp','search','tvagent'];
   if(allowed.indexOf(tab)<0){ tab = 'plan'; sub=null; }
+  /* 導覽狀態：內部頁先用 aria-current；外連（官方套包／其他 APP）唔可以當「目前頁」。
+     同時補返 .on class——CSS 一直用 .on／.cur，舊碼只加 .active，所以導覽從來冇 highlight。 */
   document.querySelectorAll('#topnav a, #tabbar a').forEach(function(a){
-    a.classList.toggle('active', a.getAttribute('data-tab')===tab);
+    var isTab = a.getAttribute('data-tab')===tab;
+    var isExternal = a.getAttribute('target')==='_blank' || (a.classList && a.classList.contains('external-link'));
+    var on = isTab && !isExternal;
+    if(a.classList){ a.classList.toggle('active', on); a.classList.toggle('on', on); }
+    if(on) a.setAttribute('aria-current','page');
+    else a.removeAttribute('aria-current');
   });
   if(tab==='official'){ location.href = EXTERNAL.officialPack; return; }
   var view = document.getElementById('view');
@@ -99,6 +106,92 @@ App.h = function(tag, cls, html){
   if(cls) el.className = cls;
   if(html!==undefined) el.innerHTML = html;
   return el;
+};
+
+/* 全站小提示：之前 3 處呼叫 App.toast 但一直冇定義（一撳就 throw） */
+App.toast = function(msg, ms){
+  try{
+    var t = document.getElementById('toast');
+    if(!t) return false;
+    t.textContent = String(msg == null ? '' : msg);
+    t.className = 'show';
+    clearTimeout(App._toastTimer);
+    App._toastTimer = setTimeout(function(){ t.className = ''; }, ms || 2600);
+    return true;
+  }catch(e){ return false; }
+};
+
+/* ── 模組擴充登記處（唔好再各自覆寫 App.pages／App.xxx）──────────────
+   舊做法：每個檔自己 `var prev = App.pages.plan; App.pages.plan = function(){…prev()…}`，
+   靠 <script> 次序串成一條隱形鏈，次序一改就靜靜壞。
+   新做法：一律經 App.wrap(名, function(prev){ return function(){…prev()…}; }) 登記，
+   會記住每層疊咗幾次，測試可以斷言成條鏈。 */
+App._wrapChain = {};
+App.wrap = function(name, fn){
+  if(typeof fn !== 'function') throw new Error("App.wrap('"+name+"') 需要傳入函式");
+  var prev = App[name];
+  if(typeof prev !== 'function') prev = function(){ return ''; };
+  var wrapped = fn(prev);
+  if(typeof wrapped !== 'function') throw new Error("App.wrap('"+name+"') 必須回傳函式");
+  App[name] = wrapped;
+  App._wrapChain[name] = (App._wrapChain[name] || 0) + 1;
+  return wrapped;
+};
+/* 同一個手法用喺其他模組（INTERESTS、ITEMS 等）嘅方法上 */
+App.wrapOn = function(obj, name, fn, label){
+  if(!obj || typeof obj[name] !== 'function') throw new Error('App.wrapOn 找唔到方法：'+name);
+  var key = (label || 'module') + '.' + name;
+  if(typeof fn !== 'function') throw new Error("App.wrapOn('"+key+"') 需要傳入函式");
+  var prev = obj[name];
+  var wrapped = fn(prev);
+  if(typeof wrapped !== 'function') throw new Error("App.wrapOn('"+key+"') 必須回傳函式");
+  obj[name] = wrapped;
+  App._wrapChain[key] = (App._wrapChain[key] || 0) + 1;
+  return wrapped;
+};
+
+/* ── 帶會進度（只記喺本機；冇帳戶、冇上傳）────────────────────────
+   { c01:{ done:true, at:ISO, seg:'c01-flow', segLabel:'教材＋帶流程', segAt:ISO }, … } */
+App.PROGRESS_KEY = 'vs-progress-v1';
+App.progressAll = function(){
+  try{ var d = JSON.parse(localStorage.getItem(App.PROGRESS_KEY) || '{}'); return (d && typeof d === 'object') ? d : {}; }
+  catch(e){ return {}; }
+};
+App.progressGet = function(tid){ var a = App.progressAll(); return a[tid] || {}; };
+App.progressPatch = function(tid, patch){
+  try{
+    if(!tid) return {};
+    var a = App.progressAll();
+    a[tid] = a[tid] || {};
+    Object.keys(patch || {}).forEach(function(k){ a[tid][k] = patch[k]; });
+    a[tid].at = new Date().toISOString();
+    localStorage.setItem(App.PROGRESS_KEY, JSON.stringify(a));
+    return a[tid];
+  }catch(e){ return {}; }
+};
+App.progressMark = function(tid){
+  var cur = App.progressGet(tid);
+  var next = App.progressPatch(tid, { done: !cur.done });
+  App.toast(next.done ? '✅ 已標記「帶過」' : '已取消「帶過」標記');
+  return next;
+};
+App.progressSeg = function(tid, segKey, segLabel){
+  if(!tid || !segKey) return;
+  App.progressPatch(tid, { seg: segKey, segLabel: segLabel || segKey, segAt: new Date().toISOString() });
+};
+App.progressSummary = function(){
+  var a = App.progressAll(), done = 0, total = 0;
+  try{ total = (DATA.meetings || []).length; }catch(e){ total = 16; }
+  Object.keys(a).forEach(function(k){ if(a[k] && a[k].done && (!DATA.meetings || DATA.meetings.some(function(m){return m.tid===k;}))) done++; });
+  return { done: done, total: total };
+};
+App.lastMeeting = function(){
+  var a = App.progressAll(), best = null;
+  Object.keys(a).forEach(function(k){
+    if(!a[k] || !a[k].at) return;
+    if(!best || String(a[k].at) > String(best.at)) best = { tid:k, at:a[k].at, seg:a[k].seg, segLabel:a[k].segLabel };
+  });
+  return best;
 };
 
 App.searchOpen = function(){ location.hash = '#search'; };
@@ -350,7 +443,25 @@ App.printSec = function(el){
   setTimeout(done, 20000);
   window.print();
 };
-App.printPage = function(){ window.print(); };
+/* 整頁列印：列印 CSS 會收埋冇 open 嘅 <details>，所以列印前自動全部打開、印完還原。
+   之前「整場教案全部列印」會漏咗所有摺疊內容（講稿／抽問／檢查清單）。 */
+App.printPage = function(){
+  var opened = [];
+  try{
+    Array.prototype.forEach.call(document.querySelectorAll('details'), function(d){
+      if(d && d.open === false){ d.open = true; opened.push(d); }
+    });
+  }catch(e){}
+  var restored = false;
+  var restore = function(){
+    if(restored) return; restored = true;
+    opened.forEach(function(d){ try{ d.open = false; }catch(e){} });
+    if(window.removeEventListener) window.removeEventListener('afterprint', restore);
+  };
+  if(window.addEventListener) window.addEventListener('afterprint', restore);
+  try{ window.print(); }catch(e){}
+  setTimeout(restore, 1000);
+};
 
 /* ══════════ 搜尋 ══════════ */
 App.searchIndex = null;
@@ -496,6 +607,12 @@ App.renderMeeting = function(tid){
     '<button class="print-all-btn" onclick="App.printPage()">🖨️ 整場教案全部列印</button>'+
     (m.full ? '<span class="tag ok">✓ 完整教案</span>' : '<span class="tag wip">內容陸續補上</span>');
   wrap.appendChild(meta);
+  /* 帶會進度：只記本機（localStorage），畀集會目錄篩「未帶／已帶」同「繼續上次」用 */
+  var pr0 = App.progressGet(m.tid);
+  var markBtn = App.h('button','mark-done'+(pr0.done?' done':''), pr0.done?'✅ 已帶（撳一下取消）':'☑️ 標記為已帶');
+  markBtn.setAttribute('aria-pressed', pr0.done?'true':'false');
+  markBtn.onclick = function(){ App.progressMark(m.tid); App.route(); };
+  wrap.appendChild(markBtn);
   wrap.appendChild(App.h('p','lede','📍 場地：'+m.venue+'<br>🎯 目標：'+m.goal+(m.evidence?'<br>👀 觀察：'+m.evidence:'')+(m.gap?'<br>⚠️ 注意：'+m.gap:'')));
   if(!m.special){
     var lead = App.h('div','card teach-card');
@@ -798,7 +915,10 @@ App.renderMeeting = function(tid){
         pane.appendChild(sec);
         wrap.appendChild(pane);
       });
-      tabHost.appendChild(App.filterbar(items, items[0].k, function(){}, wrap));
+      tabHost.appendChild(App.filterbar(items, items[0].k, function(k){
+        var hit = items.filter(function(x){ return x.k===k; })[0];
+        App.progressSeg(tid, k, hit ? hit.n : k);
+      }, wrap));
     })();
 
     return wrap;
@@ -929,7 +1049,7 @@ App.pages.search = function(sub){
 App.pages.plan = function(){
   var wrap = App.h('div','page plan-page');
   wrap.appendChild(App.h('h1',null,'📅 集會目錄'));
-  wrap.appendChild(App.h('p','lede','新領袖：由 c01 開始，一場跟一場。每場入去有「今日你點帶」＋時間表＋物資＋教材。內容跟《深資童軍訓練綱要》會員章→肩章。'));
+  wrap.appendChild(App.h('p','lede','新領袖：由 c01 開始，一場跟一場。每場入去有「今日你點帶」＋時間表＋物資＋教材。內容跟《深資童軍訓練綱要》會員章→肩章。<br>📖 <a href="'+DATA.source.url+'" target="_blank" rel="noopener">綱要全文（官方 PDF・主入口）</a>'));
   var how = App.h('div','card teach-card');
   how.innerHTML = '<h3>第一次帶集會：跟呢 5 步</h3><ol class="steps">'+
     '<li><b>開會前</b>：開嗰場「執袋＋通知」，袋齊物資；自己讀一次「照住講」。</li>'+
@@ -939,37 +1059,53 @@ App.pages.plan = function(){
     '<li><b>宣布＋解散 15 分鐘</b>：下次日期／帶咩；再 FALL IN 解散、執拾。</li>'+
     '</ol><p class="mut">特別場（大會操／宣誓／露營）跟嗰場自己嘅時間表，唔好硬套 90 分鐘。</p>';
   wrap.appendChild(how);
+  /* 會員章／肩章對照係查閱用，收埋做 details（內容一個字都冇刪），令首屏只留「跟邊場」入口 */
   var prog = App.h('div','card');
-  prog.innerHTML = '<h3>會員章 11 項 → 跟邊場</h3><ol class=\"steps tight\">'+
+  prog.innerHTML = '<details class="plan-map"><summary><h3 style="display:inline">📚 會員章／肩章 → 跟邊場（撳開查）</h3></summary><h3>會員章 11 項 → 跟邊場</h3><ol class=\"steps tight\">'+
     DATA.membershipItems.map(function(x){
       return '<li>'+x.t+'　<a href=\"#plan/'+x.meet+'\">'+x.meet+'</a></li>';
     }).join('')+'</ol><h3>肩章 → 跟邊場</h3><ol class=\"steps tight\">'+
     DATA.shoulderItems.map(function(x){
       return '<li>'+x.t+'　<a href=\"#plan/'+x.meet+'\">'+x.meet+'</a></li>';
-    }).join('')+'</ol><p class=\"mut\">c04 大會操、c09 創辦人日係特別場，唔計入肩章細項；c09 用來練服務策劃。</p>';
+    }).join('')+'</ol><p class=\"mut\">c04 大會操、c09 創辦人日係特別場，唔計入肩章細項；c09 用來練服務策劃。</p></details>';
   wrap.appendChild(prog);
 
+  var sum = App.progressSummary();
   var filterItems = [
-    {k:'all',n:'全部 16 場'}, {k:'member',n:'會員章 c01–06'},
-    {k:'know',n:'肩章・認識 c07–09'}, {k:'skill',n:'肩章・技能 c10–16'},
-    {k:'special',n:'特別集會'}
+    {k:'all',n:'全部 '+sum.total+' 場'}, {k:'todo',n:'未帶'}, {k:'done',n:'已帶'},
+    {k:'special',n:'特別場'}, {k:'member',n:'會員章 c01–06'},
+    {k:'know',n:'肩章・認識 c07–09'}, {k:'skill',n:'肩章・技能 c10–16'}
   ];
   var filter = App.h('div','plan-filter filters');
   filter.setAttribute('aria-label','篩選集會');
-  var result = App.h('p','plan-result','顯示 16 場');
+  var result = App.h('p','plan-result','顯示 '+sum.total+' 場・已帶 '+sum.done+'／'+sum.total);
 
+  /* 逐行建 DOM（唔用一大串 innerHTML）：篩選／進度測試可以真正 query 到每行 */
   var table = App.h('table','meeting-table plan-table');
-  table.innerHTML = '<thead><tr><th>場次／月份</th><th>主題／對應獎章</th><th>形式</th><th>狀態</th><th><span class="sr-only">開啟</span></th></tr></thead><tbody>' +
-    DATA.meetings.map(function(m,idx){
-      var tag = m.placeholder ? '<span class="tag wip">🚧 規劃中</span>' : (m.full ? '<span class="tag ok">✓ 完整</span>' : '<span class="tag wip">🚧</span>');
-      var spec = m.special ? '<span class="tag sp">特別</span>' : '';
-      var stage = idx<6 ? 'member' : (idx<9 ? 'know' : 'skill');
-      var groups = stage+(m.special?' special':'');
-      return '<tr class="meet-row" data-groups="'+groups+'" data-href="#plan/'+m.tid+'" tabindex="0" role="link" aria-label="開啟 '+m.tid+' '+m.n+'">'+
-        '<td class="plan-id"><b>'+m.tid+'</b><small>'+m.month+'</small></td>'+
-        '<td class="plan-topic"><b>'+m.n+'</b><small>🎖️ '+m.badge+'</small></td>'+
-        '<td class="plan-form">'+m.form+spec+'</td><td class="plan-status">'+tag+'</td><td class="row-go" aria-hidden="true">▶</td></tr>';
-    }).join('') + '</tbody>';
+  table.innerHTML = '<thead><tr><th>場次／月份</th><th>主題／對應獎章</th><th>形式</th><th>狀態</th><th><span class="sr-only">開啟</span></th></tr></thead>';
+  var tbody = App.h('tbody');
+  DATA.meetings.forEach(function(m,idx){
+    var pr = App.progressGet(m.tid);
+    var tag = m.placeholder ? '<span class="tag wip">🚧 規劃中</span>' : (m.full ? '<span class="tag ok">✓ 完整</span>' : '<span class="tag wip">🚧</span>');
+    var spec = m.special ? '<span class="tag sp">特別</span>' : '';
+    var doneTag = pr.done ? ' <span class="tag done-tag">✅ 已帶</span>' : '';
+    var stage = idx<6 ? 'member' : (idx<9 ? 'know' : 'skill');
+    var groups = stage+(m.special?' special':'');
+    var tr = App.h('tr','meet-row');
+    tr.setAttribute('data-groups',groups);
+    tr.setAttribute('data-done', pr.done?'1':'0');
+    tr.setAttribute('data-href','#plan/'+m.tid);
+    tr.setAttribute('tabindex','0');
+    tr.setAttribute('role','link');
+    tr.setAttribute('aria-label','開啟 '+m.tid+' '+m.n);
+    tr.innerHTML = '<td class="plan-id"><b>'+m.tid+'</b><small>'+m.month+'</small></td>'+
+      '<td class="plan-topic"><b>'+m.n+'</b><small>🎖️ '+m.badge+'</small></td>'+
+      '<td class="plan-form">'+m.form+spec+'</td><td class="plan-status">'+tag+doneTag+'</td><td class="row-go" aria-hidden="true">▶</td>';
+    tr.onclick = function(){ location.hash = tr.getAttribute('data-href'); };
+    tr.onkeydown = function(e){ if(e && (e.key==='Enter'||e.key===' ')){ if(e.preventDefault)e.preventDefault(); location.hash = tr.getAttribute('data-href'); } };
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
 
   filterItems.forEach(function(it,i){
     var btn = App.h('button','filter-btn'+(i===0?' active':''),it.n);
@@ -979,23 +1115,23 @@ App.pages.plan = function(){
         x.classList.remove('active'); x.setAttribute('aria-pressed','false');
       });
       btn.classList.add('active'); btn.setAttribute('aria-pressed','true');
-      var shown = 0;
-      Array.prototype.forEach.call(table.querySelectorAll('tr.meet-row'),function(tr){
-        var on = it.k==='all' || (' '+tr.getAttribute('data-groups')+' ').indexOf(' '+it.k+' ')>=0;
-        tr.classList.toggle('hidden',!on); if(on) shown++;
+      var shown = 0, doneShown = 0;
+      Array.prototype.forEach.call(table.querySelectorAll('.meet-row'),function(tr){
+        var isDone = tr.getAttribute('data-done')==='1';
+        var on;
+        if(it.k==='all') on = true;
+        else if(it.k==='todo') on = !isDone;
+        else if(it.k==='done') on = isDone;
+        else on = (' '+tr.getAttribute('data-groups')+' ').indexOf(' '+it.k+' ')>=0;
+        tr.classList.toggle('hidden',!on); if(on){ shown++; if(isDone) doneShown++; }
       });
-      result.textContent = '顯示 '+shown+' 場';
+      var s2 = App.progressSummary();
+      result.textContent = '顯示 '+shown+' 場'+(it.k==='done'?'（已帶 '+doneShown+'）':'')+'・全團已帶 '+s2.done+'／'+s2.total;
     };
     filter.appendChild(btn);
   });
   wrap.appendChild(filter);
   wrap.appendChild(result);
-  if(table.querySelectorAll){
-    Array.prototype.forEach.call(table.querySelectorAll('tr.meet-row'), function(tr){
-      tr.onclick = function(){ location.hash = tr.getAttribute('data-href'); };
-      tr.onkeydown = function(e){ if(e && (e.key==='Enter'||e.key===' ')){ if(e.preventDefault)e.preventDefault(); location.hash = tr.getAttribute('data-href'); } };
-    });
-  }
   wrap.appendChild(table);
   var planProj = App.h('p','plan-project');
   planProj.innerHTML = '<button class="proj-big" onclick="App.projPlan(\'年度集會目錄\')">🖥️ 投年度表</button>';
@@ -1103,7 +1239,7 @@ App.pages.uniform = function(sub){
   var cur = 'land';
   subs.forEach(function(x){ if(x.k===sub) cur = sub; });
   wrap.appendChild(App.subnav('uniform',subs,cur));
-  wrap.appendChild(App.h('p','lede','深資童軍支部（陸／海／空）男／女團員制服。下面係《儀容與制服手冊》31–60 頁原檔（深資制服圖喺呢份）。'));
+  wrap.appendChild(App.h('p','lede','深資童軍支部（陸／海／空）男／女團員制服。下面係《儀容與制服手冊》31–60 頁原檔（深資制服圖喺呢份）。<br><small class="mut">2026 核對：以《儀容與制服手冊》＋總會官網制服頁為準；官方圖只連不載、唔自繪、唔 AI 生成。舊圖如未顯示新制會寫明，未核實嘅章形／尺寸寫「待核對」。</small>'));
   wrap.appendChild(App.h('div','card',
     '<p><b>手冊原圖（31–60 頁）</b>　<a href="https://drive.google.com/file/d/1BqIREqz8JarW1WbDScXLBnQzr9KvPOnQ/view" target="_blank" rel="noopener">開 Drive</a></p>'+
     '<iframe title="儀容與制服手冊 31-60" src="https://drive.google.com/file/d/1BqIREqz8JarW1WbDScXLBnQzr9KvPOnQ/preview" style="width:100%;min-height:70vh;border:0;border-radius:8px" allow="autoplay"></iframe>'));
@@ -1357,7 +1493,7 @@ App.pages.book = function(sub){
   }
 
   var ul3 = App.h('ul','bullet');
-  ul3.innerHTML = '<li><a href="'+DATA.source.url+'" target="_blank" rel="noopener">《深資童軍訓練綱要》網上版（深資支部）</a></li>'+
+  ul3.innerHTML = '<li><a href="'+DATA.source.url+'" target="_blank" rel="noopener">📖 《深資童軍訓練綱要》第十一版 PDF（全文・主入口）</a>　<small class="mut">網上版後備：<a href="'+DATA.source.onlineUrl+'" target="_blank" rel="noopener">按章查</a></small></li>'+
     '<li><a href="'+EXTERNAL.officialPack+'" target="_blank" rel="noopener">官方集會套包 2026-09-01 版 PDF</a></li>'+
     '<li><a href="'+EXTERNAL.circulars+'" target="_blank" rel="noopener">📚 通告圖書館（訓練班／活動通告＋推送訂閱）</a></li>'+
     '<li><a href="'+EXTERNAL.vsbadge+'" target="_blank" rel="noopener">🎖️ 深資童軍進度追蹤</a></li>'+
@@ -1552,20 +1688,46 @@ App.filterItems = function(wrap, filt, all, show){
   });
   filt.setAttribute('data-cat', cat);
 };
+/* 大量卡片分批：首批 12 張＋「睇多啲」，唔好一次過 render 全部（手機 scroll 同 DOM 都輕）。
+   篩選時會先 ensureAll()，避免「揀咗分類但張卡仲未 render」嘅空頁。 */
+App.BATCH_PER = 12;
+App.cardBatch = function(wrap, items, kind){
+  var idx = 0, more = null;
+  function addOne(){ wrap.appendChild(App.itemCard(items[idx], kind)); idx++; }
+  function addBatch(){ var end = Math.min(items.length, idx + App.BATCH_PER); while(idx < end) addOne(); }
+  addBatch();
+  if(idx < items.length){
+    more = App.h('button','more-btn','👀 睇多啲（尚有 '+(items.length-idx)+' 張）');
+    more.setAttribute('aria-label','顯示其餘 '+(items.length-idx)+' 張卡');
+    more.onclick = function(){
+      addBatch();
+      if(idx >= items.length){ if(more.parentNode) more.parentNode.removeChild(more); }
+      else more.textContent = '👀 睇多啲（尚有 '+(items.length-idx)+' 張）';
+    };
+    wrap.appendChild(more);
+  }
+  return {
+    ensureAll: function(){ while(idx < items.length) addOne(); if(more && more.parentNode) more.parentNode.removeChild(more); },
+    rendered: function(){ return idx; },
+    total: items.length
+  };
+};
+
 App.pages.play = function(){
   var wrap = App.h('div','page');
   wrap.appendChild(App.h('h1',null,'🎮 活動（即插即用單項）'));
   wrap.appendChild(App.h('p','lede','單項活動：今日想加一項服務／探險／執委會練習，喺呢度揀一張跟流程做。'));
   var cats = ITEMS.cats(ITEMS.activities);
   var filt = App.h('div','filters'); filt.setAttribute('role','tablist');
+  var batch;
   [{k:'all',n:'全部'}].concat(cats.map(function(c){return {k:c,n:c};})).forEach(function(b,i){
     var btn = App.h('button','filter-btn'+(i===0?' active':''), b.n);
     btn.setAttribute('data-cat', b.k); btn.setAttribute('role','tab'); btn.setAttribute('aria-selected', i===0?'true':'false');
-    btn.onclick = function(){ App.filterItems(wrap, filt, ITEMS.activities, btn); };
+    btn.onclick = function(){ if(batch) batch.ensureAll(); App.filterItems(wrap, filt, ITEMS.activities, btn); };
     filt.appendChild(btn);
   });
   wrap.appendChild(filt);
-  ITEMS.activities.forEach(function(x){ wrap.appendChild(App.itemCard(x,'activity')); });
+  batch = App.cardBatch(wrap, ITEMS.activities, 'activity');
   return wrap;
 };
 
@@ -1607,17 +1769,16 @@ App.pages.skills = function(sub){
   }
 
   var filt = App.h('div','filters'); filt.setAttribute('role','tablist');
+  var batch;
   [{k:'all',n:'全部'}].concat(cats.map(function(c){return {k:c,n:c};})).forEach(function(b,i){
     var btn = App.h('button','filter-btn'+(i===0?' active':''), b.n);
     btn.setAttribute('data-cat', b.k); btn.setAttribute('role','tab'); btn.setAttribute('aria-selected', i===0?'true':'false');
-    btn.onclick = function(){ App.filterItems(wrap, filt, ITEMS.skills, btn); };
+    btn.onclick = function(){ if(batch) batch.ensureAll(); App.filterItems(wrap, filt, ITEMS.skills, btn); };
     filt.appendChild(btn);
   });
   if(cur==='all') wrap.appendChild(filt);
-  ITEMS.skills.forEach(function(x){
-    if(cur!=='all' && x.cat!==cur) return;
-    wrap.appendChild(App.itemCard(x,'skill'));
-  });
+  var skillList = (cur==='all') ? ITEMS.skills : ITEMS.skills.filter(function(x){ return x.cat===cur; });
+  batch = App.cardBatch(wrap, skillList, 'skill');
   wrap.appendChild(App.h('div','callout warn','⚠️ 安全紅線：刀具／爐具／火源／繩結承重必須有持委任書領袖在場；夜間與水域活動最少三人同行；任何「疑似真傷患」即時停止練習。呢頁係教材，唔係證書課程——急救、拯溺、先鋒工程高處工作要上正式課程。'));
   return wrap;
 };
@@ -1652,7 +1813,7 @@ App.pages.badges = function(){
     filt.appendChild(btn);
   });
   wrap.appendChild(filt);
-  wrap.appendChild(App.h('p','source-note','📚 來源：'+INTERESTS.source.title+'（'+INTERESTS.source.version+'）｜<a href="#book/apply">考核成員（具體計劃＋考核表）</a>｜💡 會員章＋肩章＝團內考核｜細項清單：<a href="'+INTERESTS.source.url+'" target="_blank" rel="noopener">官方頁</a>'));
+  wrap.appendChild(App.h('p','source-note','📚 來源：'+INTERESTS.source.title+'（'+INTERESTS.source.version+'）｜<a href="#book/apply">考核成員（具體計劃＋考核表）</a>｜💡 會員章＋肩章＝團內考核｜📖 <a href="'+INTERESTS.source.pdf+'" target="_blank" rel="noopener">綱要全文 PDF（主入口）</a>｜<a href="'+INTERESTS.source.url+'" target="_blank" rel="noopener">按章查（網上版）</a>'));
   var grid = App.h('div','badge-grid');
   var GOLD_MERGED = { 'g-plan-gold':1, 'g-service-gold':1, 'g-outdoor-gold':1 };
   var sugTitle = function(cat){
@@ -1687,7 +1848,7 @@ App.pages.badges = function(){
     + '<li><b>四條金帶</b>：活動策劃（一項活動策劃實踐，或外宿最少五日四夜活動）／社會服務（三選一：童軍及社區服務、連續 6 個月 52 小時志願服務、寰宇童軍計劃）／多元技能／戶外探險（後兩者項數同認可項目以官方頁最新清單為準）。</li>'
     + '<li><b>程序</b>：活動前最少 2 個月諮詢團長並向主考人申請許可 → 活動前 1 個月交計劃書 → 完結後 1 個月內交報告書。</li>'
     + '<li><b>榮譽童軍獎章</b>：集齊四條金帶後，由總會按地域及區推薦批核，總領袖及香港總監簽發，於童軍大會操頒授。</li>'
-    + '<li>完整要求：<a href="'+INTERESTS.source.url+'" target="_blank" rel="noopener">官方頁「獎章考核要求」</a>。</li>'
+    + '<li>完整要求：<a href="'+INTERESTS.source.pdf+'" target="_blank" rel="noopener">綱要全文 PDF</a>｜<a href="'+INTERESTS.source.url+'" target="_blank" rel="noopener">按章查（網上版）</a>。</li>'
     + '</ul></details>';
   grid.appendChild(gold);
   wrap.appendChild(grid);

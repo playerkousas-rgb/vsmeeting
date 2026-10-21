@@ -60,7 +60,7 @@ sb.window = sb; sb.globalThis = sb;
 vm.createContext(sb);
 
 const lessons = fs.readdirSync(path.join(root, 'js')).filter(f => /^c\d\d-/.test(f)).sort().map(f => 'js/' + f);
-const files = lessons.concat(['js/data.js', 'js/interests.js', 'js/ceremony.js', 'js/uniform.js', 'js/dia.js', 'js/ayp.js', 'js/figs.js', 'js/items.js', 'js/projector.js', 'js/minigame.js', 'js/app.js']);
+const files = lessons.concat(['js/data.js', 'js/interests.js', 'js/ceremony.js', 'js/uniform.js', 'js/dia.js', 'js/ayp.js', 'js/figs.js', 'js/items.js', 'js/projector.js', 'js/minigame.js', 'js/app.js', 'js/enhance.js']);
 for (const f of files) vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), sb, { filename: f });
 ok(true, '載入次序正確：c01–c16 → data → 模組 → app（' + files.length + ' 個檔案）');
 
@@ -124,14 +124,19 @@ for (const m of DATA.meetings) {
 {
   const ITEMS = sb.ITEMS;
   const page = App.pages.play();
-  const cards = page.querySelectorAll('.item-card');
   const btns = page.querySelectorAll('.filter-btn');
-  ok(cards.length === ITEMS.activities.length && btns.length >= 2, '活動庫 ' + cards.length + ' 張單項活動卡＋' + btns.length + ' 個分類掣');
+  const first = page.querySelectorAll('.item-card');
+  const more = page.querySelector('.more-btn');
+  ok(first.length === 12 && !!more, '活動庫首批 12 張＋「睇多啲」（共 ' + ITEMS.activities.length + ' 張）');
+  more.onclick();
+  let cards = page.querySelectorAll('.item-card');
+  ok(cards.length === ITEMS.activities.length && !page.querySelector('.more-btn'), '撳「睇多啲」補齊 ' + cards.length + ' 張活動卡');
   btns[1].onclick();
   const cat = btns[1].getAttribute('data-cat');
-  const shown = cards.filter(c => !c.classList.contains('hidden'));
+  let shown = cards.filter(c => !c.classList.contains('hidden'));
   ok(shown.length > 0 && shown.every(c => c.getAttribute('data-cat') === cat), '撳「' + cat + '」只顯示該類活動（' + shown.length + ' 個）');
   btns[0].onclick();
+  cards = page.querySelectorAll('.item-card');
   ok(cards.filter(c => !c.classList.contains('hidden')).length === cards.length, '撳「全部」還原所有活動');
   ok(ITEMS.activities.every(x => x.goal && x.flow && x.flow.length >= 3), '每項活動都有目的＋起碼 3 步流程');
 }
@@ -140,8 +145,11 @@ for (const m of DATA.meetings) {
 {
   const ITEMS = sb.ITEMS;
   const page = App.pages.skills('all');
-  const cards = page.querySelectorAll('.item-card');
-  ok(cards.length === ITEMS.skills.length, '技能頁 ' + cards.length + ' 張技能卡');
+  let cards = page.querySelectorAll('.item-card');
+  ok(cards.length === 12 && !!page.querySelector('.more-btn'), '技能頁首批 12 張＋「睇多啲」（共 ' + ITEMS.skills.length + ' 張）');
+  page.querySelector('.more-btn').onclick();
+  cards = page.querySelectorAll('.item-card');
+  ok(cards.length === ITEMS.skills.length, '技能頁補齊 ' + cards.length + ' 張技能卡');
   ok(ITEMS.skills.every(x => x.points && x.points.length >= 3), '每張技能卡最少 3 個要點（有內容）');
   ok(ITEMS.skills.every(x => x.check && x.check.length >= 1), '每張技能卡都有「完成標準／檢查」');
   ok(ITEMS.skills.every(x => x.safety), '每張技能卡都有安全欄');
@@ -260,6 +268,93 @@ ok(undef === 0, '全部頁面 HTML 冇漏 "undefined"');
 const appSrc = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
 for (const bad of ['搵今日集會', '黑箱作業', '一版講一個遊戲', '🅰️', '🅱️']) {
   ok(!appSrc.includes(bad), 'app.js 冇「' + bad + '」字句');
+}
+
+/* ═════════ v55：疊加層（進度／分批／意見回報）═════════ */
+{
+  ok(typeof App.toast === 'function', 'App.toast 有定義（之前 3 處呼叫都 throw）');
+  ok(typeof App.wrap === 'function' && typeof App.wrapOn === 'function', '有 App.wrap／App.wrapOn 擴充登記處');
+  ok((App._wrapChain['pages.plan']||0) === 1 && (App._wrapChain['pages.book']||0) === 1,
+    'pages.plan／pages.book 各登記 1 層（' + JSON.stringify(App._wrapChain) + '）');
+
+  /* 進度：標記已帶 → 目錄篩「已帶／未帶」 */
+  App.progressMark('c01');
+  ok(App.progressGet('c01').done === true, '標記 c01 已帶（本機）');
+  const plan = App.pages.plan();
+  ok(!!plan.querySelector('.continue-card'), '集會目錄有「繼續上次」卡');
+  const rows = plan.querySelectorAll('.meet-row');
+  ok(rows.length === DATA.meetings.length && rows[0].getAttribute('data-done') === '1', '目錄 16 行＋c01 標示已帶');
+  const fbtns = plan.querySelectorAll('.filter-btn');
+  const doneBtn = fbtns.filter(b => b.innerHTML === '已帶')[0];
+  const todoBtn = fbtns.filter(b => b.innerHTML === '未帶')[0];
+  ok(!!doneBtn && !!todoBtn, '目錄有「未帶／已帶」篩選');
+  doneBtn.onclick();
+  ok(rows.filter(r => !r.classList.contains('hidden')).length === 1, '撳「已帶」只出 1 場');
+  todoBtn.onclick();
+  ok(rows.filter(r => !r.classList.contains('hidden')).length === DATA.meetings.length - 1, '撳「未帶」出其餘 ' + (DATA.meetings.length-1) + ' 場');
+  ok(App.progressSummary().done === 1, '進度統計：已帶 1 場');
+
+  /* 意見回報：冇 widget 時一定要有後備模態（唔可以靜靜失敗） */
+  const modal = el('div'); modal.id = 'modal'; body.appendChild(modal);
+  ok(App.FEEDBACK && App.FEEDBACK.app === '深資童軍集會', '回報來源名稱＝深資童軍集會');
+  ok(/scout-admin-blue\.vercel\.app/.test(App.FEEDBACK.page) && /report\.html\?app=/.test(App.FEEDBACK.page), '有網頁版表單連結');
+  const ret = App.feedback();
+  ok(ret === false && modal.innerHTML.includes('fb-ta') && modal.innerHTML.includes('report.html?app='), 'widget 未載入 → 後備模態有可複製文字＋表單');
+  ok(App.feedbackTemplate().includes('類別') && App.feedbackTemplate().includes('邊一頁') && App.feedbackTemplate().includes('裝置'), '回報模板有類別／頁面／裝置');
+  const bookRefs = App.pages.book('refs');
+  ok(bookRefs.querySelectorAll('.feedback-holder').length === 1 && bookRefs.querySelectorAll('.feedback-holder')[0].innerHTML.includes('feedback-card'), '手冊參考資料有「意見回報」卡');
+  const cardHtml = App.feedbackCard();
+  ok(cardHtml.includes('唔好填團員姓名') && cardHtml.includes('離線都用得'), '回報卡有私隱界線＋離線做法');
+  App.modalClose();
+  ok(modal.innerHTML === '', '模態關得返');
+
+  /* 綱要主入口＝官方 PDF（唔係官網首頁） */
+  ok(/drive\.google\.com\/file\/d\/1F8aZSr_/.test(DATA.source.url), 'DATA.source.url 直連綱要官方 PDF');
+  const planHtml = (function(){ let h=''; const walk=n=>{h+=String(n.innerHTML||'');(n.children||[]).forEach(walk);}; walk(App.pages.plan()); return h; })();
+  ok(planHtml.includes(DATA.source.url) && planHtml.includes('綱要全文'), '集會目錄有綱要全文主入口');
+}
+
+/* 每頁一個 h1（用 element 計，唔係 regex 掃 innerHTML） */
+{
+  function countTag(node, tag){
+    let n = (node.tagName === tag) ? 1 : 0;
+    (node.children || []).forEach(c => { n += countTag(c, tag); });
+    return n;
+  }
+  const pages = { '集會目錄': App.pages.plan(), '手冊': App.pages.book(), '制服': App.pages.uniform(),
+    '儀式': App.pages.ceremony(), '活動': App.pages.play(), '技能': App.pages.skills(),
+    '獎章': App.pages.badges(), 'AYP': App.pages.ayp(), '列印': App.pages.print(),
+    '搜尋': App.pages.search(), 'TV': App.pages.tvagent(), '集會詳情': App.renderMeeting('c01') };
+  let bad = [];
+  for (const k in pages) { const n = countTag(pages[k], 'H1'); if (n !== 1) bad.push(k + '=' + n); }
+  ok(bad.length === 0, '12 個頁面各有 1 個 h1' + (bad.length ? '（' + bad.join('、') + '）' : ''));
+}
+
+/* 字數預算（v55：唔刪官方原文，只把次要內容收 details／分批；逐頁量度） */
+{
+  const CJK = t => (t.match(/[\u3400-\u9fff]/g) || []).length;
+  const textOf = h => h.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
+  const rawText = node => String(node.innerHTML || '') + ' ' + (node.children || []).map(rawText).join(' ');
+  const count = node => CJK(textOf(rawText(node).replace(/<details[\s\S]*?<\/details>/gi, ' ')));
+  const budgets = [
+    ['集會目錄', App.pages.plan(), 850],
+    ['集會詳情 c01', App.renderMeeting('c01'), 1650],
+    ['集會詳情 c16', App.renderMeeting('c16'), 3350],
+    ['活動', App.pages.play(), 3400],
+    ['技能', App.pages.skills(), 5350],
+    ['制服', App.pages.uniform(), 700],
+    ['儀式', App.pages.ceremony(), 1700]
+  ];
+  let over = [];
+  budgets.forEach(([name, node, max]) => { const n = count(node); if (n > max) over.push(name + '=' + n + '>' + max); });
+  ok(over.length === 0, '7 頁字數預算達標（' + budgets.map(([n,node,max])=>n+' '+count(node)).join('、') + '）' + (over.length?'；超標：'+over.join('、'):''));
+
+  /* 官方原文一句都唔可以因為「精簡」而消失 */
+  const book = App.pages.book('promise');
+  let bh = ''; const walk = n => { bh += String(n.innerHTML || ''); (n.children || []).forEach(walk); }; walk(book);
+  ok(DATA.facts.promise.every(l => bh.includes(l)), '誓詞 4 句逐句保留');
+  ok(DATA.facts.law.every(l => bh.includes(l)), '規律 7 條逐條保留');
+  ok(bh.includes(DATA.facts.motto), '銘言保留');
 }
 
 console.log(fail === 0 ? '\n🎉 runtime 全部通過' : '\n❌ runtime 有 ' + fail + ' 項失敗');

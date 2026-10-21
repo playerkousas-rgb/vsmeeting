@@ -183,6 +183,13 @@ var FIGS = {
     cap:'設場參考：櫈背向圓心圍圈，參加者只沿同一方向行，停咗先搶位；相片係音樂椅，只用嚟睇櫈圈同走動方向。⚠️ 玩法係少一張櫈、由中間一人叫特徵，確實數量同位置睇下面俯視圖；唔准推撞、撲櫈或疊坐',
     credit:'Artaxerxes，Musical chairs，2008，CC BY-SA 3.0；由網上原相轉為 AVIF，並非 AI 生成',
     source:'https://commons.wikimedia.org/wiki/File:Musical_chairs_Lawn_Jam_Our_Community_Place_Harrisonburg_VA_June_2008.jpg'
+  },
+  /* 營火反思圈：用平面圖，唔用音樂椅相片（相片冇火、亦唔係營火場地，唔可以當教材） */
+  'fire-circle': {
+    src:'img/fig/fire-circle.avif', w:720, h:381,
+    alt:'營火圈座位俯視圖：火圈、領袖位置、急救箱同水桶位置、圍火安全距離',
+    cap:'設場：營火反思圈座位示意（平面圖，非相片）——火圈置中、領袖企外圍、急救箱同水桶放固定位；⚠️ 真實場地以場主規定及安全距離為準，火未完全熄滅前唔准離開',
+    credit:'本 APP 自製平面示意圖（非真實相片、非 AI 生成）'
   }
 };
 
@@ -204,7 +211,7 @@ var GAME_FIG = {
   '預算大作戰':'game-pack',
   '黑夜無聲':'game-tarp',
   '60秒電梯演講':'game-ball',
-  '營火反思圈':'game-chairs',
+  '營火反思圈':'fire-circle',
   '社區需求地圖':'game-orienteer',
   '服務提案路演':'game-ball',
   '壓力與時間管理':'game-banner',

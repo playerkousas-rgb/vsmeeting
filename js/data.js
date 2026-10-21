@@ -15,7 +15,8 @@ var EXTERNAL = {
 DATA.source = {
   title: '深資童軍訓練綱要（深資童軍支部）',
   version: '第十版（2017）＋總會最新修訂通告',
-  url: 'https://sites.google.com/scouting.org.hk/venture/VentureScoutTrainingScheme',
+  url: 'https://drive.google.com/file/d/1F8aZSr_WzRbJCLy7l41iDO2tEUxpKCvE/view',
+  onlineUrl: 'https://sites.google.com/scouting.org.hk/venture/VentureScoutTrainingScheme',
   packVersion: '按《深資童軍訓練綱要》編排（官方集會套包作外連參考）',
   verified: '誓詞規律銘言以 P.O.R. 第一章核對；會員章、肩章要求以官方集會套包及深資支部訓練綱要網上版核對；年齡以 P.O.R. 為準（以通告最新修訂作實）。'
 };

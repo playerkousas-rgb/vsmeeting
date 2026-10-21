@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "python3 -m http.server 8090 --bind 0.0.0.0",
-    "test": "node tests/smoke.mjs && node tests/runtime.mjs",
+    "test": "node tests/smoke.mjs && node tests/runtime.mjs && node tests/quality.mjs",
     "test:runtime": "node tests/runtime.mjs"
   },
   "dependencies": {

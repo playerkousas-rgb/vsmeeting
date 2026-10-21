@@ -3417,3 +3417,39 @@ details.mg-host.open>summary{color:#B71C1C}
 .meet-jump{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 14px;padding:10px;background:#FFF8E1;border-radius:10px}
 .meet-jump a{display:inline-block;padding:6px 10px;background:#2E7D32;color:#fff;border-radius:999px;text-decoration:none;font-size:14px}
 .uni-photo{display:block;width:100%;max-width:280px;height:auto;margin:0 auto 8px;border-radius:12px;background:#f4f4f4;object-fit:contain}
+
+/* ══════════ v55 疊加層：進度／分批／意見回報 ══════════ */
+/* 集會頁「已帶」標記 */
+.mark-done{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:2px 0 8px;
+  padding:8px 14px;border:1.5px solid #C8E6C9;border-radius:999px;background:#F1F8E9;color:#2E7D32;
+  font:inherit;font-size:.86rem;font-weight:800;cursor:pointer}
+.mark-done.done{background:#2E7D32;border-color:#2E7D32;color:#fff}
+/* 集會目錄：已帶 tag／繼續上次卡 */
+.tag.done-tag{background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7}
+.continue-card{border-left:5px solid var(--ord,#E65100);background:#FFF8F1}
+.continue-card h2{font-size:1rem;margin:0 0 6px}
+.continue-card .quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.plan-map>summary{cursor:pointer;list-style:none;font-weight:800;color:var(--brand-dark,#5C1421)}
+.plan-map>summary::-webkit-details-marker{display:none}
+.plan-map>summary::before{content:"▸ ";color:var(--gold,#C9972B)}
+.plan-map[open]>summary::before{content:"▾ "}
+/* 分批「睇多啲」 */
+.more-btn{display:block;width:100%;min-height:48px;margin:14px 0 4px;border:1.5px dashed #D9C3A0;
+  border-radius:14px;background:#FFFDF7;color:#7A4A00;font:inherit;font-weight:800;cursor:pointer}
+.more-btn:hover{background:#FFF5E1}
+/* 意見回報卡＋離線模態 */
+.feedback-card{border:1.5px solid #C5CAE9;background:#F7F8FF}
+.feedback-holder{margin-top:14px}
+.feedback-card .quick{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.feedback-card .safe{font-size:.8rem;color:#6d6455}
+.fb-copy{width:100%;box-sizing:border-box;font:inherit;font-size:.85rem;padding:10px;
+  border:1.5px solid #C5CAE9;border-radius:10px;background:#fff;margin:8px 0}
+#modal .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:12px 16px;border-bottom:1px solid #EEE;position:sticky;top:0;background:#fff;z-index:1}
+#modal .sheet-head .x{min-width:44px;min-height:44px;border:0;background:transparent;font-size:1.1rem;cursor:pointer}
+body.modal-open{overflow:hidden}
+/* Scout Admin widget：升上底部導覽（唔好蓋住 5 個掣）；列印隱藏 */
+#scoutw-fab{bottom:calc(var(--tabh,82px) + 18px) !important;right:14px !important;min-height:44px !important}
+@media print{#scoutw-fab,.feedback-card,.mark-done,.more-btn{display:none !important}}
+/* 導覽掣最少 44px（手指按得到；2026 可及性檢查） */
+#topnav .navrow a,#tabbar .navrow a{min-height:44px;justify-content:center}
